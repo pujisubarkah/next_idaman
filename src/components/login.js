@@ -46,30 +46,29 @@ const Login = () => {
           localStorage.setItem("session_id", sessionId); // Menyimpan session ID ke localStorage
         }
 
-         // Menambahkan log login ke tabel log_login
-      const sessionId = `${user.id}-${new Date().getTime()}`; // Session ID unik
-      const { error: logError } = await supabase
-        .schema('siap_skpd')
-        .from('log_login')
-        .insert([
-          {
-            username: user.username,  // Menyimpan username yang login
-            user_id: user.id,  // ID user
-            time: new Date().toISOString(),  // Menyimpan waktu login
-            ip: window.location.hostname,  // Atau IP yang lebih tepat
-            session_id: sessionId,  // ID sesi yang unik
-           
-            user_agent: navigator.userAgent,  // Informasi user agent
-          }
-        ]);
+        // Menambahkan log login ke tabel log_login
+        const sessionId = `${user.id}-${new Date().getTime()}`; // Session ID unik
+        const { error: logError } = await supabase
+          .schema('siap_skpd')
+          .from('log_login')
+          .insert([
+        {
+          username: user.username,  // Menyimpan username yang login
+          user_id: user.id,  // ID user
+          time: new Date().toISOString(),  // Menyimpan waktu login
+          ip: window.location.hostname,  // Atau IP yang lebih tepat
+          session_id: sessionId,  // ID sesi yang unik
+          user_agent: navigator.userAgent,  // Informasi user agent
+        }
+          ]);
 
         if (logError) {
-          console.log("Error logging login:", JSON.stringify(error));  // Mencetak error dalam format JSON
+          console.log("Error logging login:", JSON.stringify(logError));  // Mencetak error dalam format JSON
         } else {
           console.log("Login log inserted successfully:", {
-            username: user.username,
-            session_id: sessionId,
-            time: new Date().toISOString(),
+        username: user.username,
+        session_id: sessionId,
+        time: new Date().toISOString(),
           });
         }
 
@@ -78,11 +77,11 @@ const Login = () => {
           .schema('siap_skpd')
           .from('log_session')
           .insert([{
-            session_id: sessionId,
-            user_agent: navigator.userAgent,
-            first_ip: window.location.hostname,  // IP saat pertama login
-            first_username: user.username,  // Username yang login pertama kali
-            label: "login successful"  // Label untuk sesi login
+        session_id: sessionId,
+        user_agent: navigator.userAgent,
+        first_ip: window.location.hostname,  // IP saat pertama login
+        first_username: user.username,  // Username yang login pertama kali
+        label: "login successful"  // Label untuk sesi login
           }]);
 
         if (sessionError) {
@@ -169,7 +168,7 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <div className="w-3/4 bg-gray-100 flex items-center justify-center m-0 p-0">
+      <div className="w-3/4 bg-gray-100 flex items-center justify-center m-0 p-0 relative">
         <Image
           src="/lan-ilustrasi.jpeg"
           alt="Illustration of Lembaga Administrasi Negara building with cartoon characters"
