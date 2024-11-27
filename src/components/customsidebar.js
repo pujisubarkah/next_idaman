@@ -32,8 +32,9 @@ const CustomSidebar = () => {
                     key={index}
                     label={item.label}
                     icon={item.icon}
-                    children={item.children} // Pass children to Dropdown
-                  />
+                  >
+                    {item.children}
+                  </Dropdown>
                 ) : (
                   <Sidebar.Item
                     key={index}

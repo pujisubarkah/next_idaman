@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from "../../lib/supabaseClient"; // Adjusted path
 import bcrypt from "bcryptjs"; // Import bcrypt
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import Image from 'next/image';
 
 
 
@@ -103,7 +104,7 @@ const Login = () => {
     <div className="flex h-screen m-0 p-0">
       <div className="w-1/4 flex flex-col justify-center items-center bg-white p-8">
         <div className="flex flex-col items-center mb-6">
-          <img src="/lanri.png" alt="Logo LANRI" className="w-20 mb-4" />
+          <Image src="/lanri.png" alt="Logo LANRI" className="w-20 mb-4" width={80} height={80} />
           <h1 className="text-4xl font-bold mb-2 text-teal-600">IDAMAN LAN</h1>
           <p className="text-gray-600 text-center">
             Sistem Informasi Sumber Daya Manusia Lembaga Administrasi Negara
@@ -169,10 +170,11 @@ const Login = () => {
         </div>
       </div>
       <div className="w-3/4 bg-gray-100 flex items-center justify-center m-0 p-0">
-        <img
+        <Image
           src="/lan-ilustrasi.jpeg"
           alt="Illustration of Lembaga Administrasi Negara building with cartoon characters"
           className="h-full object-cover"
+          layout="fill"
         />
       </div>
     </div>
