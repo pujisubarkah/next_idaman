@@ -1,3 +1,4 @@
+
 import Link from 'next/link';  // Import Link from Next.js
 import {
   FaTachometerAlt,
@@ -14,7 +15,7 @@ import {
 export const sidebarData = [
   {
     label: "Dashboard",
-    to: "/dashboard",
+    to: "/home",
     icon: FaTachometerAlt,
   },
   {
@@ -98,29 +99,27 @@ export const Sidebar = () => {
           if (item.dropdown) {
             return (
               <li key={index}>
-                <div>
-                  <item.icon />
-                  {item.label}
-                </div>
-                <ul>
-                  {item.children.map((child, childIndex) => (
-                    <li key={childIndex}>
-                      <Link href={child.to}>
-                        <a>{child.label}</a>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <div>
+                <item.icon />
+                {item.label}
+              </div>
+              <ul>
+                {item.children.map((child, childIndex) => (
+                <li key={childIndex}>
+                  <Link href={child.to}>
+                  {child.label}
+                  </Link>
+                </li>
+                ))}
+              </ul>
               </li>
             );
           }
           return (
             <li key={index}>
               <Link href={item.to}>
-                <a>
                   <item.icon />
                   {item.label}
-                </a>
               </Link>
             </li>
           );

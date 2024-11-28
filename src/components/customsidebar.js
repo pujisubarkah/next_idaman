@@ -1,62 +1,70 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Sidebar } from "flowbite-react";
-import { Link, BrowserRouter as Router } from "react-router-dom";
+import { useRouter } from "next/navigation"; // Menggunakan useRouter dari Next.js
+import Link from "next/link"; // Menggunakan Link dari Next.js
 import Dropdown from "./dropdown";
 import { sidebarData } from "./datasidebar";
 
-
 const CustomSidebar = () => {
-  const [isClient, setIsClient] = React.useState(false);
+  const [isClient, setIsClient] = useState(false); // Menyimpan status client-side rendering
 
-  React.useEffect(() => {
+  const router = useRouter(); // Inisialisasi useRouter
+
+  // Cek jika halaman sedang dirender di client-side
+  useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Jika bukan client-side, kembalikan null (tidak merender)
   if (!isClient) {
     return null;
   }
 
-  return (
-    <Router>
-  
-      
-      <div className="flex">
-        {/* Sidebar component */}
-        <Sidebar aria-label="Sidebar with content separator" className="w-64">
-          <Sidebar.Items>
-            <Sidebar.ItemGroup>
-              {sidebarData.map((item, index) =>
-                item.dropdown ? (
-                  <Dropdown
-                    key={index}
-                    label={item.label}
-                    icon={item.icon}
-                  >
-                    {item.children}
-                  </Dropdown>
-                ) : (
-                  <Sidebar.Item
-                    key={index}
-                    as={Link}
-                    to={item.to}
-                    icon={item.icon}
-                    className="hover:bg-white hover:text-teal-500 hover:border-teal-500 border border-transparent"
-                  >
-                    {item.label}
-                  </Sidebar.Item>
-                )
-              )}
-            </Sidebar.ItemGroup>
-          </Sidebar.Items>
-        </Sidebar>
+  // Fungsi untuk navigasi menggunakan useRouter
+  const handleNavigation = (to) => {
+    router.push(to); // Navigasi ke path yang diberikan
+  };
 
-        {/* Add content area here */}
-        <div className="flex-1 p-4">
-          {/* Content goes here */}
-        </div>
+  return (
+    <div className="flex">
+      {/* Sidebar component */}
+      <Sidebar aria-label="Sidebar with content separator" className="w-64">
+        <Sidebar.Items>
+          <Sidebar.ItemGroup>
+            {sidebarData.map((item, index) =>
+              item.dropdown ? (
+                <Dropdown key={index} label={item.label} icon={item.icon}>
+                  {item.children.map((child, childIndex) => (
+                    <li key={childIndex}>
+                      {/* Handle navigasi dengan onClick */}
+                      <button onClick={() => handleNavigation(child.to)}>
+                        {child.label}
+                      </button>
+                    </li>
+                  ))}
+                </Dropdown>
+              ) : (
+                <Sidebar.Item
+                  key={index}
+                  as="button" // Gunakan button untuk menangani navigasi
+                  onClick={() => handleNavigation(item.to)} // Menangani navigasi pada klik
+                  icon={item.icon}
+                  className="hover:bg-white hover:text-teal-500 hover:border-teal-500 border border-transparent"
+                >
+                  {item.label}
+                </Sidebar.Item>
+              )
+            )}
+          </Sidebar.ItemGroup>
+        </Sidebar.Items>
+      </Sidebar>
+
+      {/* Konten utama */}
+      <div className="flex-1 p-4">
+        {/* Konten halaman lainnya */}
       </div>
-    </Router>
+    </div>
   );
 };
 

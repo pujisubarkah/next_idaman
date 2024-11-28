@@ -1,4 +1,3 @@
-
 import dynamic from 'next/dynamic';
 
 // Dynamic import hanya untuk Client Component
