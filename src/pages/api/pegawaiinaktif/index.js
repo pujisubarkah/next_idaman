@@ -1,25 +1,55 @@
-let pegawaiInaktif = [
-    { id: "1", nama: "John Doe", status: "pensiun", tanggal: "2024-11-01" },
-    { id: "2", nama: "Jane Smith", status: "meninggal", tanggal: "2024-10-15" },
-];
+
+import { supabase } from '../../../../lib/supabaseClient'; // Pastikan pathnya benar
 
 export default async function handler(req, res) {
-    if (req.method === 'GET') {
-        res.status(200).json(pegawaiInaktif);
-    } else if (req.method === 'POST') {
-        // Pastikan body dapat dibaca dalam format JSON
-        const body = req.body;
-        const { nama, status, tanggal } = body;
+  // Menangani hanya request GET
+  if (req.method === 'GET') {
+    const { pensiun_id, searchQuery, page = 1, itemsPerPage = 10 } = req.query;
 
-        if (!nama || !status || !tanggal) {
-            return res.status(400).json({ error: 'Semua field harus diisi!' });
-        }
+    console.log('Request received at /api/pensiun'); // Log untuk debugging
 
-        const newPegawai = { id: String(pegawaiInaktif.length + 1), nama, status, tanggal };
-        pegawaiInaktif.push(newPegawai);
-        return res.status(201).json(newPegawai);
-    } else {
-        res.setHeader('Allow', ['GET', 'POST']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+    try {
+      // Membangun query Supabase
+      let query = supabase
+        .schema('siap')
+        .from('view_data_pegawai')
+        .select('*');
+
+      // Jika ada searchQuery, tambahkan filter
+      if (searchQuery) {
+        query = query.ilike('peg_nama_lengkap', `%${searchQuery}%`);
+      }
+
+      // Pastikan query.range dipanggil setelah semua kondisi query
+      const { data, error, count } = await query.range(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage - 1
+      );
+
+      // Menangani error dari Supabase
+      if (error) {
+        console.error('Error fetching data:', error);
+        return res.status(500).json({ error: error.message });
+      }
+
+      // Jika data tidak ditemukan
+      if (!data || data.length === 0) {
+        console.log('No data found');
+        return res.status(404).json({ message: 'Data not found' });
+      }
+
+      // Mengembalikan data dengan informasi total
+      return res.status(200).json({
+        data,
+        totalItems: count || 0,
+      });
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
+  } else {
+    // Jika method yang digunakan selain GET, kembalikan status 405
+    res.setHeader('Allow', ['GET']);
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 }

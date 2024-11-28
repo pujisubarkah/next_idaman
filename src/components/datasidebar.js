@@ -33,9 +33,9 @@ export const sidebarData = [
     dropdown: true,
     icon: FaList,
     children: [
-      { label: "Pensiun", to: "/pegawai_inaktif/pensiun" },
-      { label: "Meninggal Dunia", to: "/pegawai_inaktif/meninggal" },
-      { label: "Pindah ke Luar", to: "/pegawai_inaktif/pindah" },
+      { label: "Pensiun", to: "/pegawai-inaktif/pensiun" },
+      { label: "Meninggal Dunia", to: "/pegawai-inaktif/meninggal" },
+      { label: "Pindah ke Luar", to: "/pegawai-inaktif/pindah" },
       { label: "CLTN/Tugas Belajar", to: "#" },
     ],
   },

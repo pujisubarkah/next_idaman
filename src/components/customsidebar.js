@@ -38,27 +38,27 @@ const CustomSidebar = () => {
                   {item.children.map((child, childIndex) => (
                     <li key={childIndex}>
                       {/* Handle navigasi dengan onClick */}
-                      <button onClick={() => handleNavigation(child.to)}>
+                      <Link href={child.to} onClick={() => console.log(child.label)}>
                         {child.label}
-                      </button>
+                      </Link>
                     </li>
                   ))}
                 </Dropdown>
               ) : (
                 <Sidebar.Item
-                  key={index}
-                  as="button" // Gunakan button untuk menangani navigasi
-                  onClick={() => handleNavigation(item.to)} // Menangani navigasi pada klik
-                  icon={item.icon}
-                  className="hover:bg-white hover:text-teal-500 hover:border-teal-500 border border-transparent"
-                >
-                  {item.label}
-                </Sidebar.Item>
-              )
-            )}
-          </Sidebar.ItemGroup>
-        </Sidebar.Items>
-      </Sidebar>
+                key={index}
+                as={Link}
+                href={item.to}
+                icon={item.icon}
+                className="hover:bg-white hover:text-teal-500 hover:border-teal-500 border border-transparent"
+              >
+                {item.label}
+              </Sidebar.Item>
+            )
+          )}
+        </Sidebar.ItemGroup>
+      </Sidebar.Items>
+    </Sidebar>
 
       {/* Konten utama */}
       <div className="flex-1 p-4">

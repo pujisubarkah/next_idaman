@@ -11,7 +11,7 @@ const NavbarComponent = () => {
 
     useEffect(() => {
         // Ambil data user dari localStorage
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("user")) || {};
         if (user && user.nama) {
             setUserName(user.nama); // Pastikan nama ada di dalam data user
         }

@@ -30,18 +30,13 @@ const StylishAccordionDropdown = ({ label, icon: Icon, children }) => {
       {/* Dropdown Content */}
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-96" : "max-h-0"  // Atur max-h sesuai kebutuhan
+          isOpen ? "max-h-96" : "max-h-0"
         }`}
       >
         <ul className="mt-2 pl-8 space-y-2">
           {children.map((child, index) => (
-            <li key={index}>
-              <a
-                href={child.to}
-                className="flex items-center p-2 text-sm font-medium text-black rounded-md transition-all"
-              >
-                {child.label}
-              </a>
+            <li key={index} className="flex items-center p-2 text-sm font-medium text-black rounded-md transition-all">
+              <span className="font-medium text-gray-700">{child.label}</span>
             </li>
           ))}
         </ul>
