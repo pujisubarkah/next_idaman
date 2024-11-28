@@ -28,9 +28,10 @@ const Header = () => {
         <Image
           src="/lanp.png"
           alt="Logo LAN"
-          className="h-20"
-          width={80}
-          height={80}
+          layout="intrinsic"
+          className="h-auto"
+          width={150}
+          height={150}
         />
 
         {/* Main Title */}
@@ -43,21 +44,23 @@ const Header = () => {
 
         {/* Additional Logos */}
         <div className="flex items-center space-x-4">
-          <Image
-            src="/berakhlak.png"
-            alt="Logo Berakhlak"
-            className="h-20"
-            width={80}
-            height={80}
-          />
-          <Image
-            src="/EVP.png"
-            alt="Logo EVP"
-            className="h-20"
-            width={80}
-            height={80}
-          />
-        </div>
+  <Image
+    src="/berakhlak.png"
+    alt="Logo Berakhlak"
+    width={150}
+    height={150}
+    layout="intrinsic"
+    className="h-auto"
+  />
+  <Image
+    src="/EVP.png"
+    alt="Logo EVP"
+    width={150}
+    height={150}
+    layout="intrinsic"
+    className="h-auto"
+  />
+</div>
       </div>
     </div>
   );
