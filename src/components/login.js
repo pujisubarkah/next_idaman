@@ -173,7 +173,7 @@ const Login = () => {
           src="/lan-ilustrasi.jpeg"
           alt="Illustration of Lembaga Administrasi Negara building with cartoon characters"
           className="h-full object-cover"
-          layout="fill"
+          fill
         />
       </div>
     </div>

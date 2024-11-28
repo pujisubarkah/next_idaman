@@ -1,11 +1,12 @@
 import React from "react";
 import Image from "next/image";
 
-// Assuming you have a ScrollingText component, otherwise, you can create one.
 const ScrollingText = ({ text, className }) => {
   return (
-    <div className={`whitespace-nowrap overflow-hidden`}>
-      <p className={`animate-marquee ${className}`}>{text}</p>
+    <div className="whitespace-nowrap overflow-hidden relative">
+      <p className={`animate-marquee inline-block ${className}`}>
+        {text}
+      </p>
     </div>
   );
 };
@@ -23,15 +24,15 @@ const Header = () => {
       <div className="absolute inset-0 bg-teal-700 opacity-60"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between">
+      <div className="relative z-10 flex flex-wrap items-center justify-between space-y-4 md:space-y-0">
         {/* Logo LAN */}
         <Image
           src="/lanp.png"
           alt="Logo LAN"
-          layout="intrinsic"
           className="h-auto"
           width={150}
           height={150}
+          priority
         />
 
         {/* Main Title */}
@@ -44,23 +45,21 @@ const Header = () => {
 
         {/* Additional Logos */}
         <div className="flex items-center space-x-4">
-  <Image
-    src="/berakhlak.png"
-    alt="Logo Berakhlak"
-    width={150}
-    height={150}
-    layout="intrinsic"
-    className="h-auto"
-  />
-  <Image
-    src="/EVP.png"
-    alt="Logo EVP"
-    width={150}
-    height={150}
-    layout="intrinsic"
-    className="h-auto"
-  />
-</div>
+          <Image
+            src="/berakhlak.png"
+            alt="Logo Berakhlak"
+            width={150}
+            height={150}
+            className="h-auto"
+          />
+          <Image
+            src="/EVP.png"
+            alt="Logo EVP"
+            width={150}
+            height={150}
+            className="h-auto"
+          />
+        </div>
       </div>
     </div>
   );
