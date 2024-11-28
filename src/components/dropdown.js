@@ -1,48 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+// Dropdown.js
+import { useState } from "react";
 
-const StylishAccordionDropdown = ({ label, icon: Icon, children }) => {
+const Dropdown = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <div className="relative">
-      {/* Header Dropdown */}
-      <div
-        className="cursor-pointer flex items-center justify-between p-3 rounded-md hover:bg-gray-200 transition-all"
-        onClick={toggleDropdown}
-      >
-        <div className="flex items-center">
-          {Icon && <Icon className="mr-3 text-teal-500" size={20} />}
-          <span className="font-medium text-gray-700">{label}</span>
-        </div>
-        <span
-          className={`transition-transform ${
-            isOpen ? "rotate-180" : "rotate-0"
-          }`}
-        >
-          ▼
-        </span>
-      </div>
-
-      {/* Dropdown Content */}
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <ul className="mt-2 pl-8 space-y-2">
-          {children.map((child, index) => (
-            <li key={index} className="flex items-center p-2 text-sm font-medium text-black rounded-md transition-all">
-              <span className="font-medium text-gray-700">{child.label}</span>
+    <li>
+      <button type="button" onClick={toggleDropdown} className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+        {item.icon}
+        <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">{item.title}</span>
+        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+      </button>
+      {isOpen && item.submenu && (
+        <ul className="py-2 space-y-2">
+          {item.submenu.map((subitem, index) => (
+            <li key={index}>
+              <a href={subitem.link} className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                {subitem.title}
+              </a>
             </li>
           ))}
         </ul>
-      </div>
-    </div>
+      )}
+    </li>
   );
 };
 
-export default StylishAccordionDropdown;
+export default Dropdown;

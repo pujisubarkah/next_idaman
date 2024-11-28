@@ -5,18 +5,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { faSearch, faRotateRight, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
-const PensiunPage = () => {
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+const sortByTmtPensiun = (data) => {
+  return data.sort((a, b) => new Date(b.tmt_pensiun) - new Date(a.tmt_pensiun));
+};
+
+const Pensiun = () => {
     const [pegawai, setPegawai] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
   
     // Fetch data dengan axios
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await axios.get('/api/pensiun', {
+          const response = await axios.get('/api/pegawaiinaktif', {
             params: {
               searchQuery, // Kirimkan query pencarian
               page: currentPage,
@@ -127,24 +136,25 @@ const PensiunPage = () => {
           </thead>
           <tbody>
             
-            {pegawai.map((data, index) => (
+          {pegawai.map(({ peg_nama_lengkap, peg_lahir_tanggal, peg_lahir_tempat, peg_nip, gol_akhir, peg_gol_akhir_tmt, unit_kerja_nama, 
+                    jabatan_nama, peg_jabatan_tmt, status_pegawai, tmt_status_pegawai, masa_kerja_tahun, masa_kerja_bulan, tmt_pensiun }, index) => (
               <tr key={index}  className={index % 2 === 0 ? "bg-teal-50" : "bg-white"} // Memeriksa apakah baris ganjil atau genap
               >
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
-                  {data.peg_nama_lengkap} {data.peg_lahir_tempat} , 
-                  {formatDate(data.peg_lahir_tanggal)}
+                  {peg_nama_lengkap} {peg_lahir_tempat} , 
+                  {formatDate(peg_lahir_tanggal)}
                 </td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.peg_nip}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.nm_gol_akhir}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(data.peg_gol_akhir_tmt)}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.unit_kerja_nama}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.jabatan_nama}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(data.peg_jabatan_tmt)}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.status_pegawai}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(data.tmt_status_pegawai)}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.masa_kerja_tahun}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{data.masa_kerja_bulan}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(data.tmt_pensiun)}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{peg_nip}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{gol_akhir}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_gol_akhir_tmt)}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{unit_kerja_nama}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{jabatan_nama}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_jabatan_tmt)}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{status_pegawai}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(tmt_status_pegawai)}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_tahun}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_bulan}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(tmt_pensiun)}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
   {/* Icon View */}
   <div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
@@ -190,4 +200,4 @@ const PensiunPage = () => {
   );
 };
 
-export default PENSIUN;
+export default Pensiun;

@@ -2,17 +2,14 @@
 
 // Import komponen Header, Navbar, dan Sidebar
 import Header from "../../components/header";
-import Sidebar from "../../components/customsidebar";
 import Navbar from "../../components/navbar";
-
-
+import Sidebar from "../../components/customsidebar";
 
 export default function RootLayout({ children }) {
-  const role = "admin"; // Simulasi role, bisa diambil dari session atau context
-
   return (
     <html lang="en">
       <body className="antialiased">
+        {/* Wrapper to prevent overlap and set full screen */}
         <div className="flex flex-col h-screen">
           {/* Header */}
           <Header />
@@ -20,16 +17,16 @@ export default function RootLayout({ children }) {
           {/* Navbar */}
           <Navbar />
 
-          {/* Layout dengan Sidebar */}
-          <div className="flex flex-1">
-            {/* Sidebar */}
-            <Sidebar role={role} />
+        {/* Main Content with Sidebar */}
+        <div className="flex flex-row flex-1">
+          {/* Sidebar */}
+          <Sidebar />
 
-            {/* Konten utama */}
-            <main className="flex-1 p-4 overflow-y-auto">{children}</main>
-          </div>
+          {/* Main content */}
+          <main className="flex-1 p-4 overflow-y-auto">{children}</main>
         </div>
-      </body>
-    </html>
+      </div>
+    </body>
+  </html>
   );
 }

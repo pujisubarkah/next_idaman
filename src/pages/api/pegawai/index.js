@@ -3,15 +3,20 @@ import { supabase } from '../../../../lib/supabaseClient'; // Adjusted path
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { unit_kerja_id, searchQuery } = req.query; // Ambil parameter query dari request
+    const { unit_kerja_id, searchQuery, peg_status } = req.query; // Ambil parameter query dari request
 
     try {
       let query = supabase
         .schema('siap')
         .from('view_data_pegawai')
         .select('*', { count: 'exact' })
-        .eq('peg_status', true)
         .order('peg_nama', { ascending: true });
+
+      // Tambahkan filter peg_status jika ada
+      if (peg_status !== undefined) {
+        const status = peg_status === 'true'; // Ubah nilai peg_status ke boolean true/false
+        query = query.eq('peg_status', status); // Filter peg_status
+      }
 
       // Tambahkan filter pencarian jika ada
       if (searchQuery) {
@@ -30,7 +35,13 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: error.message });
       }
 
-      res.status(200).json(data);
+      // Mengubah peg_status menjadi 'Aktif' atau 'Tidak Aktif'
+      const modifiedData = data.map(pegawai => ({
+        ...pegawai,
+        peg_status: pegawai.peg_status ? "Aktif" : "Tidak Aktif", // Mengubah boolean menjadi string 'Aktif' atau 'Tidak Aktif'
+      }));
+
+      res.status(200).json(modifiedData);
     } catch (error) {
       console.error("Server error:", error.message);
       res.status(500).json({ error: 'Internal Server Error' });

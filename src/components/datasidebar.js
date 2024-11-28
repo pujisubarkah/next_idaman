@@ -1,4 +1,3 @@
-
 import Link from 'next/link';  // Import Link from Next.js
 import {
   FaTachometerAlt,
@@ -10,6 +9,7 @@ import {
   FaTable,
   FaChartPie,
   FaHandPointUp,
+  FaCircle,  // Import FaCircle icon for bullet
 } from "react-icons/fa";
 
 export const sidebarData = [
@@ -99,27 +99,29 @@ export const Sidebar = () => {
           if (item.dropdown) {
             return (
               <li key={index}>
-              <div>
-                <item.icon />
-                {item.label}
-              </div>
-              <ul>
-                {item.children.map((child, childIndex) => (
-                <li key={childIndex}>
-                  <Link href={child.to}>
-                  {child.label}
-                  </Link>
-                </li>
-                ))}
-              </ul>
+                <div>
+                  <item.icon />
+                  {item.label}
+                </div>
+                <ul>
+                  {item.children.map((child, childIndex) => (
+                    <li key={childIndex} className="flex items-center">
+                      {/* Add FaCircle for bullet effect */}
+                      <FaCircle className="mr-2 text-gray-500" />
+                      <Link href={child.to}>
+                        {child.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </li>
             );
           }
           return (
             <li key={index}>
               <Link href={item.to}>
-                  <item.icon />
-                  {item.label}
+                <item.icon />
+                {item.label}
               </Link>
             </li>
           );

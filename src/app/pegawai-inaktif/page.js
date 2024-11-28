@@ -1,13 +1,12 @@
-// app/list_unit/page.js
-import RootLayout from '../../components/layout'; // Adjust the path to the correct one
+import React from 'react';
 
-
-export default function pegawaiinaktif() {
+const PegawaiInaktif = () => {
   return (
-    <RootLayout>
-      <div>
-      
-      </div>
-    </RootLayout>
+    <div>
+      <h1>Daftar Pegawai Inaktif</h1>
+      {/* Tambahkan konten atau komponen lain di sini */}
+    </div>
   );
-}
+};
+export default PegawaiInaktif;
+

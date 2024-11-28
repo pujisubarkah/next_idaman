@@ -20,33 +20,23 @@ const ListAllPegawai = () => {
   useEffect(() => {
     const fetchData = async () => {
       console.log("Fetching data for unit_kerja_id:", unit_kerja_id);
-  
+    
       try {
-        const response = await axios.get('/api/pegawai', {
-          params: {
-            unit_kerja_id,
-            peg_status: true,
-            search: searchQuery,
-            orderBy: 'peg_nama',
-            orderDirection: 'asc',
-          },
-        });
-  
-        if (response.status === 200) {
-          if (response.data && response.data.data) {
-            setPegawai(response.data.data);
-            setFilteredPegawai(response.data.data);
-            console.log("Data fetched successfully:", response.data.data);
-          console.error("Failed to fetch data:", response.data ? response.data.message : "No data received");
-            console.error("No data received");
-          }
+        const response = await axios.get(`/api/pegawai`);
+        console.log("Response data:", response);
+    
+        if (response.status === 200 && response.data && response.data.data) {
+          setPegawai(response.data.data);
+          setFilteredPegawai(response.data.data);
+          console.log("Data fetched successfully:", response.data.data);
         } else {
-          console.error("Failed to fetch data:", response.data.message);
+          console.error("No data or unexpected response structure:", response.data);
         }
       } catch (error) {
-        console.error("Error fetching data from API:", error.message);
+        console.error("Error fetching data from API:", error);
       }
     };
+    
   
     fetchData();
   }, [unit_kerja_id, searchQuery]);
@@ -365,64 +355,64 @@ const ListAllPegawai = () => {
 </thead>
 
         <tbody>
-        {pegawai.map(({ peg_nama_lengkap, peg_lahir_tempat, peg_lahir_tanggal, peg_nip, nm_gol_akhir, peg_gol_akhir_tmt, jabatan_nama, peg_jabatan_tmt,peg_status, peg_pns_tmt, masa_kerja_tahun, masa_kerja_bulan }, index) => (
-            <tr
-              key={index}
-              style={{
-                backgroundColor: index % 2 === 0 ? "#e0f2f1" : "#ffffff",
-              }}
-            >
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {peg_nama_lengkap}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {peg_lahir_tempat},{" "}
-                {new Date(peg_lahir_tanggal).toLocaleDateString("id-ID")}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {peg_nip}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {nm_gol_akhir}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {new Date(peg_gol_akhir_tmt
-                ).toLocaleDateString("id-ID")}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {jabatan_nama}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {new Date(peg_jabatan_tmt
-                ).toLocaleDateString("id-ID")}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {peg_status ? "Aktif" : "Tidak Aktif"}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {new Date(peg_pns_tmt).toLocaleDateString("id-ID")}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {masa_kerja_tahun}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                {masa_kerja_bulan}
-              </td>
-              <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-                <FontAwesomeIcon
-                  icon={faSearch}
-                  style={{ cursor: "pointer", marginRight: "5px", color: "#00695c" }}
-                />
-                <FontAwesomeIcon
-                  icon={faEdit}
-                  style={{ cursor: "pointer", marginRight: "5px", color: "#00695c" }}
-                />
-                <FontAwesomeIcon
-                  icon={faTrash}
-                  style={{ cursor: "pointer", color: "#d32f2f" }}
-                />
-              </td>
-            </tr>
+        {pegawai.map(
+    (
+      {
+        peg_nama_lengkap,
+        peg_lahir_tempat,
+        peg_lahir_tanggal,
+        peg_nip,
+        gol_akhir,
+        peg_gol_akhir_tmt,
+        jabatan_nama,
+        peg_jabatan_tmt,
+        peg_ket_status,
+        peg_pns_tmt,
+        masa_kerja_tahun,
+        masa_kerja_bulan
+      },
+      index
+    ) => (
+      <tr
+      key={index}
+      style={{
+        backgroundColor: index % 2 === 0 ? "#e0f2f1" : "#ffffff",
+      }}
+    >
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {peg_nama_lengkap}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {peg_lahir_tempat}, {new Date(peg_lahir_tanggal).toLocaleDateString()}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {peg_nip}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {gol_akhir}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {new Date(peg_gol_akhir_tmt).toLocaleDateString()}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {jabatan_nama}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {new Date(peg_jabatan_tmt).toLocaleDateString()}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {peg_ket_status} 
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {new Date(peg_pns_tmt).toLocaleDateString()}
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {masa_kerja_tahun} Thn
+      </td>
+      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
+        {masa_kerja_bulan} Bln
+      </td>
+    </tr>
           ))}
         </tbody>
       </table>

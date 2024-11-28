@@ -1,12 +1,12 @@
 // app/list_unit/page.js
-
-import Pensiun from '../../../components/pensiun'; // Mengimpor komponen Pensiun
+import RootLayout from '../../home/layout'; // Mengimpor layout dari home/layout.js
+import Pensiun from '../../../components/pensiun'; // Mengimpor komponen ListUnit
 
 export default function ListUnitPage() {
   return (
     <RootLayout>
       <div>
-      <Pensiun />
+        <Pensiun />
       </div>
     </RootLayout>
   );
