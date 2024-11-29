@@ -4,11 +4,14 @@ import {
   FaSearch,
   FaUser,
   FaBell,
+  FaCog,
+  FaUsers,
   FaHdd,
   FaList,
   FaTable,
   FaChartPie,
   FaHandPointUp,
+  FaPowerOff,
   FaCircle,  // Import FaCircle icon for bullet
 } from "react-icons/fa";
 
@@ -40,15 +43,6 @@ export const sidebarData = [
     ],
   },
   {
-    label: "Jabatan Kosong",
-    dropdown: true,
-    icon: FaHandPointUp,
-    children: [
-      { label: "Eselon", to: "#" },
-      { label: "Noneselon", to: "#" },
-    ],
-  },
-  {
     label: "Pegawai Struktural",
     to: "#",
     icon: FaUser,
@@ -70,6 +64,25 @@ export const sidebarData = [
     icon: FaHdd,
   },
   {
+    label: "Semua Pegawai",
+    to: "#",
+    icon: FaTable,
+  },
+  {
+    label: "Pencarian Dinamis",
+    to: "#",
+    icon: FaSearch,
+  },
+  {
+    label: "Jabatan Kosong",
+    dropdown: true,
+    icon: FaHandPointUp,
+    children: [
+      { label: "Eselon", to: "#" },
+      { label: "Noneselon", to: "#" },
+    ],
+  },
+  {
     label: "Rekap",
     dropdown: true,
     icon: FaTable,
@@ -77,6 +90,25 @@ export const sidebarData = [
       { label: "Daftar Urut Kepangkatan", to: "#" },
       { label: "Unit Kerja", to: "#" },
       { label: "Jabatan", to: "#" },
+      { label: "Golongan", to: "#" },
+      { label: "Jenis Kelamin", to: "#" },
+      { label: "Tingkat Pendidikan", to: "#" },
+      { label: "Kelompok Usia", to: "#" },
+      { label: "Eselon Jenis Kelamin", to: "#" },
+      { label: "Monitoring Mapping SIASN", to: "#" },
+    ],
+  },
+  {
+    label: "Formasi",
+    dropdown: true,
+    icon: FaTable,
+    children: [
+      { label: "PNS Akan Naik Pangkat", to: "#" },
+      { label: "PNS Akan Pensiun Golongan", to: "#" },
+      { label: "PNS Akan Pensiun Jabatan", to: "#" },
+      { label: "PNS Pindah Keluar", to: "#" },
+      { label: "PNS Meninggal", to: "#" },
+      { label: "PNS Sudah Pensiun", to: "#" },
     ],
   },
   {
@@ -86,7 +118,36 @@ export const sidebarData = [
     children: [
       { label: "Jabatan", to: "#" },
       { label: "Golongan", to: "#" },
-    ],
+      { label: "Jenis Kelamin", to: "#" },
+      { label: "Eselon Jenis Kelamin", to: "#" },
+      { label: "Tingkat Pendidikan", to: "#" },
+      { label: "Kelompok Usia", to: "#" },
+      ],
+  },
+  {
+    label: "Absen/Presensi",
+    to: "#",
+    icon: FaTable,
+  },
+  {
+    label: "Users",
+    dropdown: true,
+    icon: FaUsers,
+    children: [
+      { label: "Data User", to: "#" },
+      { label: "Data Role", to: "#" },
+      { label: "Hak Akess User", to: "#" },
+      ],
+  },
+  {
+    label: "Ubah Password",
+    to: "#",
+    icon: FaCog,
+  },
+  {
+    label: "Logout",
+    to: "#",
+    icon: FaPowerOff,
   },
 ];
 

@@ -2,7 +2,6 @@
 import { supabase } from '../../../../lib/supabaseClient'; // Pastikan pathnya benar
 
 export default async function handler(req, res) {
-  // Menangani hanya request GET
   if (req.method === 'GET') {
     const { pensiun_id, searchQuery, page = 1, itemsPerPage = 10 } = req.query;
 
@@ -13,14 +12,26 @@ export default async function handler(req, res) {
       let query = supabase
         .schema('siap')
         .from('view_data_pegawai')
-        .select('*');
+        .select('*', { count: 'exact' });
 
-      // Jika ada searchQuery, tambahkan filter
+      // Filter berdasarkan peg_status = false
+      query = query.eq('peg_status', false);
+
+      // Filter berdasarkan pensiun_id jika ada
+      if (pensiun_id) {
+        const pensiunIds = pensiun_id.split(',').map(Number); // Pisahkan jika lebih dari satu ID
+        query = query.in('pensiun_id', pensiunIds);
+      }
+
+      // Filter berdasarkan searchQuery jika ada
       if (searchQuery) {
         query = query.ilike('peg_nama_lengkap', `%${searchQuery}%`);
       }
 
-      // Pastikan query.range dipanggil setelah semua kondisi query
+      // Urutkan berdasarkan TMT Pensiun secara descending
+      query = query.order('tmt_pensiun', { ascending: false });
+
+      // Paginasi menggunakan range
       const { data, error, count } = await query.range(
         (page - 1) * itemsPerPage,
         page * itemsPerPage - 1

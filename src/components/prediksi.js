@@ -13,7 +13,7 @@ const sortByTmtPensiun = (data) => {
   return data.sort((a, b) => new Date(b.tmt_pensiun) - new Date(a.tmt_pensiun));
 };
 
-const Pensiun = () => {
+const Prediksi = () => {
     const [pegawai, setPegawai] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -21,30 +21,30 @@ const Pensiun = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
   
-    // Fetch data dengan axios
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get('/api/pegawaiinaktif', {
-            params: {
-              searchQuery,
-              page: currentPage,
-              itemsPerPage,
-              pensiun_id: '1, 4', // Tambahkan filter pensiun_id
-            },
-          });
-    
-          const { data } = response.data;
-          setPegawai(data);
-          setTotalItems(response.data.totalItems);
-          setTotalPages(Math.ceil(response.data.totalItems / itemsPerPage));
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-    
-      fetchData();
-    }, [currentPage, searchQuery, itemsPerPage]);
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('/api/pegawaiinaktif', {
+              params: {
+                searchQuery,
+                page: currentPage,
+                itemsPerPage,
+                pensiun_id: 6, // Ganti menjadi nilai tunggal
+              },
+            });
+      
+            const { data } = response.data;
+            setPegawai(data);
+            setTotalItems(response.data.totalItems);
+            setTotalPages(Math.ceil(response.data.totalItems / itemsPerPage));
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        };
+      
+        fetchData();
+      }, [currentPage, searchQuery, itemsPerPage]);
+      
   
 
   const handleItemsPerPageChange = (event) => {
@@ -129,59 +129,36 @@ const Pensiun = () => {
         <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
           <thead className="bg-teal-600">
           <tr className="bg-teal-900 text-white">
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama/Tempat Tgl Lahir</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama</th>
               <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">NIP</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pangkat</th>
+              <th rowlSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Tanggal Lahir</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Satuan Kerja</th>
               <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Unit Kerja</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Jabatan</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pegawai</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Masa Kerja</th>
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT PENSIUN</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Golongan</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Eselon</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Jabatan</th>
               <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">PILIHAN</th>
-            </tr>
-            <tr className="bg-teal-900 text-white">
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Gol</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT Gol</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT Jabatan</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Status</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT Status</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Thn</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Bln</th>
             </tr>
           </thead>
           <tbody>
             
           {pegawai.map(({ peg_nama_lengkap, peg_lahir_tanggal, peg_lahir_tempat, peg_nip, gol_akhir, peg_gol_akhir_tmt, unit_kerja_nama, 
-                    jabatan_nama, peg_jabatan_tmt, status_pegawai, peg_ketstatus_tgl, masa_kerja_tahun, masa_kerja_bulan, tmt_pensiun }, index) => (
+                    jabatan_nama, peg_jabatan_tmt, status_pegawai, peg_ketstatus_tgl, masa_kerja_tahun, masa_kerja_bulan, keterangan }, index) => (
               <tr key={index}  className={index % 2 === 0 ? "bg-teal-50" : "bg-white"} // Memeriksa apakah baris ganjil atau genap
               >
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
-                  {peg_nama_lengkap} {peg_lahir_tempat} , 
-                  {formatDate(peg_lahir_tanggal) || "Tanggal Tidak Tersedia"}
-                </td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{peg_nama_lengkap} </td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{peg_nip}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{gol_akhir}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_gol_akhir_tmt) || "Tanggal Tidak Tersedia"}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_lahir_tanggal)}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{satuan_kerja_nama}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{unit_kerja_nama}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{gol_akhir}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{eselon}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{jabatan_nama}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_jabatan_tmt) || "Tanggal Tidak Tersedia"}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{status_pegawai}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_ketstatus_tgl) || "Tanggal Tidak Tersedia"}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_tahun}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_bulan}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(tmt_pensiun) || "Tanggal Tidak Tersedia"}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
   {/* Icon View */}
   <div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
     <FontAwesomeIcon icon={faSearch} className="text-teal-700 mr-2" />
     <span className="text-teal-700 text-sm">View</span>
-  </div>
-
-  {/* Icon Kembalikan */}
-  <div className="flex items-center cursor-pointer hover:text-teal-500">
-    <FontAwesomeIcon icon={faRotateRight} className="text-teal-700 mr-2" />
-    <span className="text-teal-700 text-sm">Kembalikan</span>
   </div>
 </td>
 
@@ -216,4 +193,4 @@ const Pensiun = () => {
   );
 };
 
-export default Pensiun;
+export default Prediksi;

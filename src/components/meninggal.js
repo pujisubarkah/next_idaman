@@ -21,30 +21,30 @@ const Pensiun = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
   
-    // Fetch data dengan axios
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get('/api/pegawaiinaktif', {
-            params: {
-              searchQuery,
-              page: currentPage,
-              itemsPerPage,
-              pensiun_id: '1, 4', // Tambahkan filter pensiun_id
-            },
-          });
-    
-          const { data } = response.data;
-          setPegawai(data);
-          setTotalItems(response.data.totalItems);
-          setTotalPages(Math.ceil(response.data.totalItems / itemsPerPage));
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-    
-      fetchData();
-    }, [currentPage, searchQuery, itemsPerPage]);
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('/api/pegawaiinaktif', {
+              params: {
+                searchQuery,
+                page: currentPage,
+                itemsPerPage,
+                pensiun_id: 2, // Ganti menjadi nilai tunggal
+              },
+            });
+      
+            const { data } = response.data;
+            setPegawai(data);
+            setTotalItems(response.data.totalItems);
+            setTotalPages(Math.ceil(response.data.totalItems / itemsPerPage));
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        };
+      
+        fetchData();
+      }, [currentPage, searchQuery, itemsPerPage]);
+      
   
 
   const handleItemsPerPageChange = (event) => {
@@ -136,7 +136,7 @@ const Pensiun = () => {
               <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Jabatan</th>
               <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pegawai</th>
               <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Masa Kerja</th>
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT PENSIUN</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Keterang Meninggal</th>
               <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">PILIHAN</th>
             </tr>
             <tr className="bg-teal-900 text-white">
@@ -153,7 +153,7 @@ const Pensiun = () => {
           <tbody>
             
           {pegawai.map(({ peg_nama_lengkap, peg_lahir_tanggal, peg_lahir_tempat, peg_nip, gol_akhir, peg_gol_akhir_tmt, unit_kerja_nama, 
-                    jabatan_nama, peg_jabatan_tmt, status_pegawai, peg_ketstatus_tgl, masa_kerja_tahun, masa_kerja_bulan, tmt_pensiun }, index) => (
+                    jabatan_nama, peg_jabatan_tmt, status_pegawai, peg_ketstatus_tgl, masa_kerja_tahun, masa_kerja_bulan, keterangan }, index) => (
               <tr key={index}  className={index % 2 === 0 ? "bg-teal-50" : "bg-white"} // Memeriksa apakah baris ganjil atau genap
               >
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
@@ -170,7 +170,7 @@ const Pensiun = () => {
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_ketstatus_tgl) || "Tanggal Tidak Tersedia"}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_tahun}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_bulan}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(tmt_pensiun) || "Tanggal Tidak Tersedia"}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{keterangan}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
   {/* Icon View */}
   <div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
