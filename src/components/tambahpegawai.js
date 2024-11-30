@@ -39,7 +39,6 @@ const formFields = [
     { label: "Pendidikan Akhir", key: "pendidikanAkhir", type: "text" },
     { label: "Jenis Jabatan", key: "jenisJabatan", type: "text" },
     { label: "Nama Jabatan", key: "namaJabatan", type: "text" },
-    { label: "TMT Jabatan", key: "tmtJabatan", type: "text" },
     { label: "Instansi", key: "instansi", type: "text" },
     { label: "Status Gaji", key: "statusGaji", type: "text" },
     { label: "Kedudukan Pegawai", key: "kedudukanPegawai", type: "text" },
@@ -49,7 +48,7 @@ const formFields = [
     { label: "No Karpeg", key: "noKarpeg", type: "text" },
     { label: "No Askes", key: "noAskes", type: "text" },
     { label: "No KTP", key: "noKTP", type: "text" },
-    { label: "Golongan Daerah", key: "golonganDaerah", type: "text" },
+    { label: "Golongan Darah", key: "golonganDarah", type: "text" },
     { label: "Bapetarum", key: "bapetarum", type: "text" },
     { label: "TMT Gaji Berkala", key: "tmtGajiBerkala", type: "text" },
     { label: "Alamat Rumah", key: "alamatRumah", type: "text" },
@@ -214,6 +213,7 @@ const FormPegawai = () => {
                   </label>
                 ))}
               </div>
+
               {/* DatePicker for TMT CPNS */}
 <div className="flex justify-end items-center">
   <label className="text-gray-700 text-sm font-bold mr-2">TMT CPNS:</label>
@@ -235,41 +235,160 @@ const FormPegawai = () => {
         );
       }
 
-{/* Container untuk pendidikan awal */}
-<div className="flex gap-4">
-  {/* Kolom untuk tingkat pendidikan */}
-  <div className="flex flex-col w-1/3">
-    <label className="text-gray-700 text-sm font-bold mb-1">Tingkat Pendidikan:</label>
-    <input
-      type="text"
-      className="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
-      placeholder="Tingkat Pendidikan"
-    />
-  </div>
+      if (field.key === "pendidikanAwal") {
+        // Special handling for "pendidikanAwal" with an additional "TMT CPNS" datepicker
+        return (
+          <div key={field.key} className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
+              Pendidikan Awal:
+            </label>
+            <div className="flex w-2/6 space-x-3">
+              <input
+                id="gelarDepan"
+                type="text"
+                value={formData["gelarDepan"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    gelarDepan: e.target.value,
+                  }))
+                }
+                placeholder="Tk Pendidikan"
+                className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+              <input
+                id="gelarBelakang"
+                type="text"
+                value={formData["gelarBelakang"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    gelarBelakang: e.target.value,
+                  }))
+                }
+                placeholder="pendidikan"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+            {/* Label dan input untuk TMT CPNS */}
+            <div className="flex justify-end items-center">
+              <label className="text-gray-700 text-sm font-bold mr-6 flex justify-end w-full"> Tahun Pendidikan Awal:</label>
+              <input
+                id="tmtCPNS"
+                type="text"
+                value={formData["tmtCPNS"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tmtCPNS: e.target.value,
+                  }))
+                }
+                placeholder="Tahun"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          </div>
+        );
+      }
+      
+      if (field.key === "pendidikanAkhir") {
+        // Special handling for "pendidikanAwal" with an additional "TMT CPNS" datepicker
+        return (
+          <div key={field.key} className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
+              Pendidikan Akhir:
+            </label>
+            <div className="flex w-2/6 space-x-3">
+              <input
+                id="gelarDepan"
+                type="text"
+                value={formData["gelarDepan"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    gelarDepan: e.target.value,
+                  }))
+                }
+                placeholder="Tk Pendidikan"
+                className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+              <input
+                id="gelarBelakang"
+                type="text"
+                value={formData["gelarBelakang"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    gelarBelakang: e.target.value,
+                  }))
+                }
+                placeholder="pendidikan"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+            {/* Label dan input untuk TMT CPNS */}
+            <div className="flex justify-end items-center">
+              <label className="text-gray-700 text-sm font-bold mr-6 flex justify-end w-full"> Tahun Pendidikan Akhir:</label>
+              <input
+                id="tmtCPNS"
+                type="text"
+                value={formData["tmtCPNS"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tmtCPNS: e.target.value,
+                  }))
+                }
+                placeholder="Tahun"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          </div>
+        );
+      }
 
-  {/* Kolom untuk pendidikan */}
-  <div className="flex flex-col w-1/3">
-    <label className="text-gray-700 text-sm font-bold mb-1">Pendidikan:</label>
-    <input
-      type="text"
-      className="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
-      placeholder="Pendidikan"
-    />
-  </div>
+      if (field.key === "namaJabatan") {
+        // Special handling for "Tempat, Tanggal Lahir" to create two columns
+        return (
+          <div key={field.key} className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
+              Nama Jabatan:
+            </label>
+            <div className="flex w-2/3 space-x-2">
+              <input
+                id="namajabatan"
+                type="text"
+                value={formData["namajabatan"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tempatLahir: e.target.value,
+                  }))
+                }
+                placeholder="Jabatan"
+                className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+              <DatePicker
+                id="tmtjabatan"
+                selected={formData["tanggalLahir"] || null}
+                onChange={(date) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tanggalLahir: date,
+                  }))
+                }
+                placeholderText="TMT Jabatan"
+                className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+          </div>
+        );
+      }
 
-  {/* Kolom untuk tahun pendidikan awal */}
-  <div className="flex flex-col w-1/3">
-    <label className="text-gray-700 text-sm font-bold mb-1">Tahun Pendidikan Awal:</label>
-    <input
-      type="text"
-      className="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
-      placeholder="Tahun Pendidikan"
-    />
-  </div>
-</div>
 
 
-
+      
     // Default handling for other fields
     switch (field.type) {
       case "text":
@@ -362,21 +481,21 @@ const FormPegawai = () => {
 
   return (
     <div className="m-2 w-full">
-    <form onSubmit={handleSubmit} className="w-full mx-auto">
-      <h1 className="text-center font-bold uppercase mb-6">Tambah Pegawai Lembaga Administrasi Negara</h1>
-      <div className="border p-4 rounded-lg">
-        {formFields.map((field) => renderFormField(field))}
-      </div>
-      <div className="flex items-center justify-between mt-4">
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
-  </div>
+      <form onSubmit={handleSubmit} className="w-full mx-auto">
+        <h1 className="text-center font-bold uppercase mb-6">Tambah Pegawai Lembaga Administrasi Negara</h1>
+        <div className="border p-4 rounded-lg">
+          {formFields.map((field) => renderFormField(field))}
+        </div>
+        <div className="flex items-center justify-center mt-4">
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Simpan
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
