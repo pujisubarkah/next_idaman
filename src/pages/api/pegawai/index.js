@@ -1,54 +1,63 @@
 // pages/api/pegawai.js
-import { supabase } from '../../../../lib/supabaseClient'; // Adjusted path
+import { supabase } from '../../../../lib/supabaseClient'; // Pastikan pathnya benar
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { unit_kerja_id, searchQuery, peg_status } = req.query; // Ambil parameter query dari request
+    const { pensiun_id, searchQuery, page = 1, itemsPerPage = 10 } = req.query;
+
+    console.log('Request received at /api/pegawai'); // Log untuk debugging
 
     try {
+      // Membangun query Supabase
       let query = supabase
         .schema('siap')
         .from('view_data_pegawai')
-        .select('*', { count: 'exact' })
-        .order('peg_nama', { ascending: true });
+        .select('*', { count: 'exact' });
 
-      // Tambahkan filter peg_status jika ada
-      if (peg_status !== undefined) {
-        const status = peg_status === 'true'; // Ubah nilai peg_status ke boolean true/false
-        query = query.eq('peg_status', status); // Filter peg_status
-      }
+      // Filter berdasarkan peg_status = false
+      query = query.eq('peg_status', true);
 
-      // Tambahkan filter pencarian jika ada
+     
+      // Filter berdasarkan searchQuery jika ada
       if (searchQuery) {
         query = query.ilike('peg_nama_lengkap', `%${searchQuery}%`);
       }
 
-      // Tambahkan filter unit_kerja_id jika ada
-      if (unit_kerja_id) {
-        query = query.eq('unit_kerja_id', unit_kerja_id);
-      }
+      // Order berdasarkan abjad di peg_nama_lengkap
+      query = query.order('peg_nama_lengkap', { ascending: true });
 
-      const { data, error } = await query;
+      
 
+      // Paginasi menggunakan range
+      const { data, error, count } = await query.range(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage - 1
+      );
+
+      // Menangani error dari Supabase
       if (error) {
-        console.error("Error fetching data:", error.message);
+        console.error('Error fetching data:', error);
         return res.status(500).json({ error: error.message });
       }
 
-      // Mengubah peg_status menjadi 'Aktif' atau 'Tidak Aktif'
-      const modifiedData = data.map(pegawai => ({
-        ...pegawai,
-        peg_status: pegawai.peg_status ? "Aktif" : "Tidak Aktif", // Mengubah boolean menjadi string 'Aktif' atau 'Tidak Aktif'
-      }));
+      // Jika data tidak ditemukan
+      if (!data || data.length === 0) {
+        console.log('No data found');
+        return res.status(404).json({ message: 'Data not found' });
+      }
 
-      res.status(200).json(modifiedData);
+      // Mengembalikan data dengan informasi total
+      return res.status(200).json({
+        data,
+        totalItems: count || 0,
+      });
     } catch (error) {
-      console.error("Server error:", error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Unexpected error:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   } else {
-    // Jika metode HTTP selain GET
+    // Jika method yang digunakan selain GET, kembalikan status 405
     res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 }

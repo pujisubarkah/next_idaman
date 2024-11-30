@@ -1,487 +1,218 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import { faSearch, faEdit, faTrash, faAdd, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faEdit, faTrash, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
-const ListAllPegawai = () => {
-  // State untuk menyimpan data pegawai, pagination, dan show per page
-  const [pegawai, setPegawai] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [showModal, setShowModal] = useState(false); // Modal state
- 
-  const [searchQuery, setSearchQuery] = useState(''); // State untuk pencarian
-  const [filteredPegawai, setFilteredPegawai] = useState(pegawai); // State untuk menyimpan hasil pencarian
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+const sortByTmtPensiun = (data) => {
+  return data.sort((a, b) => new Date(b.tmt_pensiun) - new Date(a.tmt_pensiun));
+};
 
-  const { unit_kerja_id } = useParams(); // Ambil parameter unit_kerja_id dari URL
-
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log("Fetching data for unit_kerja_id:", unit_kerja_id);
+const listpegawai = () => {
+    const [pegawai, setPegawai] = useState([]);
+    const [totalItems, setTotalItems] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [searchQuery, setSearchQuery] = useState("");
+  
+    // Fetch data dengan axios
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get('/api/pegawai', {
+            params: {
+              searchQuery,
+              page: currentPage,
+              itemsPerPage,
+              pensiun_id: '1, 4', // Tambahkan filter pensiun_id
+            },
+          });
     
-      try {
-        const response = await axios.get(`/api/pegawai`);
-        console.log("Response data:", response);
-    
-        if (response.status === 200 && response.data && response.data.data) {
-          setPegawai(response.data.data);
-          setFilteredPegawai(response.data.data);
-          console.log("Data fetched successfully:", response.data.data);
-        } else {
-          console.error("No data or unexpected response structure:", response.data);
+          const { data } = response.data;
+          setPegawai(data || []);
+          setTotalItems(response.data.totalItems);
+          setTotalPages(Math.ceil(response.data.totalItems / itemsPerPage));
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
-      } catch (error) {
-        console.error("Error fetching data from API:", error);
-      }
-    };
+      };
     
-  
-    fetchData();
-  }, [unit_kerja_id, searchQuery]);
-  
+      fetchData();
+    }, [currentPage, searchQuery, itemsPerPage]);
   
 
-    
-    const handleItemsPerPageChange = (event) => {
-      setItemsPerPage(Number(event.target.value));
-      setCurrentPage(1); // Reset ke halaman pertama ketika jumlah items berubah
-    };
+  const handleItemsPerPageChange = (event) => {
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(1);
+  };
 
-    const handlePageChange = (newPage) => {
-        setCurrentPage(newPage);
-    };
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
 
   const handleModal = () => {
     setShowModal(!showModal);
   };
 
-  // Fungsi untuk mengupdate pencarian
-  const handleSearchChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-  
-    const filtered = pegawai.filter((item) =>
-      item.nama.toLowerCase().includes(query.toLowerCase()) // Sesuaikan dengan field di data Anda
-    );
-    setFilteredPegawai(filtered);
+  const handleExport = () => {
+    alert("Exporting to Excel...");
+    // You can use a library like `xlsx` here to generate an Excel file
   };
 
-  const totalPages = Math.ceil(filteredPegawai.length / itemsPerPage);
-  const currentPegawai = filteredPegawai.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+  
+    // Cek apakah tanggal adalah 1 Januari 1970
+    if (date.getTime() === new Date('1970-01-01').getTime()) {
+      return null; // Atau kembalikan string "Tanggal Tidak Tersedia"
+    }
+  
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+  };
+  
+
 
   return (
-    <div className="flex-4 h-full px-4 overflow-auto" id="list-all-pegawai">
-      {/* Tombol Tambah Pegawai dan Download Data Pegawai */}
-      <div className="flex justify-between mb-4">
-        <button
-          onClick={handleModal}
-          className="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 flex items-center"
-        >
-          <FontAwesomeIcon icon={faAdd} className="mr-2" />
-          Tambah Pegawai
-        </button>
-        <button
-          onClick={() => alert("Download data pegawai")}  // Fungsionalitas download
-          className="bg-teal-500 text-white py-2 px-4 rounded hover:bg-green-600"
-        >
-          <FontAwesomeIcon icon={faDownload} className="mr-2" />
-          Download Data Pegawai
-        </button>
-      </div>
-
-      {/* Modal Tambah Pegawai */}
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-10">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h3 className="text-lg font-semibold">Tambah Pegawai</h3>
-            <div className="my-4">
-              <label className="block mb-2">Nama:</label>
-              <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-            </div>
-            <div className="my-4">
-              <label className="block mb-2">Jabatan:</label>
-              <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={handleModal}
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+    <div className="p-4">
+      <div className="overflow-x-auto">
+        <h3 className="text-center text-xl font-semibold my-8">DAFTAR PEGAWAI SATUAN KERJA LAN</h3>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center space-x-4">
+            <div>
+              <label className="mr-2">Show:</label>
+              <select
+                value={itemsPerPage}
+                onChange={handleItemsPerPageChange}
+                className="p-2 border border-gray-300 rounded"
               >
-                Tutup
-              </button>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            <div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Cari Pegawai..."
+                className="p-2 border border-gray-300 rounded"
+              />
             </div>
           </div>
+
+          <button
+            onClick={handleExport}
+            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+            aria-label="Export data to Excel"
+          >
+            <FontAwesomeIcon icon={faFileExcel} />
+            Export to Excel
+          </button>
         </div>
-      )}
 
-      <div className="overflow-x-auto">
-        <h3 className="text-center text-xl font-semibold my-4">
-          DAFTAR PEGAWAI
-          <br />
-          LEMBAGA ADMINISTRASI NEGARA
-        </h3>
-        <div className="mb-4 flex justify-between items-center">
-  {/* Show Rows Dropdown */}
-  <div className="flex items-center">
-    <label className="mr-2">Show:</label>
-    <select
-      value={itemsPerPage}
-      onChange={handleItemsPerPageChange}
-      className="p-2 border border-gray-300 rounded"
-    >
-      <option value={10}>10</option>
-      <option value={25}>25</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
-    </select>
+        <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
+          <thead className="bg-teal-600">
+          <tr className="bg-teal-900 text-white">
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama/Tempat Tgl Lahir</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">NIP</th>
+              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pangkat</th>
+              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Jabatan</th>
+              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pegawai</th>
+              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Masa Kerja</th>
+              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">PILIHAN</th>
+            </tr>
+            <tr className="bg-teal-900 text-white">
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Gol</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT Gol</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT Jabatan</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Status</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">TMT Status</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Thn</th>
+              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Bln</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+          {pegawai.map(({ peg_nama_lengkap, peg_lahir_tanggal, peg_lahir_tempat, peg_nip, gol_akhir, peg_gol_akhir_tmt, jabatan_nama, peg_jabatan_tmt, status_pegawai, peg_pns_tmt, masa_kerja_tahun, masa_kerja_bulan }, index) => (
+              <tr key={index}  className={index % 2 === 0 ? "bg-teal-50" : "bg-white"} // Memeriksa apakah baris ganjil atau genap
+              >
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
+                  {peg_nama_lengkap} {peg_lahir_tempat} , 
+                  {formatDate(peg_lahir_tanggal) || "Tanggal Tidak Tersedia"}
+                </td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{peg_nip}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{gol_akhir}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_gol_akhir_tmt) || "Tanggal Tidak Tersedia"}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{jabatan_nama}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_jabatan_tmt) || "Tanggal Tidak Tersedia"}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{status_pegawai}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_pns_tmt) || "Tanggal Tidak Tersedia"}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_tahun}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_bulan}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
+  {/* Icon View */}
+  <div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
+    <FontAwesomeIcon icon={faSearch} className="text-teal-700 mr-2" />
+    <span className="text-teal-700 text-sm">View</span>
   </div>
-
-  {/* Search Bar - Positioned to the right */}
-  <div className="flex items-center">
-    <label className="mr-2">Search:</label>
-    <input
-      type="text"
-      value={searchQuery}
-      onChange={handleSearchChange}
-      className="p-2 border border-gray-300 rounded"
-      placeholder="Cari Pegawai..."
-    />
+{/* Icon View */}
+<div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
+    <FontAwesomeIcon icon={faEdit} className="text-teal-700 mr-2" />
+    <span className="text-teal-700 text-sm">Edit</span>
   </div>
-</div>
+  {/* Icon Kembalikan */}
+  <div className="flex items-center cursor-pointer hover:text-teal-500">
+    <FontAwesomeIcon icon={faTrash} className="text-teal-700 mr-2" />
+    <span className="text-teal-700 text-sm">Delete</span>
+  </div>
+</td>
 
-    <div style={{ margin: "20px", padding: "10px" }}>
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "separate",
-          borderSpacing: "0",
-          border: "1px solid #4cafaf",
-          borderRadius: "10px",
-          overflow: "hidden",
-          margin: "20px 0",
-        }}
-      >
-        <thead>
-  <tr style={{ backgroundColor: "#004d40" }}>
-    <th
-      rowSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "left",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Nama
-    </th>
-    <th
-      rowSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "left",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Tempat, Tgl Lahir
-    </th>
-    <th
-      rowSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "left",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      NIP
-    </th>
-    <th
-      colSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "center",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Pangkat
-    </th>
-    <th
-      colSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "center",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Jabatan
-    </th>
-    <th
-      colSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "center",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Pegawai
-    </th>
-    <th
-      colSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "center",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Masa Kerja
-    </th>
-    <th
-      rowSpan="2"
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        textAlign: "left",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "14px",
-        color: "#ffffff",
-      }}
-    >
-      Pilihan
-    </th>
-  </tr>
-  <tr style={{ backgroundColor: "#004d40" }}>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      Gol
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      TMT Gol
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      Nama
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      TMT Jabatan
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      Status
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      TMT Status
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      Thn
-    </th>
-    <th
-      style={{
-        padding: "10px 15px",
-        border: "1px solid #00695c",
-        color: "#ffffff",
-      }}
-    >
-      Bln
-    </th>
-  </tr>
-</thead>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-        <tbody>
-        {pegawai.map(
-    (
-      {
-        peg_nama_lengkap,
-        peg_lahir_tempat,
-        peg_lahir_tanggal,
-        peg_nip,
-        gol_akhir,
-        peg_gol_akhir_tmt,
-        jabatan_nama,
-        peg_jabatan_tmt,
-        peg_ket_status,
-        peg_pns_tmt,
-        masa_kerja_tahun,
-        masa_kerja_bulan
-      },
-      index
-    ) => (
-      <tr
-      key={index}
-      style={{
-        backgroundColor: index % 2 === 0 ? "#e0f2f1" : "#ffffff",
-      }}
-    >
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {peg_nama_lengkap}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {peg_lahir_tempat}, {new Date(peg_lahir_tanggal).toLocaleDateString()}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {peg_nip}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {gol_akhir}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {new Date(peg_gol_akhir_tmt).toLocaleDateString()}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {jabatan_nama}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {new Date(peg_jabatan_tmt).toLocaleDateString()}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {peg_ket_status} 
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {new Date(peg_pns_tmt).toLocaleDateString()}
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {masa_kerja_tahun} Thn
-      </td>
-      <td style={{ padding: "10px 15px", border: "1px solid #80cbc4" }}>
-        {masa_kerja_bulan} Bln
-      </td>
-    </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="bg-teal-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+            >
+              Previous
+            </button>
+            <span>{`Page ${currentPage} of ${totalPages}`}</span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="bg-teal-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+            >
+              Next
+            </button>
+          </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-                        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
-                            {currentPage > 1 && (
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        margin: '0 5px',
-                                        border: 'none',
-                                        borderRadius: '3px',
-                                        backgroundColor: '#f9f9f9',
-                                        color: '#000',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                    }}
-                                >
-                                    Prev
-                                </button>
-                            )}
-                            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                                const pageNumber = currentPage > 3 ? currentPage - 2 + i : i + 1;
-                                return (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => handlePageChange(pageNumber)}
-                                        style={{
-                                            padding: '5px 10px',
-                                            margin: '0 5px',
-                                            border: 'none',
-                                            borderRadius: '3px',
-                                            backgroundColor: currentPage === pageNumber ? '#004d40' : '#f9f9f9',
-                                            color: currentPage === pageNumber ? '#fff' : '#000',
-                                            cursor: 'pointer',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                        }}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                );
-                            })}
-                            {currentPage < totalPages && (
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        margin: '0 5px',
-                                        border: 'none',
-                                        borderRadius: '3px',
-                                        backgroundColor: '#f9f9f9',
-                                        color: '#000',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                    }}
-                                >
-                                    Next
-                                </button>
-                            )}
-                        </div>
-                    )}
-      <br />
+         
+        </div>
       </div>
     </div>
   );
 };
 
-export default ListAllPegawai;
+export default listpegawai;
