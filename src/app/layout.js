@@ -1,7 +1,7 @@
 import localFont from "next/font/local";
+import React, { Suspense } from "react";
 import "./globals.css";
-
-
+import Loadingspinner from "../components/LoadingSpinner"; // Pastikan path sesuai
 
 // Font lokal
 const poppins = localFont({
@@ -18,7 +18,11 @@ export const metadata = {
 export default function Layout({ children }) {
   return (
     <html lang="en">
-      <body className={poppins.variable}>{children}</body>
+      <body className={poppins.variable}>
+        <Suspense fallback={<Loadingspinner />}>
+          {children}
+        </Suspense>
+      </body>
     </html>
   );
 }

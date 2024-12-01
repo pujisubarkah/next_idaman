@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import { faSearch, faEdit, faTrash, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faEdit, faTrash, faFileExcel, faAdd } from '@fortawesome/free-solid-svg-icons';
 
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -87,44 +87,57 @@ const listpegawai = () => {
 
   return (
     <div className="p-4">
-      <div className="overflow-x-auto">
-        <h3 className="text-center text-xl font-semibold my-8">DAFTAR PEGAWAI SATUAN KERJA LAN</h3>
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center space-x-4">
-            <div>
-              <label className="mr-2">Show:</label>
-              <select
-                value={itemsPerPage}
-                onChange={handleItemsPerPageChange}
-                className="p-2 border border-gray-300 rounded"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
-
-            <div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder="Cari Pegawai..."
-                className="p-2 border border-gray-300 rounded"
-              />
-            </div>
+    <div className="overflow-x-auto">
+      <h3 className="text-center text-xl font-semibold my-8">DAFTAR PEGAWAI SATUAN KERJA LAN</h3>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center space-x-4">
+          <div>
+            <label className="mr-2">Show:</label>
+            <select
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="p-2 border border-gray-300 rounded"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
           </div>
 
-          <button
-            onClick={handleExport}
-            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-            aria-label="Export data to Excel"
-          >
-            <FontAwesomeIcon icon={faFileExcel} />
-            Export to Excel
-          </button>
+          <div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="Cari Pegawai..."
+              className="p-2 border border-gray-300 rounded"
+            />
+          </div>
         </div>
+
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center space-x-4">
+             <button
+              onClick={() => window.location.href = '/tambah-pegawai'}
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              aria-label="Add Pegawai"
+            >
+              <FontAwesomeIcon icon={faAdd} />
+              Tambah Pegawai
+            </button>
+            <button
+              onClick={handleExport}
+              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+              aria-label="Export data to Excel"
+            >
+              <FontAwesomeIcon icon={faFileExcel} />
+              Export to Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
 
         <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
           <thead className="bg-teal-600">

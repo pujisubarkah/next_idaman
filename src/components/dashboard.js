@@ -67,7 +67,7 @@ const Dashboard = () => {
                   <td className="px-4 py-2 border border-teal-300">{status}</td>
                   <td className="px-4 py-2 border border-teal-300">{jumlah}</td>
                   <td className="px-4 py-2 border border-teal-300">
-                    <a href={`http://idaman.lan.go.id/list-permohonan/${id}`} className="text-teal-600 hover:underline">
+                    <a href={`/list-permohonan/${id}`} className="text-teal-600 hover:underline">
                       Lihat Detail
                     </a>
                   </td>

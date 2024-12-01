@@ -9,8 +9,8 @@ import "react-datepicker/dist/react-datepicker.css";
 const formFields = [
     { label: "Unit Kerja", key: "unitKerja", type: "text" },
     { label: "NIP", key: "nip", type: "text" },
-    { label: "Gelar", key: "gelar", type: "text" },
     { label: "Nama Lengkap", key: "namaLengkap", type: "text" },
+    { label: "Gelar", key: "gelar", type: "text" },
     { label: "Tempat, Tanggal Lahir", key: "tempatTanggalLahir", type: "text" },
     { label: "Foto", key: "foto", type: "file" },
     {
@@ -52,6 +52,7 @@ const formFields = [
     { label: "Bapetarum", key: "bapetarum", type: "text" },
     { label: "TMT Gaji Berkala", key: "tmtGajiBerkala", type: "text" },
     { label: "Alamat Rumah", key: "alamatRumah", type: "text" },
+    { label: "detail", key: "detailalamat", type: "text" },
 ];
 
 const FormPegawai = () => {
@@ -66,106 +67,117 @@ const FormPegawai = () => {
   };
 
   const renderFormField = (field) => {
-    if (field.key === "nip" || field.key === "nipLama") {
-      // Special handling for NIP and NIP Lama to render side by side
+    if (field.key === "nip") {
+      return (
+        <div key={field.key} className="mb-4 grid grid-cols-2 ml-10 mr-40 gap-4">
+        {/* Baris Pertama */}
+        {/* Bagian NIP */}
+        <div className="flex items-center">
+          <label className="block text-gray-700 text-sm font-bold ml-60 mr-6 w-1/10">
+            NIP 
+          </label>
+          <input
+            id="NIP"
+            type="text"
+            value={formData["NIP"] || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                NIP: e.target.value,
+              }))
+            }
+            placeholder="NIP"
+            className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+          />
+        </div>
+  
+        {/* Bagian NIP LAMA */}
+        <div className="flex items-center">
+          <label className="block text-gray-700 text-sm font-bold mr-10 w-1/8">
+            NIP LAMA :
+          </label>
+          <input
+            id="NIPLama"
+            type="text"
+            value={formData["NIPlama"] || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                niplama: e.target.value,
+              }))
+            }
+            placeholder="NIP Lama"
+            className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+          />
+        </div>
+        </div>
+      );
+    }
+    
+
+    if (field.key === "tempatTanggalLahir") {
       return (
         <div key={field.key} className="mb-4 flex items-center">
           <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
-            {field.key === "nip" ? "NIP" : "NIP Lama"}:
+            Tempat, Tanggal Lahir:
           </label>
           <div className="flex w-2/3 space-x-2">
-            {/* Render both NIP and NIP Lama fields */}
             <input
-              id="nip"
+              id="tempatLahir"
               type="text"
-              value={formData["nip"] || ""}
+              value={formData["tempatLahir"] || ""}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  nip: e.target.value,
+                  tempatLahir: e.target.value,
                 }))
               }
-              placeholder="NIP"
+              placeholder="Tempat Lahir"
               className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
             />
-            <input
-              id="nipLama"
-              type="text"
-              value={formData["nipLama"] || ""}
-              onChange={(e) =>
+            <DatePicker
+              id="tanggalLahir"
+              selected={formData["tanggalLahir"] || null}
+              onChange={(date) =>
                 setFormData((prev) => ({
                   ...prev,
-                  nipLama: e.target.value,
+                  tanggalLahir: date,
                 }))
               }
-              placeholder="NIP Lama"
+              placeholderText="Tanggal"
               className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              dateFormat="dd/MM/yyyy"
             />
           </div>
         </div>
       );
     }
-
-    if (field.key === "tempatTanggalLahir") {
-        // Special handling for "Tempat, Tanggal Lahir" to create two columns
-        return (
-          <div key={field.key} className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
-              Tempat, Tanggal Lahir:
-            </label>
-            <div className="flex w-2/3 space-x-2">
-              <input
-                id="tempatLahir"
-                type="text"
-                value={formData["tempatLahir"] || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    tempatLahir: e.target.value,
-                  }))
-                }
-                placeholder="Tempat Lahir"
-                className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
-              />
-              <DatePicker
-                id="tanggalLahir"
-                selected={formData["tanggalLahir"] || null}
-                onChange={(date) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    tanggalLahir: date,
-                  }))
-                }
-                placeholderText="Tanggal"
-                className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
-                dateFormat="dd/MM/yyyy"
-              />
-            </div>
-          </div>
-        );
-      }
-
+    
     if (field.key === "gelar") {
-        // Special handling for Gelar to render front and back titles side by side
-        return (
-          <div key={field.key} className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
-              Gelar:
-            </label>
-            <div className="flex w-2/3 space-x-2">
-              <input
-                id="gelarDepan"
-                type="text"
-                value={formData["gelarDepan"] || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    gelarDepan: e.target.value,
-                  }))
-                }
-                placeholder="Gelar Depan"
-                className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
-              />
+      // Special handling for Gelar to render front and back titles side by side
+      return (
+        <div key={field.key} className="mb-4 grid grid-cols-2 ml-20 mr-40 gap-4">
+         <label className="block text-gray-700 text-sm font-bold ml-80 ">
+            Gelar Depan:
+          </label>
+          <div className="flex w-2/3 space-x-2">
+            <input
+              id="gelarDepan"
+              type="text"
+              value={formData["gelarDepan"] || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  gelarDepan: e.target.value,
+                }))
+              }
+              placeholder="Gelar Depan"
+              className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+            />
+            <div className="flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-10 w-1/8">
+                Gelar Belakang:
+              </label>
               <input
                 id="gelarBelakang"
                 type="text"
@@ -181,8 +193,9 @@ const FormPegawai = () => {
               />
             </div>
           </div>
-        );
-      }
+        </div>
+      );
+    }
   
       if (field.key === "statusPegawai") {
         // Special handling for "Status Pegawai" with an additional "TMT CPNS" datepicker
@@ -368,6 +381,10 @@ const FormPegawai = () => {
                 placeholder="Jabatan"
                 className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
               />
+              <div className="flex justify-end items-center">
+              <label className="text-gray-700 text-sm font-bold mr-6 flex justify-end w-full">
+                TMT Jabatan:
+              </label>
               <DatePicker
                 id="tmtjabatan"
                 selected={formData["tanggalLahir"] || null}
@@ -378,18 +395,322 @@ const FormPegawai = () => {
                   }))
                 }
                 placeholderText="TMT Jabatan"
-                className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                className="shadow border rounded w-1/1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
                 dateFormat="dd/MM/yyyy"
               />
+            </div>
             </div>
           </div>
         );
       }
 
+      if (field.key === "golonganAwal") {
+        // Special handling for "Tempat, Tanggal Lahir" to create two columns
+        return (
+          <div key={field.key} className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
+              Golongan Awal:
+            </label>
+            <div className="flex w-2/3 space-x-2">
+              <input
+                id="gol_awal"
+                type="text"
+                value={formData["golonganAwal"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tempatLahir: e.target.value,
+                  }))
+                }
+                placeholder="golAwal"
+                className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+              <div className="flex justify-end items-center">
+              <label className="text-gray-700 text-sm font-bold mr-6 flex justify-end w-full">
+                TMT Golongan Awal:
+              </label>
+              <DatePicker
+                id="gol_awal"
+                selected={formData["gol_awal"] || null}
+                onChange={(date) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    gol_awal: date,
+                  }))
+                }
+                placeholderText="TMT Golongan Awal"
+                className="shadow border rounded w-1/1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+            </div>
+          </div>
+        );
+      }
 
+      if (field.key === "golonganAkhir") {
+        // Special handling for "Tempat, Tanggal Lahir" to create two columns
+        return (
+          <div key={field.key} className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
+              Golongan Akhir:
+            </label>
+            <div className="flex w-2/3 space-x-2">
+              <input
+                id="gol_akhir"
+                type="text"
+                value={formData["golonganAkhir"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tempatLahir: e.target.value,
+                  }))
+                }
+                placeholder="golAkhir"
+                className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+              <div className="flex justify-end items-center">
+              <label className="text-gray-700 text-sm font-bold mr-6 flex justify-end w-full">
+                TMT Golongan Akhir:
+              </label>
+              <DatePicker
+                id="gol_akhir"
+                selected={formData["gol_akhir"] || null}
+                onChange={(date) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    gol_akhir: date,
+                  }))
+                }
+                placeholderText="TMT Golongan Akhir"
+                className="shadow border rounded w-1/1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+            </div>
+          </div>
+        );
+      }
 
+      if (field.key === "masaKerjaGolongan") {
+        // Special handling for "Masa Kerja Golongan" to create two columns
+        return (
+          <div key={field.key} className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold mr-2 w-1/6">
+              Masa Kerja Golongan:
+            </label>
+            <div className="flex w-2/3 space-x-4 items-center">
+              {/* Input for Tahun */}
+              <div className="flex items-center space-x-2">
+                <input
+                  id="masaKerjaTahun"
+                  type="number"
+                  value={formData["masaKerjaTahun"] || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      masaKerjaTahun: e.target.value,
+                    }))
+                  }
+                  placeholder="Tahun"
+                  className="shadow border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                />
+                <label className="text-gray-700 text-sm font-bold">Tahun</label>
+              </div>
       
-    // Default handling for other fields
+              {/* Input for Bulan */}
+              <div className="flex items-center space-x-2">
+                <input
+                  id="masaKerjaBulan"
+                  type="number"
+                  value={formData["masaKerjaBulan"] || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      masaKerjaBulan: e.target.value,
+                    }))
+                  }
+                  placeholder="Bulan"
+                  className="shadow border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                />
+                <label className="text-gray-700 text-sm font-bold">Bulan</label>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      if (field.key === "detailalamat") {
+        return (
+          <div key={field.key} className="mb-4 grid grid-cols-2 ml-10 mr-40 gap-4">
+            {/* Baris Pertama */}
+            {/* Bagian Provinsi */}
+            <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold ml-60 mr-4 w-1/10">
+                Provinsi:
+              </label>
+              <input
+                id="provinsi"
+                type="text"
+                value={formData["provinsi"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    provinsi: e.target.value,
+                  }))
+                }
+                placeholder="Provinsi"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+      
+            {/* Bagian RT */}
+            <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold mr-10 w-1/8">
+                RT:
+              </label>
+              <input
+                id="RT"
+                type="text"
+                value={formData["RT"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    kabKota: e.target.value,
+                  }))
+                }
+                placeholder="RT"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+            {/* Baris Kedua */}
+            {/* Bagian Kab/Kota */}
+            <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold ml-60 mr-4 w-1/10">
+                Kab/Kota:
+              </label>
+              <input
+                id="KabKota"
+                type="text"
+                value={formData["KabKota"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    provinsi: e.target.value,
+                  }))
+                }
+                placeholder="Kab/Kota"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+      
+            {/* Bagian RW */}
+            <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold mr-10 w-1/8">
+                RW:
+              </label>
+              <input
+                id="RW"
+                type="text"
+                value={formData["RW"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    kabKota: e.target.value,
+                  }))
+                }
+                placeholder="RT"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+            {/* Baris Ketiga */}
+            {/* Bagian Kac */}
+            <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold ml-60 mr-4 w-1/10">
+                Kec:
+              </label>
+              <input
+                id="Kecammatan"
+                type="text"
+                value={formData["Kec"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    provinsi: e.target.value,
+                  }))
+                }
+                placeholder="Kecamatan"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+           {/* Bagian Kodepos */}
+           <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold mr-10 w-1/8">
+                Kodepos:
+              </label>
+              <input
+                id="kodepos"
+                type="text"
+                value={formData["RW"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    kodepos: e.target.value,
+                  }))
+                }
+                placeholder="kodepos"
+                className="shadow border rounded w-2/4 py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+           {/* Baris Keempat */}
+            {/* Bagian Kel */}
+            <div className="flex items-center">
+              <label className="block text-gray-700 text-sm font-bold ml-60 mr-4 w-1/10">
+                Kel/desa:
+              </label>
+              <input
+                id="Kel/desa"
+                type="text"
+                value={formData["Kel"] || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    provinsi: e.target.value,
+                  }))
+                }
+                placeholder="Kelurahan/Desa"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+           {/* Bagian telepon */}
+           <div className="flex items-center">
+  <label className="block text-gray-700 text-sm font-bold mr-10 w-1/8">
+    Telepon:
+  </label>
+  <input
+    id="telepon"
+    type="text"
+    value={formData["telp"] || ""}
+    onChange={(e) => {
+      const value = e.target.value;
+      // Memastikan hanya angka yang diizinkan
+      if (/^\d*$/.test(value)) {
+        setFormData((prev) => ({
+          ...prev,
+          telp: value, // Pastikan ini telp, bukan kodepos
+        }));
+      }
+    }}
+    placeholder="Telepon"
+    className="shadow border rounded w-2/4 py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+  />
+</div>
+
+          </div>
+        );
+      }
+      
+  // Default handling for other fields
     switch (field.type) {
       case "text":
       case "file":
