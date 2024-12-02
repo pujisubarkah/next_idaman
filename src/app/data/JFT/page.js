@@ -1,11 +1,12 @@
-import RootLayout from '../../home/layout'; // Mengimpor layout dari home/layout.js
-import JFTComponent from '../../../components/jft'; // Mengimpor komponen ListUnit
+import RootLayout from '../../home/layout';
+import JFT from '../../../components/jft'; // Mengimpor komponen JFU
+
 
 export default function JFTPage() {
   return (
     <RootLayout>
       <div>
-        <JFTComponent />
+        <JFT />
       </div>
     </RootLayout>
   );
