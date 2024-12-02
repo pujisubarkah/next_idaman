@@ -2,42 +2,39 @@ import { supabase } from '../../../../lib/supabaseClient'; // Pastikan pathnya b
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { pensiun_id, searchQuery, page = 1, itemsPerPage = 10 } = req.query;
-
     console.log('Request received at /api/permohonan'); // Log untuk debugging
 
     try {
-      // Membangun query Supabase
-      let query = supabase
+      // Mengambil semua data `nama_editor`
+      const { data: editorData, error: editorError } = await supabase
         .schema('siap_skpd')
         .from('view_status_edit_pegawai')
-        .select('*');
+        .select('nama_editor')
+        .neq('nama_editor', null); // Pastikan hanya nilai valid yang dihitung
 
-      // Mengurutkan berdasarkan status_id (ascending atau descending)
-      query = query.order('status_id', { ascending: true }); // Atau ascending: false jika ingin urutan menurun
-
-      // Paginasi menggunakan range
-      const { data, error, count } = await query.range(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage - 1
-      );
-
-      // Menangani error dari Supabase
-      if (error) {
-        console.error('Error fetching data:', error);
-        return res.status(500).json({ error: error.message });
+      if (editorError) {
+        console.error('Error fetching nama_editor:', editorError);
+        return res.status(500).json({ error: editorError.message });
       }
 
-      // Jika data tidak ditemukan
-      if (!data || data.length === 0) {
-        console.log('No data found');
-        return res.status(404).json({ message: 'Data not found' });
-      }
+      // Melakukan grouping nama_editor
+      const groupedEditors = editorData.reduce((acc, curr) => {
+        if (!acc[curr.nama_editor]) {
+          acc[curr.nama_editor] = 0;
+        }
+        acc[curr.nama_editor]++;
+        return acc;
+      }, {});
 
-      // Mengembalikan data dengan informasi total
+      // Mengubah hasil menjadi array
+      const groupedArray = Object.entries(groupedEditors).map(([editor, count]) => ({
+        nama_editor: editor,
+        total_count: count,
+      }));
+
+      // Mengembalikan data yang sudah digroup
       return res.status(200).json({
-        data,
-        totalItems: count || 0,
+        groupedEditors: groupedArray,
       });
     } catch (error) {
       console.error('Unexpected error:', error);

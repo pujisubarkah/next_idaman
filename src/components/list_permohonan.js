@@ -1,31 +1,48 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import { useRouter } from 'next/navigation'; // Use this import for Next.js 13 `app` directory
 
 const PermohonanTable = () => {
-  const searchParams = useSearchParams();
-  const status_id = searchParams.get('status_id'); // Ambil status_id dari URL
+  const router = useRouter();
+  const [statusId, setStatusId] = useState(null); // Store the status_id
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Fetch and sort data using chaining
+  // Ensure this code runs only on the client
   useEffect(() => {
-    if (!status_id) return; // Jangan fetch data jika status_id belum tersedia
+    if (typeof window !== 'undefined') {
+      console.log('Running on client side');
+      if (router.isReady) {
+        const { status_id } = router.query;
+        console.log('status_id from query:', status_id);
+        if (status_id) {
+          setStatusId(status_id);  // Set statusId once router is ready
+        }
+      }
+    }
+  }, [router.isReady, router.query]);
+
+  // Fetch data once statusId is set
+  useEffect(() => {
+    if (!statusId) return; // Don't fetch data if status_id is not available
 
     setLoading(true);
-    axios.get(`/api/permohonan?status_id=${status_id}`)
-      .then((response) => {
-        console.log('Response:', response.data);
-        console.log('Total items fetched:', response.data.data.length);
+    console.log('Fetching data with status_id:', statusId);
 
-        // Chaining for sorting and setting data
-        const sortedData = (response.data.data || [])
-          .sort((a, b) => new Date(b.log_time) - new Date(a.log_time));
-        
+    axios
+      .get(`/api/permohonan?status_id=${statusId}`)
+      .then((response) => {
+        const fetchedData = response.data.data || [];
+        console.log('Fetched Data:', fetchedData);
+
+        // Sort data by log_time
+        const sortedData = fetchedData.sort(
+          (a, b) => new Date(b.log_time) - new Date(a.log_time)
+        );
         setData(sortedData);
       })
       .catch((error) => {
@@ -34,16 +51,14 @@ const PermohonanTable = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [status_id]);
+  }, [statusId]); // Only trigger fetch when statusId changes
 
-  // Handle page change
   const handlePageChange = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= Math.ceil(data.length / itemsPerPage)) {
       setCurrentPage(pageNumber);
     }
   };
 
-  // Determine items for current page
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
@@ -52,16 +67,16 @@ const PermohonanTable = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <h2 className="text-xl font-bold mb-4">
-        Daftar Permohonan (Status ID: {status_id || 'Loading...'})
+        Daftar Permohonan {statusId ? `(Status ID: ${statusId})` : 'Loading...'}
       </h2>
 
       {loading ? (
-        <p className="text-center">Loading...</p>
+        <p className="text-center">Loading data...</p>
       ) : (
         <div>
           <div className="overflow-x-auto">
-            <table className="table-auto border-collapse border border-gray-300 w-full">
-              <thead>
+            <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
+              <thead className="bg-teal-600">
                 <tr className="bg-gray-200 text-gray-700">
                   <th className="border border-gray-300 px-4 py-2">Waktu</th>
                   <th className="border border-gray-300 px-4 py-2">Nama Pegawai</th>
@@ -72,7 +87,7 @@ const PermohonanTable = () => {
                 {currentItems.map((item, index) => (
                   <tr
                     key={index}
-                    className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                    className={index % 2 === 0 ? 'bg-teal-50' : 'bg-white'} // Odd/even row styling
                   >
                     <td className="border border-gray-300 px-4 py-2">
                       {new Date(item.log_time).toLocaleString()}

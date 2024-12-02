@@ -13,7 +13,7 @@ const sortByTmtPensiun = (data) => {
   return data.sort((a, b) => new Date(b.tmt_pensiun) - new Date(a.tmt_pensiun));
 };
 
-const listpegawai = () => {
+const ListPegawai = () => {
     const [pegawai, setPegawai] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -228,4 +228,4 @@ const listpegawai = () => {
   );
 };
 
-export default listpegawai;
+export default ListPegawai;
