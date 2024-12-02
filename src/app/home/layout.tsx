@@ -1,11 +1,11 @@
 "use client";
 
-// Import komponen Header, Navbar, dan Sidebar
+// Import components
 import Header from "../../components/header";
 import Navbar from "../../components/navbar";
 import Sidebar from "../../components/customsidebar";
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="antialiased">
@@ -17,16 +17,16 @@ export default function RootLayout({ children }) {
           {/* Navbar */}
           <Navbar />
 
-        {/* Main Content with Sidebar */}
-        <div className="flex flex-row flex-1">
-          {/* Sidebar */}
-          <Sidebar />
+          {/* Main Content with Sidebar */}
+          <div className="flex flex-row flex-1">
+            {/* Sidebar */}
+            <Sidebar />
 
-          {/* Main content */}
-          <main className="flex-1 p-4 overflow-y-auto">{children}</main>
+            {/* Main content */}
+            <main className="flex-1 p-4 overflow-y-auto">{children}</main>
+          </div>
         </div>
-      </div>
-    </body>
-  </html>
+      </body>
+    </html>
   );
 }
