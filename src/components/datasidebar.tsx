@@ -21,19 +21,19 @@ export const sidebarData = [
     label: "Dashboard",
     to: "/home",
     icon: FaTachometerAlt,
-    roles: ["admin", "user"], // Example role permissions
+    roles: ["1", "4"], // Example role permissions
   },
   {
     label: "List Pegawai",
     to: "/list_unit",
     icon: FaList,
-    roles: ["admin"], // Only admin can see this
+    roles: ["1"], // Only admin can see this
   },
   {
     label: "Cari Pegawai",
     to: "/list_all_pegawai",
     icon: FaList,
-    roles: ["admin"], // Only admin can see this
+    roles: ["1"], // Only admin can see this
   },
   {
     label: "List Pegawai Inaktif",
@@ -45,12 +45,13 @@ export const sidebarData = [
       { label: "Pindah ke Luar", to: "/pegawai-inaktif/pindah" },
       { label: "CLTN/Tugas Belajar", to: "#" },
     ],
-    
+    roles: ["1"],
   },
   {
     label: "Pegawai Struktural",
     to: "#",
     icon: FaUser,
+    roles: ["1"],
   },
   {
     label: "Notifikasi",
@@ -62,6 +63,7 @@ export const sidebarData = [
       { label: "Prediksi Kenaikan Pangkat", to: "/notifikasi/prediksipangkat" },
       { label: "Masa Kerja", to: "/notifikasi/masa_kerja" },
     ],
+    roles: ["1"],
   },
   {
     label: "Data Master",
@@ -81,16 +83,19 @@ export const sidebarData = [
       { label: "Diklat Teknis", to: "/data/diklat_teknis" },
       { label: "Monitoring Format Ceklis", to: "/data/mfc" },
     ],
+    roles: ["1"],
   },
   {
     label: "Semua Pegawai",
     to: "#",
     icon: FaTable,
+    roles: ["1"],
   },
   {
     label: "Pencarian Dinamis",
     to: "#",
     icon: FaSearch,
+    roles: ["1"],
   },
   {
     label: "Jabatan Kosong",
@@ -100,6 +105,7 @@ export const sidebarData = [
       { label: "Eselon", to: "/Jabatan-kosong/Eselon" },
       { label: "Noneselon", to: "/jabatan-kosong/Noneselon" },
     ],
+    roles: ["1"],
   },
   {
     label: "Rekap",
@@ -116,6 +122,7 @@ export const sidebarData = [
       { label: "Eselon Jenis Kelamin", to: "#" },
       { label: "Monitoring Mapping SIASN", to: "#" },
     ],
+    roles: ["1"],
   },
   {
     label: "Formasi",
@@ -129,6 +136,7 @@ export const sidebarData = [
       { label: "PNS Meninggal", to: "#" },
       { label: "PNS Sudah Pensiun", to: "#" },
     ],
+    roles: ["1"],
   },
   {
     label: "Grafik",
@@ -141,12 +149,14 @@ export const sidebarData = [
       { label: "Eselon Jenis Kelamin", to: "#" },
       { label: "Tingkat Pendidikan", to: "#" },
       { label: "Kelompok Usia", to: "#" },
-      ],
+    ],
+    roles: ["1"],
   },
   {
     label: "Absen/Presensi",
     to: "#",
     icon: FaTable,
+    roles: ["1"],
   },
   {
     label: "Users",
@@ -156,17 +166,20 @@ export const sidebarData = [
       { label: "Data User", to: "#" },
       { label: "Data Role", to: "#" },
       { label: "Hak Akess User", to: "#" },
-      ],
+    ],
+    roles: ["1"],
   },
   {
     label: "Ubah Password",
     to: "#",
     icon: FaCog,
+    roles: ["1"],
   },
   {
     label: "Logout",
     to: "#",
     icon: FaPowerOff,
+    roles: ["1"],
   },
 ];
 
