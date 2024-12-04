@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Link from 'next/link';  // Import Link from Next.js
 import {
   FaTachometerAlt,
@@ -20,16 +21,19 @@ export const sidebarData = [
     label: "Dashboard",
     to: "/home",
     icon: FaTachometerAlt,
+    roles: ["admin", "user"], // Example role permissions
   },
   {
     label: "List Pegawai",
     to: "/list_unit",
     icon: FaList,
+    roles: ["admin"], // Only admin can see this
   },
   {
     label: "Cari Pegawai",
     to: "/list_all_pegawai",
     icon: FaList,
+    roles: ["admin"], // Only admin can see this
   },
   {
     label: "List Pegawai Inaktif",
@@ -41,6 +45,7 @@ export const sidebarData = [
       { label: "Pindah ke Luar", to: "/pegawai-inaktif/pindah" },
       { label: "CLTN/Tugas Belajar", to: "#" },
     ],
+    
   },
   {
     label: "Pegawai Struktural",
