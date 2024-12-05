@@ -51,6 +51,7 @@ const Login = () => {
         const userData = { 
           id: user.id, 
           nama: user.nama, 
+          username: user.username, 
           role_id: user.role_id // Simpan role_id
         };
         const sessionId = `${user.id}-${new Date().getTime()}`; // Session ID unik

@@ -5,7 +5,7 @@ export default function ListPermohonan() {
   return (
     <div>
        <RootLayout>
-       <PermohonanTable />
+         <PermohonanTable />
        </RootLayout>
       
     </div>

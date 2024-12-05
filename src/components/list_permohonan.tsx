@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import axios from 'axios';
-
-
 
 const Dashboard = () => {
   const { statusId } = useParams(); // Ambil statusId dari URL
@@ -24,7 +22,7 @@ const Dashboard = () => {
   const fetchPermohonan = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/permohonan?status_id=${statusId}`);
+      const response = await axios.get(`/api/permohonan?status_id=${statusId}&page=${currentPage}&limit=${entriesPerPage}`);
       console.log("Data dari API permohonan:", response.data);
 
       // Set data permohonan

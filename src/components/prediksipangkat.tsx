@@ -18,7 +18,7 @@ const PrediksiPangkat = () => {
         try {
           const response = await axios.get("/api/notifikasi/pangkat"); // Adjust API URL as needed
           console.log("Data dari API:", response.data);
-          setStatuses(Array.isArray(response.data) ? response.data : []);
+          setData(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
           console.error("Error fetching statuses:", error.response?.data || error.message);
         } finally {
@@ -38,6 +38,15 @@ const PrediksiPangkat = () => {
     };
 
     const totalPages = Math.ceil(data.length / entriesPerPage);
+
+    const filteredData = data.filter(item =>
+        item.satuan_kerja_nama.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const paginatedData = filteredData.slice(
+        (currentPage - 1) * entriesPerPage,
+        currentPage * entriesPerPage
+    );
 
     return (
         <div className="p-4">

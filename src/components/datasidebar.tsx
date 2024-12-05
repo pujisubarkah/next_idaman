@@ -1,4 +1,13 @@
 import { useState } from 'react';
+
+interface SidebarItem {
+  label: string;
+  to?: string;
+  icon: React.ComponentType;
+  roles: string[];
+  dropdown?: boolean;
+  children?: SidebarItem[];
+}
 import Link from 'next/link';  // Import Link from Next.js
 import {
   FaTachometerAlt,
@@ -16,7 +25,7 @@ import {
   FaCircle,  // Import FaCircle icon for bullet
 } from "react-icons/fa";
 
-export const sidebarData = [
+export const sidebarData: SidebarItem[] = [
   {
     label: "Dashboard",
     to: "/home",
@@ -40,10 +49,10 @@ export const sidebarData = [
     dropdown: true,
     icon: FaList,
     children: [
-      { label: "Pensiun", to: "/pegawai-inaktif/pensiun" },
-      { label: "Meninggal Dunia", to: "/pegawai-inaktif/meninggal" },
-      { label: "Pindah ke Luar", to: "/pegawai-inaktif/pindah" },
-      { label: "CLTN/Tugas Belajar", to: "#" },
+      { label: "Pensiun", to: "/pegawai-inaktif/pensiun", icon: FaCircle, roles: ["1"] },
+      { label: "Meninggal Dunia", to: "/pegawai-inaktif/meninggal", icon: FaCircle, roles: ["1"] },
+      { label: "Pindah ke Luar", to: "/pegawai-inaktif/pindah", icon: FaCircle, roles: ["1"] },
+      { label: "CLTN/Tugas Belajar", to: "#", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -58,10 +67,10 @@ export const sidebarData = [
     dropdown: true,
     icon: FaBell,
     children: [
-      { label: "Prediksi Pensiun", to: "/notifikasi/prediksi" },
-      { label: "Melebihi Umur Pensiun", to: "/notifikasi/lebih" },
-      { label: "Prediksi Kenaikan Pangkat", to: "/notifikasi/prediksipangkat" },
-      { label: "Masa Kerja", to: "/notifikasi/masa_kerja" },
+      { label: "Prediksi Pensiun", to: "/notifikasi/prediksi", icon: FaCircle, roles: ["1"] },
+      { label: "Melebihi Umur Pensiun", to: "/notifikasi/lebih", icon: FaCircle, roles: ["1"] },
+      { label: "Prediksi Kenaikan Pangkat", to: "/notifikasi/prediksipangkat", icon: FaCircle, roles: ["1"] },
+      { label: "Masa Kerja", to: "/notifikasi/masa_kerja", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -70,18 +79,18 @@ export const sidebarData = [
     dropdown: true,
     icon: FaHdd,
     children: [
-      { label: "Satuan Kerja", to: "/data/satker" },
-      { label: "Unit Kerja", to: "/data/uker" },
-      { label: "Jabatan", to: "/data/jabatan" },
-      { label: "JFT", to: "/data/JFT" },
-      { label: "JFU", to: "/data/JFU" },
-      { label: "Universitas", to: "/data/universitas" },
-      { label: "Fakultas", to: "/data/fakultas" },
-      { label: "Monitoring Kelengkapan Data", to: "/data/mkd" },
-      { label: "Hukuman Disiplin", to: "/data/hukdis" },
-      { label: "Diklat Struktural Kategori", to: "/data/diklat_struk" },
-      { label: "Diklat Teknis", to: "/data/diklat_teknis" },
-      { label: "Monitoring Format Ceklis", to: "/data/mfc" },
+      { label: "Satuan Kerja", to: "/data/satker", icon: FaCircle, roles: ["1"] },
+      { label: "Unit Kerja", to: "/data/uker", icon: FaCircle, roles: ["1"] },
+      { label: "Jabatan", to: "/data/jabatan", icon: FaCircle, roles: ["1"] },
+      { label: "JFT", to: "/data/JFT", icon: FaCircle, roles: ["1"] },
+      { label: "JFU", to: "/data/JFU", icon: FaCircle, roles: ["1"] },
+      { label: "Universitas", to: "/data/universitas", icon: FaCircle, roles: ["1"] },
+      { label: "Fakultas", to: "/data/fakultas", icon: FaCircle, roles: ["1"] },
+      { label: "Monitoring Kelengkapan Data", to: "/data/mkd", icon: FaCircle, roles: ["1"] },
+      { label: "Hukuman Disiplin", to: "/data/hukdis", icon: FaCircle, roles: ["1"] },
+      { label: "Diklat Struktural Kategori", to: "/data/diklat_struk", icon: FaCircle, roles: ["1"] },
+      { label: "Diklat Teknis", to: "/data/diklat_teknis", icon: FaCircle, roles: ["1"] },
+      { label: "Monitoring Format Ceklis", to: "/data/mfc", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -102,8 +111,8 @@ export const sidebarData = [
     dropdown: true,
     icon: FaHandPointUp,
     children: [
-      { label: "Eselon", to: "/Jabatan-kosong/Eselon" },
-      { label: "Noneselon", to: "/jabatan-kosong/Noneselon" },
+      { label: "Eselon", to: "/Jabatan-kosong/Eselon", icon: FaCircle, roles: ["1"] },
+      { label: "Noneselon", to: "/jabatan-kosong/Noneselon", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -112,15 +121,15 @@ export const sidebarData = [
     dropdown: true,
     icon: FaTable,
     children: [
-      { label: "Daftar Urut Kepangkatan", to: "#" },
-      { label: "Unit Kerja", to: "#" },
-      { label: "Jabatan", to: "#" },
-      { label: "Golongan", to: "#" },
-      { label: "Jenis Kelamin", to: "#" },
-      { label: "Tingkat Pendidikan", to: "#" },
-      { label: "Kelompok Usia", to: "#" },
-      { label: "Eselon Jenis Kelamin", to: "#" },
-      { label: "Monitoring Mapping SIASN", to: "#" },
+      { label: "Daftar Urut Kepangkatan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Unit Kerja", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Jabatan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Golongan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Jenis Kelamin", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Tingkat Pendidikan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Kelompok Usia", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Eselon Jenis Kelamin", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Monitoring Mapping SIASN", to: "#", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -129,12 +138,12 @@ export const sidebarData = [
     dropdown: true,
     icon: FaTable,
     children: [
-      { label: "PNS Akan Naik Pangkat", to: "#" },
-      { label: "PNS Akan Pensiun Golongan", to: "#" },
-      { label: "PNS Akan Pensiun Jabatan", to: "#" },
-      { label: "PNS Pindah Keluar", to: "#" },
-      { label: "PNS Meninggal", to: "#" },
-      { label: "PNS Sudah Pensiun", to: "#" },
+      { label: "PNS Akan Naik Pangkat", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "PNS Akan Pensiun Golongan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "PNS Akan Pensiun Jabatan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "PNS Pindah Keluar", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "PNS Meninggal", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "PNS Sudah Pensiun", to: "#", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -143,12 +152,12 @@ export const sidebarData = [
     dropdown: true,
     icon: FaChartPie,
     children: [
-      { label: "Jabatan", to: "#" },
-      { label: "Golongan", to: "#" },
-      { label: "Jenis Kelamin", to: "#" },
-      { label: "Eselon Jenis Kelamin", to: "#" },
-      { label: "Tingkat Pendidikan", to: "#" },
-      { label: "Kelompok Usia", to: "#" },
+      { label: "Jabatan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Golongan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Jenis Kelamin", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Eselon Jenis Kelamin", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Tingkat Pendidikan", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Kelompok Usia", to: "#", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -163,9 +172,9 @@ export const sidebarData = [
     dropdown: true,
     icon: FaUsers,
     children: [
-      { label: "Data User", to: "/user/all" },
-      { label: "Data Role", to: "#" },
-      { label: "Hak Akess User", to: "#" },
+      { label: "Data User", to: "/user/all", icon: FaCircle, roles: ["1"] },
+      { label: "Data Role", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Hak Akess User", to: "#", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
   },
@@ -180,6 +189,18 @@ export const sidebarData = [
     to: "#",
     icon: FaPowerOff,
     roles: ["1"],
+  },
+  {
+    label: "Data Pribadi",
+    to: "/pegawai/profile/edit/id",
+    icon: FaUser,
+    roles: ["4"],
+  },
+  {
+    label: "Coaching & Mentoring",
+    to: "#",
+    icon: FaUser,
+    roles: ["4"],
   },
 ];
 
@@ -197,7 +218,7 @@ export const Sidebar = () => {
                   {item.label}
                 </div>
                 <ul>
-                  {item.children.map((child, childIndex) => (
+                  {item.children && item.children.map((child, childIndex) => (
                     <li key={childIndex} className="flex items-center">
                       {/* Add FaCircle for bullet effect */}
                       <FaCircle className="mr-2 text-gray-500" />

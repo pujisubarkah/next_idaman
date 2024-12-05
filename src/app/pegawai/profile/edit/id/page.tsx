@@ -1,45 +1,50 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
-interface Props {
-  params: { id: string };
-}
+const EditProfilePage = () => {
+  const router = useRouter();
+  const pathname = usePathname(); // Mendapatkan path URL
+  const [username, setUsername] = useState(null);
 
-const EditProfile = ({ params }: Props) => {
-  const { id } = params; // Dapatkan ID dari parameter URL
-  const [section, setSection] = useState<string | null>('data-pribadi');
-  const pathname = usePathname(); // Dapatkan URL lengkap
-
+  // Mengambil username dari URL
   useEffect(() => {
-    // Ambil hash fragment (bagian setelah #)
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '') || 'data-pribadi';
-      setSection(hash);
+    const pathSegments = pathname.split('/');
+    const usernameFromPath = pathSegments[pathSegments.length - 1]; // Ambil bagian terakhir sebagai username
+    console.log('Username from path:', usernameFromPath); // Debug log
+
+    if (usernameFromPath) {
+      setUsername(usernameFromPath);
+    } else {
+      console.error('Username not found in path');
+      router.push('/login'); // Redirect ke halaman login jika tidak ada username di path
     }
-  }, [pathname]);
+  }, [pathname, router]);
 
+  // Mengambil data username dari localStorage
   useEffect(() => {
-    console.log(`ID Pegawai: ${id}, Bagian: ${section}`);
-  }, [id, section]);
+    const storedUsername = localStorage.getItem('username'); // Ubah kunci menjadi 'username'
+    console.log('Stored username:', storedUsername); // Debug log
+
+    if (storedUsername) {
+      if (username && storedUsername !== username) {
+        console.warn('You do not have permission to edit this profile');
+        router.push('/'); // Redirect ke halaman aman jika username tidak cocok
+      }
+    } else {
+      console.error('Username not found in localStorage');
+      router.push('/login'); // Redirect ke halaman login jika tidak ada username di localStorage
+    }
+  }, [username, router]);
 
   return (
     <div>
-      <h1>Edit Profil Pegawai</h1>
-      <p>ID Pegawai: {id}</p>
-      <p>Seksi Aktif: {section}</p>
-
-      {/* Render berdasarkan bagian */}
-      {section === 'data-pribadi' && <DataPribadi />}
-      {section === 'file-pegawai' && <FilePegawai />}
-      {!section && <DataPribadi />}
+      <h1>Edit Profile</h1>
+      {/* Render form atau komponen edit di sini */}
+      {username && <p>Editing profile for: {username}</p>}
     </div>
   );
 };
 
-// Komponen untuk setiap bagian
-const DataPribadi = () => <div>Form Data Pribadi</div>;
-const FilePegawai = () => <div>Form File Pegawai</div>;
-
-export default EditProfile;
+export default EditProfilePage;
