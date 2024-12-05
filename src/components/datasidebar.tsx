@@ -163,7 +163,7 @@ export const sidebarData = [
     dropdown: true,
     icon: FaUsers,
     children: [
-      { label: "Data User", to: "#" },
+      { label: "Data User", to: "/user/all" },
       { label: "Data Role", to: "#" },
       { label: "Hak Akess User", to: "#" },
     ],
