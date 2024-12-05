@@ -129,7 +129,7 @@ const ListUsers = () => {
                     satuan_kerja_nama, 
                     status_aktif, 
                     m_status: { role_name } 
-                  }) => (
+                  }, index) => (
                 <tr key={id} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
                   <td className="p-3 border border-teal-500">{nama}</td>
                   <td className="p-3 border border-teal-500">{username}</td>
