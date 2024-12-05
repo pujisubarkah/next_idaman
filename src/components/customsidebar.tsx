@@ -31,7 +31,7 @@ const CustomSidebar: React.FC = () => {
   // Filter sidebar data based on role_id
   const filteredSidebarData = sidebarData.filter(item => {
     // Check if the item's required role matches the user's role
-    if (item.role_ids && !item.role_ids.includes(roleId)) {
+    if (item.roles && !item.roles.includes(roleId)) {
       return false; // Don't show this item if the role doesn't match
     }
     return true;
