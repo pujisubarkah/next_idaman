@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import RootLayout from '../../../../home/layout'; // Mengimpor layout dari home/layout.js
+import UserNavbar from '../../../../home/user_navbar';
+import Navbar2 from '../../../../home/navbar2';
 
 const EditProfilePage = () => {
   const router = useRouter();
-  const pathname = usePathname(); // Mendapatkan path URL
+  const pathname = usePathname() || ''; // Mendapatkan path URL
+  
   const [username, setUsername] = useState(null);
+  const [error, setError] = useState(null); // State to manage errors
 
   // Mengambil username dari URL
   useEffect(() => {
@@ -17,10 +22,10 @@ const EditProfilePage = () => {
     if (usernameFromPath) {
       setUsername(usernameFromPath);
     } else {
+      setError('Username not found in path');
       console.error('Username not found in path');
-      router.push('/login'); // Redirect ke halaman login jika tidak ada username di path
     }
-  }, [pathname, router]);
+  }, [pathname]);
 
   // Mengambil data username dari localStorage
   useEffect(() => {
@@ -29,21 +34,33 @@ const EditProfilePage = () => {
 
     if (storedUsername) {
       if (username && storedUsername !== username) {
+        setError('You do not have permission to edit this profile');
         console.warn('You do not have permission to edit this profile');
-        router.push('/'); // Redirect ke halaman aman jika username tidak cocok
       }
     } else {
+      setError('Username not found in localStorage');
       console.error('Username not found in localStorage');
-      router.push('/login'); // Redirect ke halaman login jika tidak ada username di localStorage
     }
-  }, [username, router]);
+  }, [username]);
 
   return (
-    <div>
+    <RootLayout> {/* Wrap UserNavbar and Navbar2 with RootLayout */}
+      <UserNavbar />
+      <Navbar2 />
       <h1>Edit Profile</h1>
-      {/* Render form atau komponen edit di sini */}
-      {username && <p>Editing profile for: {username}</p>}
-    </div>
+      {/* Render error message or form */}
+      {error && (
+        <div style={{ color: 'red', fontWeight: 'bold' }}>
+          <p>{error}</p>
+        </div>
+      )}
+      {!error && (
+        <div>
+          {username && <p>Editing profile for: {username}</p>}
+          {/* Render form atau komponen edit di sini */}
+        </div>
+      )}
+    </RootLayout>
   );
 };
 

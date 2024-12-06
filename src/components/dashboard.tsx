@@ -3,15 +3,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const Dashboard = () => {
+const Dashboard = ({ role_id }) => {
   const [statuses, setStatuses] = useState([]);
+  const [userDocuments, setUserDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      fetchStatuses();
+      if (role_id === 1) {
+        fetchStatuses();
+      } else if (role_id === 4) {
+        fetchUserDocuments();
+      }
     }
   }, [currentPage, entriesPerPage]); // Re-fetch on page or entries change
 
@@ -19,10 +24,21 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await axios.get("/api/status"); // Adjust API URL as needed
-      console.log("Data dari API:", response.data);
       setStatuses(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching statuses:", error.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserDocuments = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/user-documents"); // Adjust API URL as needed
+      setUserDocuments(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching user documents:", error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
@@ -39,26 +55,21 @@ const Dashboard = () => {
   return (
     <div className="flex-4 h-full px-4 overflow-auto">
       <div className="text-center mb-10">
-        <h3 className="text-lg font-bold font-poppins">DAFTAR STATUS</h3>
+        <h3 className="text-lg font-bold font-poppins">DASHBOARD</h3>
       </div>
       <hr className="my-4 border-gray-300" />
 
       {loading ? (
         <p>Loading...</p>
-      ) : (
+      ) : role_id === 1 ? (
+        // Tabel untuk Admin
         <div className="overflow-x-auto">
           <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
             <thead>
               <tr className="bg-teal-900 text-white">
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
-                  Status
-                </th>
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
-                  Jumlah
-                </th>
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
-                  Aksi
-                </th>
+                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Status</th>
+                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Jumlah</th>
+                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -76,73 +87,31 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-      )}
-
-  {/* Section: Statistik Operator */}
-  <div className="text-center">
-        <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-          STATISTIK OPERATOR
-        </h3>
-      </div>
-      <hr className="mb-6" />
-      <div className="flex flex-wrap items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <label htmlFor="entries" className="text-sm text-gray-600">
-            Show
-          </label>
-          <select
-            id="entries"
-            className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring focus:ring-blue-300"
-          >
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-          <span className="text-sm text-gray-600">entries</span>
-        </div>
-        <div className="relative">
-          <label htmlFor="search" className="sr-only">
-            Search
-          </label>
-          <input
-            type="search"
-            id="search"
-            placeholder="Search"
-            className="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:ring focus:ring-blue-300"
-          />
-        </div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 text-sm text-left">
-          <thead className="bg-gray-100 text-gray-800 font-semibold">
-            <tr>
-              <th className="py-3 px-4 border-b">Nama Operator</th>
-              <th className="py-3 px-4 border-b">Jumlah</th>
-              <th className="py-3 px-4 border-b">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[{ name: "Lina Indarwati", jumlah: 315, link: "5" }].map(
-              ({ name, jumlah, link }, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 border-b">{name}</td>
-                  <td className="py-3 px-4 border-b">{jumlah}</td>
-                  <td className="py-3 px-4 border-b">
-                    <a
-                      href={`http://idaman.lan.go.id/list-log-edit/${link}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      Lihat Detail
-                    </a>
-                  </td>
+      ) : role_id === 4 ? (
+        // Tabel untuk User
+        <div className="overflow-x-auto">
+          <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
+            <thead>
+              <tr className="bg-teal-900 text-white">
+                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Jenis Dokumen</th>
+                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Keterangan</th>
+                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userDocuments.map(({ jenis_dokumen, keterangan, status }, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
+                  <td className="px-4 py-2 border border-teal-300">{jenis_dokumen}</td>
+                  <td className="px-4 py-2 border border-teal-300">{keterangan}</td>
+                  <td className="px-4 py-2 border border-teal-300">{status}</td>
                 </tr>
-              )
-            )}
-          </tbody>
-        </table>
-      </div>
-
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p>Role tidak dikenali.</p>
+      )}
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
