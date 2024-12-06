@@ -191,7 +191,7 @@ export const sidebarData: SidebarItem[] = [
     roles: ["1"],
   },
   {
-    label: "Data Pribadi",
+    label: "Data Pegawai",
     to: "/pegawai/profile/edit/id",
     icon: FaUser,
     roles: ["4"],
