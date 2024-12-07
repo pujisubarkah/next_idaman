@@ -6,7 +6,7 @@ import axios from 'axios';
 import { faSearch, faEdit, faTrash, faFileExcel, faAdd } from '@fortawesome/free-solid-svg-icons';
 
 const formatDate = (dateString) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = { year: 'numeric', month: 'long', day: 'numeric' as 'numeric' | '2-digit' | undefined };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 const sortByTmtPensiun = (data) => {

@@ -3,7 +3,7 @@ import { supabase } from '../../../../../lib/supabaseClient';
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { query } = req;
-    const peg_id = query.peg_id; // Pastikan ini adalah string
+    const peg_nip = query.peg_nip; // Pastikan parameter ini sesuai dengan frontend
     const page = query.page || 1;
     const itemsPerPage = query.itemsPerPage || 10;
 
@@ -13,14 +13,8 @@ export default async function handler(req, res) {
       let queryBuilder = supabase
         .schema('siap_skpd')
         .from('spg_pegawai')
-        .select('*', { count: 'exact' });
-
-      queryBuilder = queryBuilder.eq('peg_status', true);
-
-      if (peg_id) {
-        // Pastikan peg_id adalah string saat dikirim ke Supabase
-        queryBuilder = queryBuilder.eq('peg_id', peg_id);
-      }
+        .select('*', { count: 'exact' })
+        .eq('peg_nip', peg_nip); // Filter berdasarkan peg_nip, bukan peg_id
 
       const { data, error, count } = await queryBuilder.range(
         (page - 1) * itemsPerPage,

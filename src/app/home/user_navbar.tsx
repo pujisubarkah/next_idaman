@@ -24,7 +24,7 @@ const Navbar = () => {
       label: "Riwayat Pengembangan Kompetensi",
       subMenu: [
         { label: "Pendidikan", link: "#" },
-        { label: "Pelatihan Struktural", link: "#" },
+        { label: "Pelatihan Struktural", link: "/components/jft" },
         { label: "Pelatihan Fungsional", link: "#" },
       ],
     },
@@ -45,7 +45,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-transparent p-4 shadow-md rounded-full">
+    <nav className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-400 p-4 shadow-lg rounded-lg">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6">
           {menuData.map((menu, index) => (
@@ -53,7 +53,7 @@ const Navbar = () => {
               {menu.subMenu ? (
                 <>
                   <button
-                    className="flex items-center text-black hover:bg-teal-100 px-3 py-2 rounded-full outline outline-2 outline-offset-2 outline-black skew-x-12"
+                    className="flex items-center text-white hover:text-teal-800 bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded-md transition duration-200 transform hover:scale-105"
                     onClick={() => toggleMenu(menu.label)}
                   >
                     {menu.label}
@@ -63,12 +63,12 @@ const Navbar = () => {
                     />
                   </button>
                   {activeMenu === menu.label && (
-                    <ul className="absolute top-full left-0 bg-gray-200 mt-2 rounded-lg shadow-lg w-max">
+                    <ul className="absolute top-full left-0 bg-teal-50 mt-2 rounded-lg shadow-lg w-48">
                       {menu.subMenu.map((subItem, subIndex) => (
                         <li key={subIndex}>
                           <a
                             href={subItem.link}
-                            className="block px-4 py-2 text-black hover:bg-teal-100"
+                            className="block px-4 py-2 text-teal-800 hover:bg-teal-200 transition duration-150"
                           >
                             {subItem.label}
                           </a>
@@ -80,7 +80,7 @@ const Navbar = () => {
               ) : (
                 <a
                   href={menu.link}
-                  className="flex items-center text-black hover:bg-teal-100 px-3 py-2 rounded-full outline outline-2 outline-offset-2 outline-black skew-x-12"
+                  className="flex items-center text-white hover:text-teal-800 bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded-md transition duration-200 transform hover:scale-105"
                 >
                   {menu.label}
                 </a>

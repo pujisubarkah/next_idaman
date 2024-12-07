@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 
 interface SidebarItem {
@@ -222,9 +223,11 @@ export const Sidebar = () => {
                     <li key={childIndex} className="flex items-center">
                       {/* Add FaCircle for bullet effect */}
                       <FaCircle className="mr-2 text-gray-500" />
-                      <Link href={child.to}>
-                        {child.label}
-                      </Link>
+                      {child.to && (
+                        <Link href={child.to}>
+                          {child.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -233,10 +236,12 @@ export const Sidebar = () => {
           }
           return (
             <li key={index}>
-              <Link href={item.to}>
-                <item.icon />
-                {item.label}
-              </Link>
+              {item.to && (
+                <Link href={item.to}>
+                  <item.icon />
+                  {item.label}
+                </Link>
+              )}
             </li>
           );
         })}
