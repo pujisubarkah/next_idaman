@@ -14,38 +14,48 @@ const Navbar = () => {
   const menuData = [
     {
       label: "Data Pribadi",
-      link: "#",
+      link: "#data-pribadi",
     },
     {
       label: "Arsip/Dokumen Digital",
-      link: "#",
+      link: "#file-pegawai",
     },
     {
       label: "Riwayat Pengembangan Kompetensi",
       subMenu: [
-        { label: "Pendidikan", link: "#" },
-        { label: "Pelatihan Struktural", link: "/components/jft" },
-        { label: "Pelatihan Fungsional", link: "#" },
+        { label: "Pendidikan", link: "#pendidikan" },
+        { label: "Pelatihan Struktural", link: "#pelatihan-struktural" },
+        { label: "Pelatihan Fungsional", link: "#pelatihan-fungsional" },
       ],
     },
     {
       label: "Riwayat SDM",
       subMenu: [
-        { label: "Riwayat Jabatan", link: "#" },
-        { label: "Riwayat Kepangkatan", link: "#" },
+        { label: "Riwayat Jabatan", link: "#jabatan" },
+        { label: "Riwayat Kepangkatan", link: "#kepangkatan" },
       ],
     },
     {
       label: "Kinerja dan Prestasi",
       subMenu: [
         { label: "Sasaran Kerja", link: "#" },
-        { label: "Penghargaan", link: "#" },
+        { label: "Penghargaan", link: "#penghargaan" },
+      ],
+    },
+    {
+      label: "Keluarga",
+      subMenu: [
+        { label: "Istri", link: "#pasangan" },
+        { label: "Anak", link: "#anak" },
+        { label: "Orang Tua", link: "#orangtua" },
+        { label: "Saudara Lainnya", link: "#saudara" },
+        { label: "Kontak Lainnya", link: "#kontak" },
       ],
     },
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-teal-200 via-teal-300 to-teal-400 p-4 shadow-lg rounded-lg">
+    <nav className="bg-gradient-to-r from-teal-50 via-teal-75 to-teal-100 p-4 shadow-lg rounded-lg">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6">
           {menuData.map((menu, index) => (

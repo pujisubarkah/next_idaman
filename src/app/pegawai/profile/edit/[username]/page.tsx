@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import RootLayout from '../../../../home/layout'; // Periksa apakah path ini benar
-import NavbarProfile from '../../../../home/navbar_profile';
-import UserNavbar from '../../../../home/user_navbar';
+import Profile from '../../../../home/profile';
 
 const EditProfile = ({ params }: { params: { username: string } }) => {
   const { username } = params; // Ambil parameter `username` dari URL
@@ -33,15 +32,7 @@ const EditProfile = ({ params }: { params: { username: string } }) => {
   return (
     <RootLayout>
       <div>
-        <UserNavbar />
-        <NavbarProfile />
-        <h1>Edit Profile</h1>
-        <p>Username dari URL: {username}</p>
-        {storedUsername ? (
-          <p>Username dari LocalStorage: {storedUsername}</p>
-        ) : (
-          <p>Username tidak ditemukan di LocalStorage</p>
-        )}
+       <Profile />
       </div>
     </RootLayout>
   );

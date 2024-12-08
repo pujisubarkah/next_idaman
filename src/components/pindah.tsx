@@ -6,11 +6,11 @@ import axios from 'axios';
 import { faSearch, faRotateRight, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
 const formatDate = (dateString) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = { year: 'numeric' as const, month: 'long' as const, day: 'numeric' as const };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 const sortByTmtPensiun = (data) => {
-  return data.sort((a, b) => new Date(b.tmt_pensiun) - new Date(a.tmt_pensiun));
+  return data.sort((a, b) => new Date(b.tmt_pensiun).getTime() - new Date(a.tmt_pensiun).getTime());
 };
 
 const Pindah = () => {
@@ -20,6 +20,7 @@ const Pindah = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showModal, setShowModal] = useState(false);
   
     useEffect(() => {
         const fetchData = async () => {
@@ -79,7 +80,7 @@ const Pindah = () => {
       return null; // Atau kembalikan string "Tanggal Tidak Tersedia"
     }
   
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric' as const, month: 'long' as const, day: 'numeric' as const };
     return date.toLocaleDateString(undefined, options);
   };
   
@@ -129,15 +130,15 @@ const Pindah = () => {
         <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
           <thead className="bg-teal-600">
           <tr className="bg-teal-900 text-white">
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama/Tempat Tgl Lahir</th>
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">NIP</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pangkat</th>
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Unit Kerja</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Jabatan</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pegawai</th>
-              <th colSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Masa Kerja</th>
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pindah Instansi</th>
-              <th rowSpan="2" className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">PILIHAN</th>
+              <th rowSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama/Tempat Tgl Lahir</th>
+              <th rowSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">NIP</th>
+              <th colSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pangkat</th>
+              <th rowSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Unit Kerja</th>
+              <th colSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Jabatan</th>
+              <th colSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pegawai</th>
+              <th colSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Masa Kerja</th>
+              <th rowSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Pindah Instansi</th>
+              <th rowSpan={2} className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">PILIHAN</th>
             </tr>
             <tr className="bg-teal-900 text-white">
               <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Gol</th>

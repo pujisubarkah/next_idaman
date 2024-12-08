@@ -11,7 +11,7 @@ const formatDate = (dateString) => {
   if (date.getTime() === new Date('1970-01-01').getTime()) {
     return null; // Return null or an appropriate message if the date is invalid
   }
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString(undefined, options);
 };
 

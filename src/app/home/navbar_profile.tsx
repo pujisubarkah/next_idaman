@@ -69,40 +69,44 @@ const ProfileInfo = () => {
     }, []);
 
     return (
-        <div className="w-full max-w-md mx-auto p-4 border rounded-md bg-gray-50">
-            <div className="flex items-start space-x-4">
-                {/* Foto Placeholder Kotak */}
-                <div className="w-24 h-24 bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-300">
-                    {profileData.photoUrl ? (
-                        <img
-                            src={profileData.photoUrl}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <span className="text-gray-500 text-sm">No Photo</span>
-                    )}
-                </div>
-
-                {/* Informasi Profil */}
-                <div className="flex-1">
-                    <div className="border border-gray-300 rounded-md divide-y divide-gray-300">
-                        <div className="flex justify-between p-3 bg-gray-100">
-                            <div className="font-semibold">NIP</div>
-                            <div>{profileData.nip || "—"}</div>
-                        </div>
-                        <div className="flex justify-between p-3">
-                            <div className="font-semibold">NIP Lama</div>
-                            <div>{profileData.nipLama || "—"}</div>
-                        </div>
-                        <div className="flex justify-between p-3 bg-gray-100">
-                            <div className="font-semibold">Nama Lengkap</div>
-                            <div>{profileData.namaLengkap || "—"}</div>
-                        </div>
-                    </div>
-                </div>
+        <div className="w-full max-w-4xl mx-auto p-4 border rounded-md bg-gray-50">
+             <h2 className="text-2xl font-bold text-teal-600">Informasi Profil</h2>
+        <div className="flex items-start space-x-6">
+          {/* Foto Placeholder Kotak */}
+          <div className="w-32 h-32 bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-300 rounded-md">
+            {profileData.photoUrl ? (
+              <img
+                src={profileData.photoUrl}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-gray-500 text-sm">No Photo</span>
+            )}
+          </div>
+      
+          {/* Informasi Profil */}
+          <div className="flex-1">
+          
+            <div className="border border-gray-300 rounded-md divide-y divide-gray-300">
+              <div className="flex justify-between p-3 bg-gray-100">
+                <div className="font-semibold">NIP</div>
+                <div>{profileData.nip || "—"}</div>
+              </div>
+              <div className="flex justify-between p-3">
+                <div className="font-semibold">NIP Lama</div>
+                <div>{profileData.nipLama || "—"}</div>
+              </div>
+              <div className="flex justify-between p-3 bg-gray-100">
+                <div className="font-semibold">Nama Lengkap</div>
+                <div>{profileData.namaLengkap || "—"}</div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+      
+      
     );
 };
 

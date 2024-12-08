@@ -180,18 +180,6 @@ export const sidebarData: SidebarItem[] = [
     roles: ["1"],
   },
   {
-    label: "Ubah Password",
-    to: "#",
-    icon: FaCog,
-    roles: ["1"],
-  },
-  {
-    label: "Logout",
-    to: "#",
-    icon: FaPowerOff,
-    roles: ["1"],
-  },
-  {
     label: "Data Pegawai",
     to: "/pegawai/profile/edit/id",
     icon: FaUser,
@@ -203,6 +191,19 @@ export const sidebarData: SidebarItem[] = [
     icon: FaUser,
     roles: ["4"],
   },
+  {
+    label: "Ubah Password",
+    to: "#",
+    icon: FaCog,
+    roles: ["1", "4"],
+  },
+  {
+    label: "Logout",
+    to: "#",
+    icon: FaPowerOff,
+    roles: ["1", "4"],
+  },
+ 
 ];
 
 // Sidebar component where the Link is used
