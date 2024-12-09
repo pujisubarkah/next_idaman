@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard = () => {
-  const [statuses, setStatuses] = useState([]);
+  const [statuses, setStatuses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,16 +52,16 @@ const Dashboard = () => {
           <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
             <thead>
               <tr className="bg-teal-900 text-white">
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
+                <th rowSpan={2} className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
                   Nama Jabatan
                 </th>
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
+                <th rowSpan={2} className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
                   Skil
                 </th>
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
+                <th rowSpan={2} className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
                   Jumlah Pegawai
                 </th>
-                <th rowSpan="2" className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
+                <th rowSpan={2} className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">
                   Aksi
                 </th>
               </tr>
