@@ -1,7 +1,5 @@
 // pages/api/unit-kerja.js
 
-// pages/api/unit-kerja.js
-
 import { supabase } from '../../../../lib/supabaseClient'; // Adjust path accordingly
 
 export default async function handler(req, res) {
@@ -13,6 +11,7 @@ export default async function handler(req, res) {
         .from("m_spg_unit_kerja")
         .select(
           `unit_kerja_id, 
+          
             unit_kerja_parent, 
             unit_kerja_nama, 
             satuan_kerja_id, 
@@ -22,16 +21,19 @@ export default async function handler(req, res) {
 
       if (error) throw error;
 
-      // Filter data and map the results
+      // Filter, map, and sort the data
       const filteredData = data
         .filter((unit) => unit.unit_kerja_id !== 99) // Remove unit_kerja_id = 99
         .map((unit) => ({
           ...unit,
           jumlahPegawai: unit.spg_pegawai.length, // Add jumlah pegawai
-          satuanKerjaNama: unit.m_spg_satuan_kerja?.satuan_kerja_nama || "Tidak Diketahui",
+          satuanKerjaNama: unit.m_spg_satuan_kerja?.[0]?.satuan_kerja_nama || "Tidak Diketahui",
         }))
         .sort((a, b) => {
-          // Sort by satuan_kerja_id, then unit_kerja_id
+          // Sort by unit_kerja_parent, satuan_kerja_id, then unit_kerja_id
+          if (a.unit_kerja_parent !== b.unit_kerja_parent) {
+            return a.unit_kerja_parent - b.unit_kerja_parent;
+          }
           if (a.satuan_kerja_id !== b.satuan_kerja_id) {
             return a.satuan_kerja_id - b.satuan_kerja_id;
           }

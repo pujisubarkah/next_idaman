@@ -1,57 +1,59 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const ProfileInfo = () => {
+    const { nip } = useParams(); // Mengambil NIP dari parameter URL
+    console.log("NIP from URL:", nip);
+
     const [profileData, setProfileData] = useState({
         nip: "",
         nipLama: "",
         namaLengkap: "",
         photoUrl: null as string | null,
     });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        console.log("User from localStorage:", user);
-
-        if (user && user.username) {
-            setProfileData(prevData => ({
-                ...prevData,
-                nip: user.username,
-            }));
-
+        if (nip) {
             const fetchProfileData = async () => {
                 try {
-                    console.log("Fetching profile data for username:", user.username);
-                    const res = await axios.get(`/api/pegawai/idaman?peg_nip=${user.username}`, {
+                    console.log("Fetching profile data for NIP:", nip);
+                    const res = await axios.get(`/api/pegawai/idaman?peg_nip=${nip}`, {
                         headers: {
                             'Cache-Control': 'no-cache',
-                        }
+                        },
                     });
 
+                    console.log("API response data:", res.data);
+
                     const data = res.data.data;
-                    const filteredData = data.find(item => item.peg_nip === user.username);
+                    const filteredData = data.find(item => item.peg_nip === nip);
 
                     if (filteredData) {
-                        console.log("Filtered profile data:", filteredData);
-
-                        setProfileData(prevData => ({
-                            ...prevData,
+                        setProfileData({
+                            nip: filteredData.peg_nip || "",
                             nipLama: filteredData.peg_nip_lama || "",
                             namaLengkap: filteredData.peg_nama || "",
                             photoUrl: filteredData.peg_foto || null,
-                        }));
+                        });
                     } else {
-                        console.warn("No matching profile data found for NIP:", user.username);
+                        console.warn("No matching profile data found for NIP:", nip);
                     }
                 } catch (error) {
                     console.error("Error fetching profile data:", error);
+                } finally {
+                    setLoading(false);
                 }
             };
-            fetchProfileData();
-        }
-    }, []);
 
-    // Fungsi untuk memvalidasi ekstensi gambar
+            fetchProfileData();
+        } else {
+            console.error("NIP is not available in URL.");
+            setLoading(false);
+        }
+    }, [nip]);
+
     const isValidImageUrl = (url: string | null) => {
         if (!url) return false;
         const validExtensions = ['jpg', 'jpeg', 'png'];
@@ -59,14 +61,16 @@ const ProfileInfo = () => {
         return validExtensions.includes(extension || '');
     };
 
-    // Base URL untuk foto yang diupload ke Supabase
     const basePhotoUrl = "https://dtjrketxxozstcwvotzh.supabase.co/storage/v1/object/public/foto_pegawai/";
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="w-full max-w-4xl mx-auto p-4 border rounded-md bg-gray-50">
             <h2 className="text-2xl font-bold text-teal-600">Informasi Profil</h2>
             <div className="flex items-start space-x-6">
-                {/* Kolom Foto Profil (Besar) */}
                 <div className="w-48 h-48 bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-300 rounded-full">
                     {profileData.photoUrl && isValidImageUrl(profileData.photoUrl) ? (
                         <img
@@ -82,8 +86,6 @@ const ProfileInfo = () => {
                         />
                     )}
                 </div>
-
-                {/* Kolom Informasi Profil */}
                 <div className="flex-1">
                     <div className="border border-gray-300 rounded-md divide-y divide-gray-300">
                         <div className="flex justify-between p-3 bg-gray-100">

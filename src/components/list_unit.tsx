@@ -72,10 +72,10 @@ const ListUnit = () => {
           <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
             <thead>
               <tr className="bg-teal-900 text-white">
-                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Satker</th>
-                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Unit Kerja</th>
-                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Jumlah Pegawai</th>
-                <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Pilihan</th>
+                <th className="p-3 border border-teal-700 text-center font-bold uppercase text-sm">Satker</th>
+                <th className="p-3 border border-teal-700 text-center font-bold uppercase text-sm">Unit Kerja</th>
+                <th className="p-3 border border-teal-700 text-center font-bold uppercase text-sm">Jumlah Pegawai</th>
+                <th className="p-3 border border-teal-700 text-center font-bold uppercase text-sm">Pilihan</th>
               </tr>
             </thead>
             <tbody>
