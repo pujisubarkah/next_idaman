@@ -40,18 +40,11 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: 'Data not found' });
       }
 
-      // Correct Base Photo URL
-      const basePhotoUrl = 'https://i.ibb.co/0DtdPRC/';
-
-      // Update peg_foto URLs if available
-      const updatedData = data.map(item => ({
-        ...item,
-        peg_foto: item.peg_foto ? `${basePhotoUrl}${item.peg_foto}` : null,
-      }));
+   
 
       // Return data with total count
       return res.status(200).json({
-        data: updatedData,
+        data: data,
         totalItems: count || 0,
       });
     } catch (error) {
