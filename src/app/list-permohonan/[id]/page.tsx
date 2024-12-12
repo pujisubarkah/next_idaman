@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import RootLayout from '../../home/layout'; // Mengimpor layout dari home/layout.js
+import RootLayout from '../../pegawai/profile/edit/layout'; // Mengimpor layout dari home/layout.js
 import Table from "../../../components/list_permohonan"; // Mengimpor komponen Table
 
 const ListPermohonan = ({ params }: { params: { id: string } }) => {

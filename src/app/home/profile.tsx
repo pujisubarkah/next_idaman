@@ -3,19 +3,19 @@
 import { useState, useEffect } from "react";
 import UserNavbar from './user_navbar';
 import DataPribadi from './data-pribadi';
-import Pendidikan from './pendidikan';
-import PelatihanStuktural from './struktural';
-import PelatihanFungsional from './fungsional';
+import Pendidikan from '../pegawai/profile/edit/pendidikan';
+import PelatihanStuktural from '../pegawai/profile/edit/struktural';
+import PelatihanFungsional from '../pegawai/profile/edit/fungsional';
 import FilePegawai from './file-pegawai';
-import NavbarProfile from './navbar_profile';
-import Pasangan from './pasangan';
-import Anak from './anak';  
-import Jabatan from './jabatan';
-import Kepangkatan from './pangkat';
-import Penghargaan from './penghargaan';
-import OrangTua from './orangtua';
-import Saudara from './saudara';
-import Kontak from './kontak';    
+import NavbarProfile from '../pegawai/profile/edit/navbar_profile';
+import Pasangan from '../pegawai/profile/edit/pasangan';
+import Anak from '../pegawai/profile/edit/anak';  
+import Jabatan from '../pegawai/profile/edit/jabatan';
+import Kepangkatan from '../pegawai/profile/edit/pangkat';
+import Penghargaan from '../pegawai/profile/edit/penghargaan';
+import OrangTua from '../pegawai/profile/edit/orangtua';
+import Saudara from '../pegawai/profile/edit/saudara';
+import Kontak from '../pegawai/profile/edit/kontak';    
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("");

@@ -1,4 +1,4 @@
-import RootLayout from '../../home/layout';
+import RootLayout from '../../pegawai/profile/edit/layout';
 import JFT from '../../../components/jft'; // Mengimpor komponen JFU
 
 

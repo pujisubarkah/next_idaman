@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router-dom";
 
 interface Pendidikan {
   tingpend_id: string;
@@ -16,36 +17,38 @@ interface Pendidikan {
 }
 
 const RiwayatPendidikan = () => {
+  const { nip } = useParams<{ nip: string }>();
   const [dataPendidikan, setDataPendidikan] = useState<Pendidikan[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async (username: string) => {
-    try {
-      const res = await axios.get(`/api/riwayat/pendidikan?peg_id=${username}`, {
-        headers: { "Cache-Control": "no-cache" },
-      });
-
-      if (Array.isArray(res.data.data)) {
-        setDataPendidikan(res.data.data);
-      } else {
-        console.error("Data tidak valid:", res.data);
-      }
-    } catch (error) {
-      console.error("Gagal mengambil data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (user?.username) {
-      fetchData(user.username);
-    } else {
-      console.warn("User tidak ditemukan di localStorage.");
-      setLoading(false);
-    }
-  }, []);
+    const fetchProfileData = async () => {
+      if (!nip) {
+        console.error("NIP tidak ditemukan di parameter URL.");
+        setLoading(false);
+        return;
+      }
+      console.log("Fetching data for NIP:", nip);
+      try {
+        const res = await axios.get<{ data: Pendidikan[] }>(
+          `/api/riwayat/pendidikan?peg_id=${nip}`,
+          {
+            headers: { "Cache-Control": "no-cache" },
+          }
+        );
+        const data = res.data.data;
+        if (data) {
+          setDataPendidikan(data);
+        }
+      } catch (error) {
+        console.error("Gagal memuat data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [nip]);
 
   return (
     <div id="pendidikan" className="p-8">

@@ -2,9 +2,9 @@
 import React from "react";
 
 // Import components
-import Header from "../../components/header";
-import Navbar from "../../components/navbar";
-import Sidebar from "../../components/customsidebar";
+import Header from "../../../../components/header";
+import Navbar from "../../../../components/navbar";
+import Sidebar from "../../../../components/customsidebar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

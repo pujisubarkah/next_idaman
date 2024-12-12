@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         try {
             // Langkah 1: Ambil peg_nip dari tabel spg_pegawai berdasarkan peg_id
             const { data: pegData, error: pegError } = await supabase
-            .schema('siap')
+                .schema('siap')
                 .from('spg_pegawai')
                 .select('peg_nip')  // Hanya ambil kolom peg_nip
                 .eq('peg_id', peg_id)  // Filter berdasarkan peg_id
@@ -27,12 +27,12 @@ export default async function handler(req, res) {
                 return res.status(404).json({ error: "peg_nip not found for the given peg_id" });
             }
 
-            // Langkah 2: Gunakan peg_id untuk filter data di tabel spg_riwayat_pendidikan
+            // Langkah 2: Gunakan peg_id untuk join data dari tabel spg_riwayat_pendidikan dan m_spg_tingkat_pendidikan
             const { data: pendidikan, error: pendidikanError } = await supabase
                 .schema('siap')
                 .from('spg_riwayat_pendidikan')
-                .select('*')  // Ambil semua data dari tabel spg_riwayat_pendidikan
-                .eq('peg_id', peg_id);  // Filter berdasarkan peg_id, bukan peg_nip
+                .select(`*, m_spg_tingkat_pendidikan(nm_tingpend)`)  // Join dengan tabel m_spg_tingkat_pendidikan
+                .eq('peg_id', peg_id);  // Filter berdasarkan peg_id
 
             if (pendidikanError) {
                 return res.status(500).json({ error: pendidikanError.message });
