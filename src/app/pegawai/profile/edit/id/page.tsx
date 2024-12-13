@@ -1,4 +1,3 @@
-// pages/pegawai/redirect.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -8,14 +7,14 @@ const RedirectToEditProfile = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Mendapatkan 'id' dari localStorage
-    const storedId = localStorage.getItem("id");
+    // Mendapatkan 'username' dari localStorage
+    const storedUsername = localStorage.getItem("username");
 
-    if (storedId) {
-      // Navigasi ke URL dengan [nip]
-      router.push(`/pegawai/profile/edit/${storedId}`);
+    if (storedUsername) {
+      // Navigasi ke URL dengan username
+      router.push(`/pegawai/profile/edit/${storedUsername}`);
     } else {
-      console.error("ID tidak ditemukan di localStorage.");
+      console.error("Username tidak ditemukan di localStorage.");
     }
   }, [router]);
 

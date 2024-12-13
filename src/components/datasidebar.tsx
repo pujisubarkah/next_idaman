@@ -41,7 +41,7 @@ export const sidebarData: SidebarItem[] = [
   },
   {
     label: "Cari Pegawai",
-    to: "/list_all_pegawai",
+    to: "/list-all-pegawai",
     icon: FaList,
     roles: ["1"], // Only admin can see this
   },

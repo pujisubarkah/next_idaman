@@ -54,7 +54,7 @@ const ListUnit = () => {
   // Function to handle search click and navigate to another page
   const handleSearchClick = (unitKerjaId) => {
     // Use router.push to navigate to the ListAllPegawai page with unit_kerja_id as a URL parameter
-    router.push(`/list_all_pegawai?unit_kerja_id=${unitKerjaId}`);
+    router.push(`/list-pegawai/all/${unitKerjaId}`);
   };
 
   return (

@@ -1,100 +1,81 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faRedo } from "@fortawesome/free-solid-svg-icons";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FaEdit, FaTrash, FaKey, FaPlus } from "react-icons/fa";
 
-const ListUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+const UserTable: React.FC = () => {
+  interface User {
+    id: number;
+    nama: string;
+    username: string;
+    m_status: {
+      role_name: string;
+    };
+    satuan_kerja_nama: string;
+    status_aktif: number;
+  }
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Fetch data dari API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/users", {
-          params: {
-            searchQuery,
-            page: currentPage,
-            itemsPerPage,
-          },
-        });
-        console.log("Fetched data:", response.data);
-        const { data } = response.data;
-        setUsers(data || []);
-      } catch (err) {
-        console.error("Error fetching users:", err);
+        const response = await axios.get("/api/users/datauser");
+        setUsers(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError("Error fetching data");
+        setLoading(false);
       }
     };
     fetchData();
-  }, [currentPage, searchQuery, itemsPerPage]);
-  
-  const handleItemsPerPageChange = (event) => {
-    setItemsPerPage(Number(event.target.value));
-    setCurrentPage(1);
-  };
+  }, []);
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
+  const filteredUsers = users.filter((user) =>
+    user.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleResetPassword = (userId) => {
-    alert(`Reset password for user ID: ${userId}`);
-  };
-
-  const handleEditUser = (userId) => {
-    alert(`Edit user with ID: ${userId}`);
-  };
-
-  const handleDeleteUser = (userId) => {
-    if (confirm("Are you sure you want to delete this user?")) {
-      alert(`Delete user with ID: ${userId}`);
-    }
-  };
-
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+ 
   return (
     <div className="p-4">
-      <h3 className="text-center text-xl font-semibold my-8">DAFTAR PENGGUNA</h3>
+      <h3 className="text-center text-xl font-semibold my-8">DAFTAR USER</h3>
 
       <div className="flex justify-between items-center mb-4">
+        <button className="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-700 flex items-center">
+          <FaPlus className="mr-2" /> Tambah User
+        </button>
         <div className="flex items-center space-x-4">
-          <div>
-            <label className="mr-2">Show:</label>
-            <select
-              value={itemsPerPage}
-              onChange={handleItemsPerPageChange}
-              className="p-2 border border-gray-300 rounded"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-          </div>
+          <label className="mr-2">Show:</label>
+          <select
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            className="p-2 border rounded"
+          >
+            {[10, 25, 50, 100].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
 
-          <div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Cari Pengguna..."
-              className="p-2 border border-gray-300 rounded"
-            />
-          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Cari Pengguna..."
+            className="p-2 border rounded"
+          />
         </div>
       </div>
 
@@ -105,61 +86,39 @@ const ListUsers = () => {
       ) : (
         <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
           <thead className="bg-teal-600">
-            <tr className="bg-teal-900 text-white">
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Nama</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Username</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Role</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Satuan Kerja</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Status Aktif</th>
-              <th className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">Aksi</th>
+            <tr className="text-white">
+              {["Nama", "Username", "Role", "Satuan Kerja", "Status Aktif", "Aksi"].map((header) => (
+                <th key={header} className="p-3 border text-left font-bold uppercase text-sm">
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
+            {paginatedUsers.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={6} className="text-center p-4">
                   No users found.
                 </td>
               </tr>
             ) : (
-                users.map(({ 
-                    id, 
-                    nama, 
-                    username, 
-                    satuan_kerja_nama, 
-                    status_aktif, 
-                    m_status: { role_name } 
-                  }, index) => (
+              paginatedUsers.map(({ id, nama, username, m_status, satuan_kerja_nama, status_aktif }, index) => (
                 <tr key={id} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
-                  <td className="p-3 border border-teal-500">{nama}</td>
-                  <td className="p-3 border border-teal-500">{username}</td>
-                  <td className="p-3 border border-teal-500">{role_name}</td>
-                  <td className="p-3 border border-teal-500">{satuan_kerja_nama}</td>
-                  <td className="p-3 border border-teal-500">
-                    {status_aktif === 1 ? "Aktif" : "Tidak Aktif"}
-                  </td>
-                  <td className="p-3 border border-teal-500">
+                  <td className="p-3 border">{nama}</td>
+                  <td className="p-3 border">{username}</td>
+                  <td className="p-3 border">{m_status?.role_name}</td>
+                  <td className="p-3 border">{satuan_kerja_nama}</td>
+                  <td className="p-3 border">{status_aktif === 1 ? "Aktif" : "Tidak Aktif"}</td>
+                  <td className="p-3 border">
                     <div className="flex space-x-4">
-                      <button
-                        onClick={() => handleResetPassword(id)}
-                        className="text-blue-500 hover:text-blue-700"
-                        aria-label="Reset Password"
-                      >
-                        <FontAwesomeIcon icon={faRedo} /> Reset Password
+                      <button className="text-blue-500 hover:text-blue-700" aria-label="Reset Password">
+                        <FaKey /> Reset
                       </button>
-                      <button
-                        onClick={() => handleEditUser(id)}
-                        className="text-green-500 hover:text-green-700"
-                        aria-label="Edit User"
-                      >
-                        <FontAwesomeIcon icon={faEdit} /> Edit
+                      <button className="text-green-500 hover:text-green-700" aria-label="Edit User">
+                        <FaEdit /> Edit
                       </button>
-                      <button
-                        onClick={() => handleDeleteUser(id)}
-                        className="text-red-500 hover:text-red-700"
-                        aria-label="Delete User"
-                      >
-                        <FontAwesomeIcon icon={faTrash} /> Delete
+                      <button className="text-red-500 hover:text-red-700" aria-label="Delete User">
+                        <FaTrash /> Delete
                       </button>
                     </div>
                   </td>
@@ -172,7 +131,7 @@ const ListUsers = () => {
 
       <div className="flex justify-between items-center mt-4">
         <button
-          onClick={() => handlePageChange(currentPage - 1)}
+          onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
           className="bg-teal-500 text-white py-1 px-3 rounded hover:bg-blue-600 disabled:opacity-50"
         >
@@ -180,7 +139,7 @@ const ListUsers = () => {
         </button>
         <span>{`Page ${currentPage} of ${totalPages}`}</span>
         <button
-          onClick={() => handlePageChange(currentPage + 1)}
+          onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="bg-teal-500 text-white py-1 px-3 rounded hover:bg-blue-600 disabled:opacity-50"
         >
@@ -191,4 +150,4 @@ const ListUsers = () => {
   );
 };
 
-export default ListUsers;
+export default UserTable;
