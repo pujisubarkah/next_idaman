@@ -1,29 +1,17 @@
+
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabaseClient"; // Adjusted path
-import bcrypt from "bcryptjs"; // Import bcrypt
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Image from "next/image";
-
-const fetchIpAddress = async () => {
-  try {
-    const response = await fetch("https://api.ipify.org?format=json");
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    console.error("Gagal mendapatkan IP Address:", error);
-    return "Unknown IP";
-  }
-};
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,80 +22,31 @@ const Login = () => {
     }
 
     try {
-      const { data: user, error } = await supabase
-        .schema("siap_skpd") // Ganti dengan nama schema Anda
-        .from("users")
-        .select("*")
-        .eq("username", username)
-        .single();
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-      if (error || !user) {
-        setErrorMessage("Username tidak ditemukan");
+      const result = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(result.error || "Terjadi kesalahan saat login");
         return;
       }
 
-      const isPasswordValid = bcrypt.compareSync(password, user.password);
-      if (isPasswordValid) {
-        const userData = { 
-          id: user.id, 
-          nama: user.nama, 
-          username: user.username, 
-          role_id: user.role_id // Simpan role_id
-        };
-        const sessionId = `${user.id}-${new Date().getTime()}`; // Session ID unik
+      const { user, session_id } = result;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("session_id", session_id);
 
-        // Simpan user dan session_id ke localStorage
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("session_id", sessionId);
-
-        const ipAddress = await fetchIpAddress();
-
-        // Tambahkan log login ke tabel log_login
-        const { error: logError } = await supabase
-          .schema("siap_skpd") // Ganti dengan nama schema Anda
-          .from("log_login")
-          .insert([
-            {
-              username: user.username,
-              user_id: user.id,
-              time: new Date().toISOString(),
-              ip: ipAddress,
-              session_id: sessionId,
-              user_agent: navigator.userAgent,
-            },
-          ]);
-
-        if (logError) console.error("Error logging login:", logError);
-
-        // Catat sesi ke tabel log_session
-        const { error: sessionError } = await supabase
-          .schema("siap_skpd") // Ganti dengan nama schema Anda
-          .from("log_session")
-          .insert([
-            {
-              session_id: sessionId,
-              user_agent: navigator.userAgent,
-              first_ip: ipAddress,
-              first_username: user.username,
-              label: "login successful",
-            },
-          ]);
-
-        if (sessionError) console.error("Error logging session:", sessionError);
-
-        // Navigasi ke halaman dashboard
-        // Cek role_id dan arahkan pengguna sesuai dengan peran mereka
-        if (userData.role_id === 1) {
-          // Admin
-          router.push("/home");
-        } else if (userData.role_id === 4) {
-          // User
-          router.push("/home");
-        } else {
-          setErrorMessage("Peran tidak dikenali");
-        }
+      if (user.role_id === 1) {
+        router.push("/home");
+      } else if (user.role_id === 4) {
+        router.push("/home");
       } else {
-        setErrorMessage("Password salah");
+        setErrorMessage("Peran tidak dikenali");
       }
     } catch (err) {
       console.error("Error saat login:", err);

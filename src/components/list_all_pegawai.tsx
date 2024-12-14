@@ -70,6 +70,10 @@ const ListPegawai = () => {
     window.open(`/pegawai/profile/edit/${nip}`, "_blank");
   };
 
+  const handleEditProfile = (nip) => {
+    window.open(`/edit-pegawai/${nip}`, "_blank");
+  };
+  
   const handleExport = () => {
     alert("Exporting to Excel...");
     // You can use a library like `xlsx` here to generate an Excel file
@@ -198,7 +202,14 @@ const ListPegawai = () => {
   <span className="text-teal-700 text-sm">View</span>
 </div>
 {/* Icon View */}
-<div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
+<div
+  className="flex items-center cursor-pointer hover:text-teal-500 mb-2"
+  onClick={() => {
+    const nip = peg_nip; // Get the NIP from your data (e.g., from localStorage)
+    console.log("Opening profile for NIP:", nip); // Log the NIP
+    window.open(`/edit-pegawai/${nip}`, "_blank");  // Open the profile in a new tab
+  }}
+>
     <FontAwesomeIcon icon={faEdit} className="text-teal-700 mr-2" />
     <span className="text-teal-700 text-sm">Edit</span>
   </div>

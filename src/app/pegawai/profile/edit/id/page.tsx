@@ -1,24 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-const RedirectToEditProfile = () => {
-  const router = useRouter();
+const RedirectToUsername = () => {
+    const router = useRouter();
 
-  useEffect(() => {
-    // Mendapatkan 'username' dari localStorage
-    const storedUsername = localStorage.getItem("username");
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            // Pastikan dijalankan di client
+            const username = localStorage.getItem('username');
+            if (username) {
+                router.replace(`/pegawai/profile/edit/${username}`);
+            } else {
+                router.replace('/error'); // Atau halaman lain
+            }
+        }
+    }, [router]);
 
-    if (storedUsername) {
-      // Navigasi ke URL dengan username
-      router.push(`/pegawai/profile/edit/${storedUsername}`);
-    } else {
-      console.error("Username tidak ditemukan di localStorage.");
-    }
-  }, [router]);
-
-  return <div>Loading...</div>; // Bisa diganti dengan loading spinner
+    return null;
 };
 
-export default RedirectToEditProfile;
+export default RedirectToUsername;

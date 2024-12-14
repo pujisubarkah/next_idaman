@@ -84,8 +84,8 @@ const UserTable: React.FC = () => {
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : (
-        <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
-          <thead className="bg-teal-600">
+        <table className="w-full border border-teal-700 rounded-lg overflow-hidden my-5">
+          <thead className="bg-teal-900">
             <tr className="text-white">
               {["Nama", "Username", "Role", "Satuan Kerja", "Status Aktif", "Aksi"].map((header) => (
                 <th key={header} className="p-3 border text-left font-bold uppercase text-sm">

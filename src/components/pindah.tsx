@@ -89,7 +89,7 @@ const Pindah = () => {
   return (
     <div className="p-4">
       <div className="overflow-x-auto">
-        <h3 className="text-center text-xl font-semibold my-8">DAFTAR PEGAWAI PENSIUN</h3>
+        <h3 className="text-center text-xl font-semibold my-8">DAFTAR PEGAWAI PINDAH KE LUAR</h3>
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-4">
             <div>

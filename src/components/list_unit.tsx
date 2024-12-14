@@ -87,13 +87,14 @@ const ListUnit = () => {
                   <td className="border border-gray-300 px-2 py-2">{satuanKerjaNama}</td>
                   <td className="border border-gray-300 px-4 py-2">{unit_kerja_nama}</td>
                   <td className="border border-gray-300 px-4 py-2">{jumlahPegawai}</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <FontAwesomeIcon
-                      icon={faSearch}
-                      className="text-white-500 cursor-pointer mr-2"
+                    <td className="border border-gray-300 px-4 py-2 text-center">
+                    <button
+                      className="bg-teal-500 text-white px-2 py-1 rounded hover:bg-teal-700"
                       onClick={() => handleSearchClick(unit_kerja_id)} // Call function to navigate to ListAllPegawai
-                    />
-                  </td>
+                    >
+                      Lihat Detail
+                    </button>
+                    </td>
                 </tr>
               ))}
             </tbody>

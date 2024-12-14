@@ -174,7 +174,7 @@ export const sidebarData: SidebarItem[] = [
     icon: FaUsers,
     children: [
       { label: "Data User", to: "/user/all", icon: FaCircle, roles: ["1"] },
-      { label: "Data Role", to: "#", icon: FaCircle, roles: ["1"] },
+      { label: "Data Role", to: "/user/roles", icon: FaCircle, roles: ["1"] },
       { label: "Hak Akess User", to: "#", icon: FaCircle, roles: ["1"] },
     ],
     roles: ["1"],
