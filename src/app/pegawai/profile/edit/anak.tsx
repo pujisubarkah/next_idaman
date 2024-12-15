@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import axios from "axios";
 
 const RiwayatAnak = () => {
   interface DataDummy {
@@ -17,37 +18,63 @@ const RiwayatAnak = () => {
     keterangan: string;
   }
 
-  const [dataDummy, setDataDummy] = useState<DataDummy[]>([]);
+  const [data, setData] = useState<DataDummy[]>([]);
+  const [nip, setNip] = useState<string | null>(null);
 
+  // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal) => {
+    const bulanIndo = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+  
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+  
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
+  
+  
   useEffect(() => {
-    // Data dummy untuk tabel (bisa diambil dari database juga)
-    setDataDummy([
-      {
-        no: 1,
-        nik: "1234567890123456",
-        namaAnak: "Ahmad Rizky",
-        jenisKelamin: "Laki-laki",
-        tempatTanggalLahir: "Jakarta, 20/08/2010",
-        statusPerkawinan: "Belum Menikah",
-        memperolehTunjangan: "Ya",
-        pendidikan: "SD Kelas 6",
-        pekerjaan: "-",
-        keterangan: "Aktif",
-      },
-      {
-        no: 2,
-        nik: "9876543210987654",
-        namaAnak: "Maya Putri",
-        jenisKelamin: "Perempuan",
-        tempatTanggalLahir: "Bandung, 15/03/2015",
-        statusPerkawinan: "Belum Menikah",
-        memperolehTunjangan: "Tidak",
-        pendidikan: "SMP Kelas 8",
-        pekerjaan: "-",
-        keterangan: "Aktif",
-      },
-    ]);
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+
+    if (nipFromUrl) {
+      // Fetch data dari API
+      fetchRiwayatAnak(nipFromUrl);
+    }
   }, []);
+
+  const fetchRiwayatAnak = async (nip: string) => {
+    try {
+      const response = await axios.get(`/api/riwayat?peg_id=${nip}&riw_status=1`);
+      const sortedData = response.data.sort((a: any, b: any) =>
+        new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()
+      );
+
+      const mappedData = sortedData.map((item: any, index: number) => ({
+        no: index + 1,
+        nik: item.nik,
+        namaAnak: item.riw_nama,
+        jenisKelamin: item.riw_kelamin === "L" ? "Laki-laki" : "Perempuan",
+        tempatTanggalLahir: `${item.riw_tempat_lahir}, ${formatTanggal(item.riw_tgl_lahir)}`,
+        statusPerkawinan: item.riw_status_perkawinan,
+        memperolehTunjangan: item.riw_status_tunj ? "Ya" : "Tidak",
+        pendidikan: item.riw_pendidikan,
+        pekerjaan: item.riw_pekerjaan,
+        keterangan: item.riw_ket,
+      }));
+
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div id="anak" className="p-8">
@@ -77,20 +104,33 @@ const RiwayatAnak = () => {
           </tr>
         </thead>
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
-              <td colSpan={11} className="text-center p-4">Data tidak ditemukan.</td>
+              <td colSpan={11} className="text-center p-4">
+                Data tidak ditemukan.
+              </td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
+            data.map((item, index) => (
+              <tr
+                key={index}
+                className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
+              >
                 <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.nik}</td>
                 <td className="p-3 border border-teal-500">{item.namaAnak}</td>
-                <td className="p-3 border border-teal-500">{item.jenisKelamin}</td>
-                <td className="p-3 border border-teal-500">{item.tempatTanggalLahir}</td>
-                <td className="p-3 border border-teal-500">{item.statusPerkawinan}</td>
-                <td className="p-3 border border-teal-500">{item.memperolehTunjangan}</td>
+                <td className="p-3 border border-teal-500">
+                  {item.jenisKelamin}
+                </td>
+                <td className="p-3 border border-teal-500">
+                  {item.tempatTanggalLahir}
+                </td>
+                <td className="p-3 border border-teal-500">
+                  {item.statusPerkawinan}
+                </td>
+                <td className="p-3 border border-teal-500">
+                  {item.memperolehTunjangan}
+                </td>
                 <td className="p-3 border border-teal-500">{item.pendidikan}</td>
                 <td className="p-3 border border-teal-500">{item.pekerjaan}</td>
                 <td className="p-3 border border-teal-500">{item.keterangan}</td>

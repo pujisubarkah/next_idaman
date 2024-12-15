@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import axios from "axios";
 
 const KontakDarurat = () => {
   interface Kontak {
@@ -15,19 +16,43 @@ const KontakDarurat = () => {
 
   const [kontakDarurat, setKontakDarurat] = useState<Kontak[]>([]);
 
-  useEffect(() => {
-    // Data dummy untuk tabel
-    setKontakDarurat([
-      {
-        no: 1,
-        nama: "Andi Rahman",
-        noTelepon: "081234567890",
-        tinggalSerumah: "Ya",
-        hubungan: "Teman Dekat",
-        alamat: "Jl. Sudirman No. 123, Jakarta",
-      },
-    ]);
-  }, []);
+ // const [data, setData] = useState<DataDummy[]>([]);
+ const [nip, setNip] = useState<string | null>(null);
+
+ useEffect(() => {
+   // Mendapatkan NIP dari URL
+   const path = window.location.pathname;
+   const segments = path.split("/"); // Memecah URL menjadi array
+   const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+   setNip(nipFromUrl);
+
+   if (nipFromUrl) {
+     // Fetch data dari API
+     fetchRiwayatKontak(nipFromUrl);
+   }
+ }, []);
+
+ const fetchRiwayatKontak = async (nip: string) => {
+   try {
+     const response = await axios.get(`/api/riwayat/kontak?peg_id=${nip}`);
+     const sortedData = response.data.sort((a: any, b: any) =>
+       new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()
+     );
+
+     const mappedData = sortedData.map((item: any, index: number) => ({
+       no: index + 1,
+       nama: item.nama,
+       noTelepon: item.no_telepon,
+       tinggalSerumah: item.tinggal_serumah ? "Ya" : "Tidak",
+       hubungan: item.hubungan,
+       alamat: item.alamat,
+     }));
+
+     setKontakDarurat(mappedData);
+   } catch (error) {
+     console.error("Error fetching data:", error);
+   }
+ };
 
   return (
     <div id="kontak" className="p-8">

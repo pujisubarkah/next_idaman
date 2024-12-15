@@ -90,7 +90,7 @@ const Datapribadi = ({ nip }: { nip: string }) => {
       }
 
       try {
-        const res = await axios.get(`/api/pegawai/idaman?peg_nip=${nip}`, {
+        const res = await axios.get(`/api/pegawai/idaman?peg_id=${nip}`, {
           headers: { "Cache-Control": "no-cache" },
         });
         const data = res.data.data.find((item) => item.peg_nip === nip);
@@ -325,9 +325,9 @@ return (
 
 
   
-const EditProfile = ({ params }: { params: { nip?: string } }) => {
+const pribadi = ({ params }: { params: { nip?: string } }) => {
   const nip = params?.nip || "";
-  const [activeTab, setActiveTab] = useState<string>(window.location.hash || "#data-pribadi");
+  const [activeTab, setActiveTab] = useState<string>(typeof window !== "undefined" ? window.location.hash || "#data-pribadi" : "#data-pribadi");
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -335,15 +335,17 @@ const EditProfile = ({ params }: { params: { nip?: string } }) => {
   };
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setActiveTab(window.location.hash || "#data-pribadi");
-    };
-
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, []);
+      if (typeof window !== "undefined") {
+        const handleHashChange = () => {
+          setActiveTab(window.location.hash || "#data-pribadi");
+        };
+  
+        window.addEventListener("hashchange", handleHashChange);
+        return () => {
+          window.removeEventListener("hashchange", handleHashChange);
+        };
+      }
+    }, []);
 
   if (!nip) {
     return <div>Error: NIP tidak ditemukan di URL.</div>;
@@ -355,10 +357,11 @@ const EditProfile = ({ params }: { params: { nip?: string } }) => {
 
       <div className="tab-content">
         {activeTab === "#data-pribadi" && <Datapribadi nip={nip} />}
+
         {/* Tambahkan konten tab lainnya di sini */}
       </div>
     </div>
   );
 };
 
-export default EditProfile;
+export default pribadi;

@@ -1,13 +1,12 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useParams } from "react-router-dom";
 
 interface Pendidikan {
+  no: number;
   tingpend_id: string;
   jurusan_id: string;
   riw_pendidikan_sttb_ijazah: string;
@@ -17,39 +16,58 @@ interface Pendidikan {
   riw_pendidikan_lokasi: string;
 }
 
-const RiwayatPendidikan = () => {
-  const { nip } = useParams<{ nip: string }>();
+const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
   const [dataPendidikan, setDataPendidikan] = useState<Pendidikan[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!nip) {
-        console.error("NIP tidak ditemukan di parameter URL.");
-        setLoading(false);
-        return;
-      }
-      console.log("Fetching data for NIP:", nip);
-      try {
-        const res = await axios.get<{ data: Pendidikan[] }>(
-          `/api/riwayat/pendidikan?peg_id=${nip}`,
-          {
-            headers: { "Cache-Control": "no-cache" },
-          }
-        );
-        const data = res.data.data;
-        if (data) {
-          setDataPendidikan(data);
-        }
-      } catch (error) {
-        console.error("Gagal memuat data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string): string => {
+    const bulanIndo = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+    ];
 
-    fetchProfileData();
-  }, [nip]);
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1];
+    if (nipFromUrl) {
+      fetchRiwayatPendidikan(nipFromUrl);
+    }
+  }, []);
+
+  const fetchRiwayatPendidikan = async (nip: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`/api/riwayat/pendidikan?peg_id=${nip}`);
+      const sortedData = response.data; // Pastikan ini sesuai dengan struktur data API
+
+      const mappedData = sortedData.map((item: any, index: number) => ({
+        no: index + 1,
+        tingpend_id: item.tingpend_id,
+        jurusan_id: item.jurusan_id,
+        riw_pendidikan_sttb_ijazah: item.riw_pendidikan_sttb_ijazah,
+        riw_pendidikan_tanggal: formatTanggal(item.riw_pendidikan_tgl),
+        riw_pendidikan_pejabat: item.riw_pendidikan_pejabat,
+        riw_pendidikan_nm: item.riw_pendidikan_nm,
+        riw_pendidikan_lokasi: item.riw_pendidikan_lokasi,
+      }));
+
+      setDataPendidikan(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div id="pendidikan" className="p-8">
@@ -89,9 +107,12 @@ const RiwayatPendidikan = () => {
               <td colSpan={9} className="text-center p-4">Data tidak ditemukan.</td>
             </tr>
           ) : (
-            dataPendidikan.map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
-                <td className="p-3 border border-teal-500">{index + 1}</td>
+            dataPendidikan.map((item) => (
+              <tr
+                key={item.no}
+                className={item.no % 2 === 0 ? "bg-teal-50" : "bg-white"}
+              >
+                <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.tingpend_id}</td>
                 <td className="p-3 border border-teal-500">{item.jurusan_id}</td>
                 <td className="p-3 border border-teal-500">{item.riw_pendidikan_sttb_ijazah}</td>
@@ -101,16 +122,10 @@ const RiwayatPendidikan = () => {
                 <td className="p-3 border border-teal-500">{item.riw_pendidikan_lokasi}</td>
                 <td className="p-3 border border-teal-500">
                   <div className="flex space-x-4">
-                    <button
-                      className="text-green-500 hover:text-green-700"
-                      aria-label="Edit"
-                    >
+                    <button className="text-green-500 hover:text-green-700" aria-label="Edit">
                       <FontAwesomeIcon icon={faEdit} /> Edit
                     </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      aria-label="Delete"
-                    >
+                    <button className="text-red-500 hover:text-red-700" aria-label="Delete">
                       <FontAwesomeIcon icon={faTrash} /> Delete
                     </button>
                   </div>

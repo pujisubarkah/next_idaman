@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import axios from "axios";
 
 const DataSaudaraLainnya = () => {
   interface DataSaudara {
@@ -18,22 +19,46 @@ const DataSaudaraLainnya = () => {
 
   const [dataSaudara, setDataSaudara] = useState<DataSaudara[]>([]);
 
+  // const [data, setData] = useState<DataDummy[]>([]);
+  const [nip, setNip] = useState<string | null>(null);
+
   useEffect(() => {
-    // Data dummy untuk tabel
-    setDataSaudara([
-      {
-        no: 1,
-        nikNip: "9876543210123456",
-        namaSaudara: "Rahmat Hidayat",
-        hubungan: "Kakak",
-        jenisKelamin: "Laki-laki",
-        tempatTanggalLahir: "Surabaya, 08/04/1985",
-        pendidikan: "S1 Teknik",
-        pekerjaan: "Insinyur",
-        keterangan: "Hidup",
-      },
-    ]);
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+
+    if (nipFromUrl) {
+      // Fetch data dari API
+      fetchRiwayatSaudara(nipFromUrl);
+    }
   }, []);
+
+  const fetchRiwayatSaudara = async (nip: string) => {
+    try {
+      const response = await axios.get(`/api/riwayat?peg_id=${nip}&riw_status=2`);
+      const sortedData = response.data.sort((a: any, b: any) =>
+        new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()
+      );
+
+      const mappedData = sortedData.map((item: any, index: number) => ({
+        no: index + 1,
+        nikNip: item.nik,
+        namaSaudara: item.riw_nama,
+        hubungan: item.riw_ket,
+        jenisKelamin: item.riw_kelamin === "L" ? "Laki-laki" : "Perempuan",
+        tempatTanggalLahir: `${item.riw_tempat_lahir}, ${item.riw_tgl_lahir}`,
+        pendidikan: item.riw_pendidikan,
+        pekerjaan: item.riw_pekerjaan,
+        keterangan: item.riw_ket,
+      }));
+
+      setDataSaudara(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div id="saudara" className="p-8">

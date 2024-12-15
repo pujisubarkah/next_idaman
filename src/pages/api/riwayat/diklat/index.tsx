@@ -9,22 +9,21 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: "'peg_id' parameter is required" });
         }
 
-        // Query dengan join antar tabel spg_riwayat_pendidikan dan spg_pegawai, serta filter berdasarkan peg_id
-        const { data, error } = await supabase
-            .schema('siap')
-            .from('spg_riwayat_pendidikan')
-            .select(`
-                *, 
-                spg_pegawai(peg_nip)  // Ambil kolom peg_nip dari tabel spg_pegawai
-            `)
-            .eq('peg_id', peg_id); // Filter berdasarkan peg_id
+    // Filter untuk riw_status NOT IN (1, 2, 3, 4)
+    const { data, error } = await supabase
+        .schema('siap')
+        .from('spg_riwayat_diklat')
+        .select('*')
+        .eq('peg_id', peg_id) // Filter berdasarkan peg_id
+      
+           
 
         if (error) {
             throw error;
         }
 
         if (data.length === 0) {
-            return res.status(404).json({ error: "No data found for the given peg_id" });
+            return res.status(404).json({ error: "No data found for the given parameters" });
         }
 
         // Kirimkan data gabungan ke client

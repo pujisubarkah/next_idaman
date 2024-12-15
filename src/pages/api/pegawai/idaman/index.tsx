@@ -3,7 +3,7 @@ import { supabase } from '../../../../../lib/supabaseClient'; // Ensure the corr
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { peg_nip, page = 1, itemsPerPage = 10 } = req.query;
+    const { peg_id, page = 1, itemsPerPage = 10 } = req.query;
 
     console.log('Request received at /api/pegawai'); // Debugging log
 
@@ -15,8 +15,8 @@ export default async function handler(req, res) {
         .select('*', { count: 'exact' });
 
       // Apply filter if `peg_nip` is provided
-      if (peg_nip) {
-        query = query.eq('peg_nip', peg_nip);
+      if (peg_id) {
+        query = query.eq('peg_id', peg_id);
       }
 
       // Order by `peg_nama_lengkap` alphabetically
