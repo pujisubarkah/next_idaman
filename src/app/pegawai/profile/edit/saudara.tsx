@@ -22,6 +22,22 @@ const DataSaudaraLainnya = () => {
   // const [data, setData] = useState<DataDummy[]>([]);
   const [nip, setNip] = useState<string | null>(null);
 
+// Fungsi untuk memformat tanggal
+const formatTanggal = (tanggal) => {
+  const bulanIndo = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+
+  const date = new Date(tanggal);
+  const hari = date.getDate();
+  const bulan = bulanIndo[date.getMonth()];
+  const tahun = date.getFullYear();
+
+  return `${hari} - ${bulan} - ${tahun}`;
+};
+
+
   useEffect(() => {
     // Mendapatkan NIP dari URL
     const path = window.location.pathname;
@@ -48,7 +64,7 @@ const DataSaudaraLainnya = () => {
         namaSaudara: item.riw_nama,
         hubungan: item.riw_ket,
         jenisKelamin: item.riw_kelamin === "L" ? "Laki-laki" : "Perempuan",
-        tempatTanggalLahir: `${item.riw_tempat_lahir}, ${item.riw_tgl_lahir}`,
+        tempatTanggalLahir: `${item.riw_tempat_lahir},  ${formatTanggal(item.riw_tgl_lahir)}`,
         pendidikan: item.riw_pendidikan,
         pekerjaan: item.riw_pekerjaan,
         keterangan: item.riw_ket,
