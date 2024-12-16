@@ -1,9 +1,8 @@
 
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faDownload, faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios"; // Pastikan axios diimpor
 
 const ListDocuments = () => {
   interface Document {
@@ -15,52 +14,65 @@ const ListDocuments = () => {
   }
 
   // Struktur data untuk setiap kategori dokumen
-  const [documentCategories, setDocumentCategories] = useState<
-    { category: string; documents: Document[] }[]
-  >([]);
+  const [documentCategories, setDocumentCategories] = useState<{
+    category: string;
+    documents: Document[];
+  }[]>([]);
+
+  const [nip, setNip] = useState<string | null>(null);
+
+  // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string | null) => {
+    if (!tanggal) {
+      return ""; // Kembalikan string kosong jika tanggal null atau undefined
+    }
+  
+    const bulanIndo = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+  
+    const date = new Date(tanggal);
+    
+    // Cek jika tanggal yang diterima adalah tanggal invalid
+    if (isNaN(date.getTime())) {
+      return ""; // Kembalikan string kosong jika tanggal tidak valid
+    }
+  
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+  
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
+  
 
   useEffect(() => {
-    // Simulasi data
-    const fetchData = async () => {
-      const data = [
-        {
-          category: "DOKUMEN PRIBADI",
-          documents: [
-            {
-              id: 1,
-              namaFile: "Dokumen1.pdf",
-              fileUrl: "/files/dokumen1.pdf",
-              keterangan: "Surat Penting",
-              tanggalUpload: "2024-12-08",
-            },
-            {
-              id: 2,
-              namaFile: "Dokumen2.docx",
-              fileUrl: "/files/dokumen2.docx",
-              keterangan: "Laporan Keuangan",
-              tanggalUpload: "2024-12-07",
-            },
-          ],
-        },
-        {
-          category: "PEMBERHENTIAN",
-          documents: [
-            {
-              id: 3,
-              namaFile: "Dokumen3.pdf",
-              fileUrl: "/files/dokumen3.pdf",
-              keterangan: "SK Pensiun",
-              tanggalUpload: "2024-12-06",
-            },
-          ],
-        },
-        // Tambahkan kategori lainnya di sini...
-      ];
-      setDocumentCategories(data);
-    };
+    const path = window.location.pathname;
+    const segments = path.split("/"); 
+    const nipFromUrl = segments[segments.length - 1]; 
+    setNip(nipFromUrl);
 
-    fetchData();
+    if (nipFromUrl) {
+      fetchfilepegawai(nipFromUrl);
+    }
   }, []);
+
+  const fetchfilepegawai = async (nip: string) => {
+    try {
+      const response = await axios.get(`/api/file_pegawai?peg_id=${nip}`);
+      const sortedData = response.data;
+
+      const mappedData = sortedData.map((item: any, index: number) => ({
+        category: item.category_name,
+        documents: item.documents || [],
+      }));
+
+      setDocumentCategories(mappedData); // Menggunakan setDocumentCategories untuk menyimpan data
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   // Handlers untuk aksi tombol
   const handleViewFile = (fileUrl: string) => window.open(fileUrl, "_blank");
@@ -119,7 +131,7 @@ const ListDocuments = () => {
                       </a>
                     </td>
                     <td className="p-3 border border-teal-500">{doc.keterangan}</td>
-                    <td className="p-3 border border-teal-500">{doc.tanggalUpload}</td>
+                    <td className="p-3 border border-teal-500">{formatTanggal(doc.tanggalUpload)}</td>
                     <td className="p-3 border border-teal-500">
                       <div className="flex space-x-4">
                         <button

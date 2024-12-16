@@ -2,11 +2,12 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const RiwayatPelatihanFungsional = () => {
+const RiwayatPelatihanTeknis = () => {
 const dataDummy = [
     {
         id: 1,
         nama: "Pelatihan Teknis",
+        lainnya : "Pelatihan Teknis Lainnya",
         tanggalMulai: "01-01-2023",
         tanggalSelesai: "10-01-2023",
         jumlahJam: 40,
@@ -19,9 +20,9 @@ const dataDummy = [
 ];
 
   return (
-    <div id="pelatihan-fungsional" className="p-4">
+    <div id="pelatihan-teknis" className="p-4">
       <h3 className="text-center text-xl font-semibold my-8">
-        Riwayat Pelatihan Fungsional
+        Riwayat Pelatihan Teknis
       </h3>
 
       <div className="flex justify-end mb-4">
@@ -35,7 +36,10 @@ const dataDummy = [
           <tr className="text-sm uppercase">
             <th className="p-3 border border-teal-500" rowSpan={2}>No</th>
             <th className="p-3 border border-teal-500" rowSpan={2}>
-              Nama Pelatihan Fungsional
+              Nama Pelatihan Teknis
+            </th>
+            <th className="p-3 border border-teal-500" colSpan={2}>
+              Nama Teknis Lainnya
             </th>
             <th className="p-3 border border-teal-500" colSpan={2}>
               Tanggal
@@ -75,6 +79,7 @@ const dataDummy = [
               >
                 <td className="p-3 border border-teal-500">{index + 1}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
+                <td className="p-3 border border-teal-500">{item.lainnya}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
                 <td className="p-3 border border-teal-500">{item.jumlahJam}</td>
@@ -108,4 +113,4 @@ const dataDummy = [
   );
 };
 
-export default RiwayatPelatihanFungsional;
+export default RiwayatPelatihanTeknis;

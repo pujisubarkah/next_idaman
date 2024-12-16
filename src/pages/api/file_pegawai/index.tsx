@@ -1,108 +1,99 @@
 import { supabase } from '../../../../lib/supabaseClient'; // Pastikan path sudah benar
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    const { page = 1, itemsPerPage = 10, parent_id, peg_id } = req.query;
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-    try {
-      // Query utama untuk mengambil data dari tabel m_spg_file_pegawai_ref
-      let query = supabase
-  .schema('siap')
-  .from('m_spg_file_pegawai_ref')
-  .select(`
-    id,
-    file_nama,
-    parent_id,
-    spg_file_pegawai:m_spg_file_pegawai_id (
-      file_id,
-      file_nama,
-      file_lokasi,
-      file_ket,
-      file_tgl
-    )
-  `, { count: 'exact' })
-  .order('id', { ascending: true });
+  try {
+    // Ambil `peg_id` dari query parameter
+    const { peg_id } = req.query;
 
-
-      // Tambahkan filter berdasarkan parent_id
-      if (parent_id) {
-        query = query.eq('parent_id', parent_id);
-      }
-
-      // Filter berdasarkan peg_id di dalam tabel relasi spg_file_pegawai
-      if (peg_id) {
-        query = query.contains('spg_file_pegawai', { peg_id });
-      }
-
-      // Pagination
-      const { data, error, count } = await query.range(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage - 1
-      );
-
-      if (error) {
-        console.error('Error fetching data:', error);
-        return res.status(500).json({ error: error.message });
-      }
-
-      if (!data || data.length === 0) {
-        return res.status(404).json({ message: 'Data not found' });
-      }
-
-      // Jika ada parent_id, tambahkan kategori berdasarkan parent_id
-      const parentIds = data.map(item => item.parent_id).filter(Boolean);
-      const { data: parentData, error: parentError } = await supabase
-        .schema('siap')
-        .from('m_spg_file_pegawai_ref')
-        .select('id, file_nama')
-        .in('id', parentIds);
-
-      if (parentError) {
-        console.error('Error fetching parent data:', parentError);
-        return res.status(500).json({ error: parentError.message });
-      }
-
-      // Buat mapping parent_id ke file_nama
-      const parentMap = parentData.reduce((map, parent) => {
-        map[parent.id] = parent.file_nama;
-        return map;
-      }, {});
-
-      // Format data akhir menjadi struktur category dan documents
-      const categorizedData = data.reduce((acc: { category: string, documents: any[] }[], item) => {
-        const categoryName = item.parent_id ? parentMap[item.parent_id] || 'Tidak Diketahui' : 'Tidak Diketahui';
-        const documents = (item.spg_file_pegawai || []).map(doc => ({
-          id: doc.id,
-          namaFile: doc.file_nama,
-          fileUrl: doc.file_lokasi,
-          keterangan: doc.file_ket,
-          tanggalUpload: doc.file_tgl,
-        }));
-
-        // Tambahkan ke kategori
-        const categoryIndex = acc.findIndex(cat => cat.category === categoryName);
-        if (categoryIndex >= 0) {
-          acc[categoryIndex].documents.push(...documents);
-        } else {
-          acc.push({
-            category: categoryName,
-            documents,
-          });
-        }
-
-        return acc;
-      }, []);
-
-      return res.status(200).json({
-        data: categorizedData,
-        totalItems: count || 0,
-      });
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+    // Validasi jika `peg_id` tidak diberikan
+    if (!peg_id) {
+      return res.status(400).json({ message: 'peg_id is required' });
     }
-  } else {
-    res.setHeader('Allow', ['GET']);
-    return res.status(405).json({ error: 'Method Not Allowed' });
+
+    // Ambil data dokumen dari tabel dengan filter `peg_id`
+    const { data, error } = await supabase
+      .schema('siap') // Pastikan nama schema benar
+      .from('spg_file_pegawai')
+      .select(`
+        peg_id,
+        file_nama,
+        file_lokasi,
+        file_ket,
+        file_tgl,
+        m_spg_file_pegawai_ref (
+          id,
+          parent_id
+        )
+      `)
+      .eq('peg_id', peg_id) // Filter berdasarkan peg_id
+      .order('m_spg_file_pegawai_id', { ascending: true }); // Urutkan berdasarkan id pada tabel spg_file_pegawai
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return res.status(200).json([]);
+    }
+
+    // Ambil semua parent_id yang ada pada data untuk mendapatkan file_nama dari m_spg_file_pegawai_ref
+    const parentIds = data
+      .map((item: any) => item.m_spg_file_pegawai_ref?.parent_id)
+      .filter((id: any) => id !== null && id !== 'null'); // Pastikan tidak ada "null" string yang terlibat
+
+    // Ambil data file_nama dari tabel m_spg_file_pegawai_ref berdasarkan parent_id
+    const { data: parentData, error: parentError } = await supabase
+      .schema('siap') // Pastikan nama schema benar
+      .from('m_spg_file_pegawai_ref')
+      .select('id, file_nama')
+      .in('id', parentIds); // Ambil file_nama yang sesuai dengan parent_id
+
+    if (parentError) {
+      throw parentError;
+    }
+
+    // Pemetaan parent_id ke file_nama
+    const parentMapping = parentData?.reduce((acc: any, item: any) => {
+      acc[item.id] = item.file_nama; // Menggunakan id sebagai kunci dan file_nama sebagai nilai
+      return acc;
+    }, {});
+
+    // Kelompokkan dokumen berdasarkan kategori (parent_id dari m_spg_file_pegawai_ref)
+    const groupedData = data.reduce((acc: any, item: any) => {
+      const parentId = item.m_spg_file_pegawai_ref?.parent_id;
+      const categoryName = parentMapping[parentId] || 'Lain - lain'; // Gunakan file_nama sebagai kategori
+
+      const document = {
+        peg_id: item.peg_id,
+        namaFile: item.file_nama,
+        fileUrl: item.file_lokasi,
+        keterangan: item.file_ket, 
+        tanggalUpload: item.file_tgl,
+        
+      };
+
+      if (!acc[categoryName]) {
+        acc[categoryName] = {
+          category_name: categoryName,
+          documents: [],
+        };
+      }
+
+      acc[categoryName].documents.push(document);
+      return acc;
+    }, {});
+
+    // Ubah objek menjadi array
+    const result = Object.values(groupedData);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ message: error.message });
   }
 }
