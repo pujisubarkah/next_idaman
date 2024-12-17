@@ -6,7 +6,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const PrediksiPangkat = () => {
-    const [data, setData] = useState([]);
+    interface DataItem {
+        peg_nama_lengkap: string;
+        peg_nip: string;
+        satuan_kerja_nama: string;
+        unit_kerja_nama: string;
+        gol_akhir: string;
+        peg_gol_akhir_tmt: string;
+        jabatan_nama: string;
+    }
+    
+    const [data, setData] = useState<DataItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [entriesPerPage, setEntriesPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);

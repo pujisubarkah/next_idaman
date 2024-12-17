@@ -9,7 +9,7 @@ import axios from "axios";
 
 // Helper functions
 const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    const options = { year: 'numeric' as const, month: 'long' as const, day: 'numeric' as const };
     return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
@@ -18,15 +18,26 @@ const calculateRetirementDate = (birthDate, retirementAge) => {
     return new Date(birth.setFullYear(birth.getFullYear() + retirementAge));
 };
 
+interface Pegawai {
+    peg_nama_lengkap: string;
+    peg_nip: string;
+    peg_lahir_tanggal: string;
+    satuan_kerja_nama: string;
+    unit_kerja_nama: string;
+    gol_akhir: string;
+    jabatan_nama: string;
+    pegawai_umur_pensiun: number;
+}
+
 const Prediksi = () => {
     // States
-    const [pegawai, setPegawai] = useState([]);
+    const [pegawai, setPegawai] = useState<Pegawai[]>([]);
     const [totalItems, setTotalItems] = useState(0);
     const [selectedYear, setSelectedYear] = useState(new Date());
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState("");
-    const [satuanKerjaList, setSatuanKerjaList] = useState([]);
+    const [satuanKerjaList, setSatuanKerjaList] = useState<string[]>([]);
 
     // Fetch data from API
     useEffect(() => {
@@ -41,12 +52,12 @@ const Prediksi = () => {
                     },
                 });
 
-                const { data, totalItems } = response.data;
+                const { data, totalItems } = response.data as { data: Pegawai[], totalItems: number };
                 setPegawai(data || []);
                 setTotalItems(totalItems);
 
                 // Extract unique satuan kerja names
-                const uniqueSatuanKerja = [...new Set(data.map((item) => item.satuan_kerja_nama))];
+                const uniqueSatuanKerja: string[] = [...new Set(data.map((item) => item.satuan_kerja_nama))];
                 setSatuanKerjaList(uniqueSatuanKerja);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -137,7 +148,7 @@ const Prediksi = () => {
                                 <td className="p-3 border border-teal-500">{pegawaiItem.peg_nama_lengkap}</td>
                                 <td className="p-3 border border-teal-500">{pegawaiItem.peg_nip}</td>
                                 <td className="p-3 border border-teal-500">{formatDate(pegawaiItem.peg_lahir_tanggal)}</td>
-                                <td className="p-3 border border-teal-500">{pegawaiItem.nm_satuan_kerja}</td>
+                                <td className="p-3 border border-teal-500">{pegawaiItem.satuan_kerja_nama}</td>
                                 <td className="p-3 border border-teal-500">{pegawaiItem.unit_kerja_nama}</td>
                                 <td className="p-3 border border-teal-500">{pegawaiItem.gol_akhir}</td>
                                 <td className="p-3 border border-teal-500">{pegawaiItem.jabatan_nama}</td>
