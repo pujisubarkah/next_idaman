@@ -14,8 +14,7 @@ export default async function handler(req, res) {
         .from('view_data_pegawai')
         .select('*', { count: 'exact' });
 
-      // Filter by peg_status = true
-      query = query.eq('peg_status', true);
+    
 
       // Filter by searchQuery if available
       if (searchQuery) {

@@ -1,22 +1,98 @@
-import React from "react";
+"use client";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RiwayatPelatihanFungsional = () => {
-const dataDummy = [
-    {
-        id: 1,
-        nama: "Pelatihan Teknis",
-        tanggalMulai: "01-01-2023",
-        tanggalSelesai: "10-01-2023",
-        jumlahJam: 40,
-        nomorSTTP: "STTP-001",
-        tanggalSTTP: "11-01-2023",
-        jabatanPenandatangan: "Direktur Pelatihan",
-        instansi: "Instansi Pelatihan B",
-        lokasi: "Bandung"
+  // Definisi tipe data untuk state
+  interface PelatihanFungsional {
+    no: number;
+    kategori: string;
+    nama: string;
+    tanggalMulai: string;
+    tanggalSelesai: string;
+    jumlahJam: string;
+    nomorSTTP: string;
+    tanggalSTTP: string;
+    jabatanPenandatangan: string;
+    instansi: string;
+    lokasi: string;
+  }
+
+  const [data, setData] = useState<PelatihanFungsional[]>([]);
+  const [nip, setNip] = useState<string | null>(null);
+
+  // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string): string => {
+    const bulanIndo = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+
+    return `${hari} ${bulan} ${tahun}`;
+  };
+
+  useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+
+    if (nipFromUrl) {
+      // Fetch data dari API
+      fetchRiwayatPelatihan(nipFromUrl);
     }
-];
+  }, []);
+
+  const fetchRiwayatPelatihan = async (nip: string) => {
+    try {
+      const response = await axios.get(
+        `api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`
+      );
+      const sortedData = response.data.sort(
+        (a: any, b: any) =>
+          new Date(a.diklat_mulai).getTime() -
+          new Date(b.diklat_mulai).getTime()
+      );
+
+      const mappedData: PelatihanFungsional[] = sortedData.map(
+        (item: any, index: number) => ({
+          no: index + 1,
+          kategori: item.m_spg_diklat_jenis.diklat_jenis_nama,
+          nama: item.m_spg_diklat_struk_kategori.kategori_nama,
+          tanggalMulai: formatTanggal(item.diklat_mulai),
+          tanggalSelesai: formatTanggal(item.diklat_selesai),
+          jumlahJam: item.diklat_jumlah_jam,
+          nomorSTTP: item.diklat_sttp_no,
+          tanggalSTTP: formatTanggal(item.diklat_sttp_tgl),
+          jabatanPenandatangan: item.diklat_sttp_pej,
+          instansi: item.diklat_penyelenggara,
+          lokasi: item.diklat_tempat,
+        })
+      );
+
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div id="pelatihan-fungsional" className="p-4">
@@ -61,16 +137,16 @@ const dataDummy = [
         </thead>
 
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={12} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr
-                key={item.id}
+                key={index}
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
                 <td className="p-3 border border-teal-500">{index + 1}</td>

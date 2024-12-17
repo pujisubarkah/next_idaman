@@ -8,7 +8,7 @@ const ListDocuments = () => {
   interface Document {
     id: number;
     namaFile: string;
-    fileUrl: string;
+    fileUrl: string | null; // File URL dapat null
     keterangan: string;
     tanggalUpload: string;
   }
@@ -26,31 +26,30 @@ const ListDocuments = () => {
     if (!tanggal) {
       return ""; // Kembalikan string kosong jika tanggal null atau undefined
     }
-  
+
     const bulanIndo = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
-  
+
     const date = new Date(tanggal);
-    
+
     // Cek jika tanggal yang diterima adalah tanggal invalid
     if (isNaN(date.getTime())) {
       return ""; // Kembalikan string kosong jika tanggal tidak valid
     }
-  
+
     const hari = date.getDate();
     const bulan = bulanIndo[date.getMonth()];
     const tahun = date.getFullYear();
-  
+
     return `${hari} - ${bulan} - ${tahun}`;
   };
-  
 
   useEffect(() => {
-    const path = window.location.pathname;
-    const segments = path.split("/"); 
-    const nipFromUrl = segments[segments.length - 1]; 
+    const path = window.location?.pathname || "";
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1] || "";
     setNip(nipFromUrl);
 
     if (nipFromUrl) {
@@ -68,20 +67,27 @@ const ListDocuments = () => {
         documents: item.documents || [],
       }));
 
-      setDocumentCategories(mappedData); // Menggunakan setDocumentCategories untuk menyimpan data
+      setDocumentCategories(mappedData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   // Handlers untuk aksi tombol
-  const handleViewFile = (fileUrl: string) => window.open(fileUrl, "_blank");
+  const handleViewFile = (fileUrl: string | null) => {
+    if (fileUrl) window.open(fileUrl, "_blank");
+    else alert("File tidak tersedia.");
+  };
 
-  const handleDownloadFile = (fileUrl: string) => {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = fileUrl.split("/").pop()!;
-    link.click();
+  const handleDownloadFile = (fileUrl: string | null) => {
+    if (fileUrl) {
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = fileUrl.split("/").pop()!;
+      link.click();
+    } else {
+      alert("File tidak tersedia.");
+    }
   };
 
   const handleDeleteFile = (id: number) => {
@@ -122,12 +128,12 @@ const ListDocuments = () => {
                     <td className="p-3 border border-teal-500">{doc.namaFile}</td>
                     <td className="p-3 border border-teal-500">
                       <a
-                        href={doc.fileUrl}
+                        href={doc.fileUrl || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className={doc.fileUrl ? "text-blue-600 hover:underline" : "text-gray-400 cursor-not-allowed"}
                       >
-                        {doc.fileUrl.split("/").pop()}
+                        {doc.fileUrl ? doc.fileUrl.split("/").pop() : "File tidak tersedia"}
                       </a>
                     </td>
                     <td className="p-3 border border-teal-500">{doc.keterangan}</td>

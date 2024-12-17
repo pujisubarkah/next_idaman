@@ -1,23 +1,99 @@
-import React from "react";
+
+"use client";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RiwayatPelatihanStruktural = () => {
-  const dataDummy = [
-    {
-      id: 1,
-      kategori: "Manajerial",
-      nama: "Pelatihan Kepemimpinan",
-      tanggalMulai: "01-01-2023",
-      tanggalSelesai: "10-01-2023",
-      jumlahJam: 40,
-      nomorSTTP: "STTP-001",
-      tanggalSTTP: "11-01-2023",
-      jabatanPenandatangan: "Direktur Pelatihan",
-      instansi: "Instansi Pelatihan A",
-      lokasi: "Jakarta"
+  // Definisi tipe data untuk state
+  interface PelatihanStruktural {
+    no: number;
+    kategori: string;
+    nama: string;
+    tanggalMulai: string;
+    tanggalSelesai: string;
+    jumlahJam: string;
+    nomorSTTP: string;
+    tanggalSTTP: string;
+    jabatanPenandatangan: string;
+    instansi: string;
+    lokasi: string;
+  }
+
+  const [data, setData] = useState<PelatihanStruktural[]>([]);
+  const [nip, setNip] = useState<string | null>(null);
+
+  // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string): string => {
+    const bulanIndo = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+
+    return `${hari} ${bulan} ${tahun}`;
+  };
+
+  useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+
+    if (nipFromUrl) {
+      // Fetch data dari API
+      fetchRiwayatPelatihan(nipFromUrl);
     }
-  ];
+  }, []);
+
+  const fetchRiwayatPelatihan = async (nip: string) => {
+    try {
+      const response = await axios.get(
+        `/api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`
+      );
+      const sortedData = response.data.sort(
+        (a: any, b: any) =>
+          new Date(a.diklat_mulai).getTime() -
+          new Date(b.diklat_mulai).getTime()
+      );
+
+      const mappedData: PelatihanStruktural[] = sortedData.map(
+        (item: any, index: number) => ({
+          no: index + 1,
+          kategori: item.m_spg_diklat_jenis.diklat_jenis_nama,
+          nama: item.m_spg_diklat_struk_kategori.kategori_nama,
+          tanggalMulai: formatTanggal(item.diklat_mulai),
+          tanggalSelesai: formatTanggal(item.diklat_selesai),
+          jumlahJam: item.diklat_jumlah_jam,
+          nomorSTTP: item.diklat_sttp_no,
+          tanggalSTTP: formatTanggal(item.diklat_sttp_tgl),
+          jabatanPenandatangan: item.diklat_sttp_pej,
+          instansi: item.diklat_penyelenggara,
+          lokasi: item.diklat_tempat,
+        })
+      );
+
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div id="pelatihan-struktural" className="p-4">
@@ -34,21 +110,27 @@ const RiwayatPelatihanStruktural = () => {
       <table className="w-full border border-teal-600 rounded-lg overflow-hidden">
         <thead className="bg-teal-900 text-white">
           <tr className="text-sm uppercase">
-            <th className="p-3 border border-teal-500" rowSpan={2}>No</th>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              No
+            </th>
             <th className="p-3 border border-teal-500" colSpan={2}>
               Pelatihan Struktural
             </th>
             <th className="p-3 border border-teal-500" colSpan={2}>
               Tanggal
             </th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Jumlah Jam</th>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Jumlah Jam
+            </th>
             <th className="p-3 border border-teal-500" colSpan={3}>
               STTP
             </th>
             <th className="p-3 border border-teal-500" colSpan={2}>
               Instansi Penyelenggara
             </th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Pilihan</th>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Pilihan
+            </th>
           </tr>
           <tr className="bg-teal-900 text-white text-sm">
             <th className="p-3 border border-teal-500">Kategori</th>
@@ -57,34 +139,44 @@ const RiwayatPelatihanStruktural = () => {
             <th className="p-3 border border-teal-500">Selesai</th>
             <th className="p-3 border border-teal-500">Nomor</th>
             <th className="p-3 border border-teal-500">Tanggal</th>
-            <th className="p-3 border border-teal-500">Jabatan Penandatangan</th>
+            <th className="p-3 border border-teal-500">
+              Jabatan Penandatangan
+            </th>
             <th className="p-3 border border-teal-500">Instansi</th>
             <th className="p-3 border border-teal-500">Lokasi</th>
           </tr>
         </thead>
 
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={12} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr
-                key={item.id}
+                key={index}
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
-                <td className="p-3 border border-teal-500">{index + 1}</td>
+                <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.kategori}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
-                <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
-                <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
+                <td className="p-3 border border-teal-500">
+                  {item.tanggalMulai}
+                </td>
+                <td className="p-3 border border-teal-500">
+                  {item.tanggalSelesai}
+                </td>
                 <td className="p-3 border border-teal-500">{item.jumlahJam}</td>
                 <td className="p-3 border border-teal-500">{item.nomorSTTP}</td>
-                <td className="p-3 border border-teal-500">{item.tanggalSTTP}</td>
-                <td className="p-3 border border-teal-500">{item.jabatanPenandatangan}</td>
+                <td className="p-3 border border-teal-500">
+                  {item.tanggalSTTP}
+                </td>
+                <td className="p-3 border border-teal-500">
+                  {item.jabatanPenandatangan}
+                </td>
                 <td className="p-3 border border-teal-500">{item.instansi}</td>
                 <td className="p-3 border border-teal-500">{item.lokasi}</td>
                 <td className="p-3 border border-teal-500">

@@ -50,7 +50,10 @@ const dataDummy = [
           
             <th className="p-3 border border-teal-500" rowSpan={2}>Pilihan</th>
           </tr>
-          
+          <tr>
+            <th className="p-3 border border-teal-500">Mulai</th>
+            <th className="p-3 border border-teal-500">Selesai</th>
+            </tr>
         </thead>
 
         <tbody>
@@ -74,7 +77,7 @@ const dataDummy = [
                 <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
                 <td className="p-3 border border-teal-500">{item.Nilai}</td>
-                <td className="p-3 border border-teal-500">{item.nomorsurat}</td>
+             
                 <td className="p-3 border border-teal-500">
                   <div className="flex space-x-4">
                     <button

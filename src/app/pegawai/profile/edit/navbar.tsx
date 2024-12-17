@@ -26,13 +26,21 @@ const Navbar = () => {
         { label: "Pendidikan", link: "#pendidikan" },
         { label: "Pelatihan Struktural", link: "#pelatihan-struktural" },
         { label: "Pelatihan Fungsional", link: "#pelatihan-fungsional" },
+        { label: "Pelatihan Teknis", link: "#pelatihan-teknis" },
+        { label: "Pelatihan Klasikal", link: "#pelatihan-klasikal" },
+        { label: "Pelatihan Non Klasikal", link: "#pelatihan-Non-klasikal" },
+        { label: "Sertifikasi", link: "#sertifikasi" },
+       
       ],
     },
     {
       label: "Riwayat SDM",
       subMenu: [
         { label: "Riwayat Jabatan", link: "#jabatan" },
+        { label: "Riwayat PLT/PLH", link: "#pltplh" },
         { label: "Riwayat Kepangkatan", link: "#kepangkatan" },
+        { label: "Riwayat KGB", link: "#kgb" },
+        { label: "Riwayat Cuti", link: "#cuti" },
       ],
     },
     {
@@ -40,6 +48,9 @@ const Navbar = () => {
       subMenu: [
         { label: "Sasaran Kerja", link: "#" },
         { label: "Penghargaan", link: "#penghargaan" },
+        { label: "Publikasi", link: "#publikasi" },
+        { label: "Tim Kerja", link: "#timkerja" },
+        { label: "Prestasi", link: "#prestasi" },
       ],
     },
     {

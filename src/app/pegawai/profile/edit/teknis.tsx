@@ -48,7 +48,7 @@ const dataDummy = [
             <th className="p-3 border border-teal-500" colSpan={3}>
               STTP
             </th>
-            <th className="p-3 border border-teal-500" colSpan={2}>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
               Instansi Penyelenggara
             </th>
             <th className="p-3 border border-teal-500" rowSpan={2}>Pilihan</th>

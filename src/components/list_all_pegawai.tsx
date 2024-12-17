@@ -172,19 +172,23 @@ const ListPegawai = () => {
           </thead>
           <tbody>
             
-          {pegawai.map(({ peg_nama_lengkap, peg_lahir_tanggal, peg_lahir_tempat, peg_nip, gol_akhir, peg_gol_akhir_tmt, jabatan_nama, peg_jabatan_tmt, status_pegawai, peg_pns_tmt, masa_kerja_tahun, masa_kerja_bulan }, index) => (
+          {pegawai.map(({ peg_nama_lengkap, peg_lahir_tanggal, peg_lahir_tempat, peg_nip, gol_akhir, peg_gol_akhir_tmt, jabatan_nama, peg_jabatan_tmt, peg_status, peg_ketstatus, peg_pns_tmt, masa_kerja_tahun, masa_kerja_bulan }, index) => (
               <tr key={index}  className={index % 2 === 0 ? "bg-teal-50" : "bg-white"} // Memeriksa apakah baris ganjil atau genap
               >
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
-                  {peg_nama_lengkap} {peg_lahir_tempat} , 
-                  {formatDate(peg_lahir_tanggal) || "Tanggal Tidak Tersedia"}
-                </td>
+               <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">
+            <div>
+              <div>{peg_nama_lengkap}</div> {/* Nama di atas */}
+                <div>
+                  {peg_lahir_tempat}, {formatDate(peg_lahir_tanggal) || "Tanggal Tidak Tersedia"} {/* Tempat dan tanggal lahir di bawah */}
+                </div>
+              </div>
+            </td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{peg_nip}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{gol_akhir}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_gol_akhir_tmt) || "Tanggal Tidak Tersedia"}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{jabatan_nama}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_jabatan_tmt) || "Tanggal Tidak Tersedia"}</td>
-                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{status_pegawai}</td>
+                <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{peg_status ? "Aktif" : `Tidak Aktif (${peg_ketstatus || "Tanpa Keterangan"})`}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{formatDate(peg_pns_tmt) || "Tanggal Tidak Tersedia"}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_tahun}</td>
                 <td className="p-3 border border-teal-500 text-left font-bold uppercase text-sm">{masa_kerja_bulan}</td>
