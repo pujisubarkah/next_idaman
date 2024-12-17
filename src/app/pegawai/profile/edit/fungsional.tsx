@@ -48,19 +48,6 @@ const RiwayatPelatihanFungsional = () => {
     return `${hari} ${bulan} ${tahun}`;
   };
 
-  useEffect(() => {
-    // Mendapatkan NIP dari URL
-    const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
-    setNip(nipFromUrl);
-
-    if (nipFromUrl) {
-      // Fetch data dari API
-      fetchRiwayatPelatihan(nipFromUrl);
-    }
-  }, []);
-
   const fetchRiwayatPelatihan = async (nip: string) => {
     try {
       const response = await axios.get(
@@ -93,6 +80,12 @@ const RiwayatPelatihanFungsional = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  useEffect(() => {
+    if (nip) {
+      fetchRiwayatPelatihan(nip);
+    }
+  }, [nip]);
 
   return (
     <div id="pelatihan-fungsional" className="p-4">

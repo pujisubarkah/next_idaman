@@ -337,7 +337,7 @@ return (
 
 
   
-const pribadi = ({ params }: { params: { nip?: string } }) => {
+const PribadiComponent = ({ params }: { params: { nip?: string } }) => {
   const nip = params?.nip || "";
   const [activeTab, setActiveTab] = useState<string>(typeof window !== "undefined" ? window.location.hash || "#data-pribadi" : "#data-pribadi");
 
@@ -376,4 +376,4 @@ const pribadi = ({ params }: { params: { nip?: string } }) => {
   );
 };
 
-export default pribadi;
+export default PribadiComponent;

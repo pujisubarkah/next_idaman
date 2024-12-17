@@ -37,19 +37,6 @@ const RiwayatAnak = () => {
   };
   
   
-  useEffect(() => {
-    // Mendapatkan NIP dari URL
-    const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
-    setNip(nipFromUrl);
-
-    if (nipFromUrl) {
-      // Fetch data dari API
-      fetchRiwayatAnak(nipFromUrl);
-    }
-  }, []);
-
   const fetchRiwayatAnak = async (nip: string) => {
     try {
       const response = await axios.get(`/api/riwayat?peg_id=${nip}&riw_status=1`);
@@ -75,6 +62,19 @@ const RiwayatAnak = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+
+    if (nipFromUrl) {
+      // Fetch data dari API
+      fetchRiwayatAnak(nipFromUrl);
+    }
+  }, [fetchRiwayatAnak]);
 
   return (
     <div id="anak" className="p-8">

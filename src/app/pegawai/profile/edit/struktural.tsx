@@ -49,19 +49,6 @@ const RiwayatPelatihanStruktural = () => {
     return `${hari} ${bulan} ${tahun}`;
   };
 
-  useEffect(() => {
-    // Mendapatkan NIP dari URL
-    const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
-    setNip(nipFromUrl);
-
-    if (nipFromUrl) {
-      // Fetch data dari API
-      fetchRiwayatPelatihan(nipFromUrl);
-    }
-  }, []);
-
   const fetchRiwayatPelatihan = async (nip: string) => {
     try {
       const response = await axios.get(
@@ -94,6 +81,19 @@ const RiwayatPelatihanStruktural = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+
+    if (nipFromUrl) {
+      // Fetch data dari API
+      fetchRiwayatPelatihan(nipFromUrl);
+    }
+  }, [fetchRiwayatPelatihan]);
 
   return (
     <div id="pelatihan-struktural" className="p-4">
