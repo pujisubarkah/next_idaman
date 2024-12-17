@@ -4,7 +4,17 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const PermohonanTable = () => {
-  const [data, setData] = useState([]);
+  interface Permohonan {
+    pegawai_id: string;
+    peg_nama: string;
+    peg_nip?: string;
+    status_name: string;
+    nama_editor: string;
+    action: string;
+    log_time: string;
+  }
+
+  const [data, setData] = useState<Permohonan[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
