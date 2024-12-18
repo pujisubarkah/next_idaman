@@ -192,6 +192,17 @@ export const sidebarData: SidebarItem[] = [
     roles: ["4"],
   },
   {
+    label: "Absen dan Presensi",
+    dropdown: true,
+    icon: FaUsers,
+    children: [
+      { label: "Tidak Hadir", to: "#", icon: FaCircle, roles: ["4"] },
+      { label: "Cuti", to: "#", icon: FaCircle, roles: ["4"] },
+   
+    ],
+    roles: ["4"],
+  },
+  {
     label: "Ubah Password",
     to: "#",
     icon: FaCog,
