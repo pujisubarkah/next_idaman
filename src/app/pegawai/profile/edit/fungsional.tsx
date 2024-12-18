@@ -51,18 +51,16 @@ const RiwayatPelatihanFungsional = () => {
   const fetchRiwayatPelatihan = async (nip: string) => {
     try {
       const response = await axios.get(
-        `api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`
+         `/api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`
       );
       const sortedData = response.data.sort(
         (a: any, b: any) =>
           new Date(a.diklat_mulai).getTime() -
           new Date(b.diklat_mulai).getTime()
       );
-
       const mappedData: PelatihanFungsional[] = sortedData.map(
         (item: any, index: number) => ({
           no: index + 1,
-          kategori: item.m_spg_diklat_jenis.diklat_jenis_nama,
           nama: item.m_spg_diklat_struk_kategori.kategori_nama,
           tanggalMulai: formatTanggal(item.diklat_mulai),
           tanggalSelesai: formatTanggal(item.diklat_selesai),
@@ -76,7 +74,7 @@ const RiwayatPelatihanFungsional = () => {
       );
 
       setData(mappedData);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching data:", error);
     }
   };

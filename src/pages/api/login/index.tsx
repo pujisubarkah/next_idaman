@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   try {
     // Cek jika ada sesi aktif sebelumnya untuk pengguna ini
     const { data: activeSession } = await supabase
-      .schema("sipa_skpd")
+      .schema("siap_skpd")
       .from("log_session")
       .select("*")
       .eq("first_username", username)
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
 
     // Catat log login
     await supabase
-      .schema("sipa_skpd")
+      .schema("siap_skpd")
       .from("log_login")
       .insert([
         {
@@ -74,7 +74,7 @@ export default async function handler(req, res) {
 
     // Catat sesi login
     await supabase
-      .schema("sipa_skpd")
+      .schema("siap_skpd")
       .from("log_session")
       .insert([
         {

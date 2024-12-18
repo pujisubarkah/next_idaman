@@ -1,35 +1,40 @@
-import { supabase } from "../../../../lib/supabaseClient"; // Pastikan path ini sesuai
+import { supabase } from "../../../../lib/supabaseClient";
 
 export default async function handler(req, res) {
-  if (req.method === "POST") {
-    const { sessionId } = req.body;
+  // Pastikan metode POST (bukan GET)
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-    if (!sessionId) {
-      return res.status(400).json({ error: "Session ID is required." });
+  const { session_id } = req.body; // Ambil session_id dari body
+
+  // Validasi session_id
+  if (!session_id) {
+    return res.status(400).json({ error: "Session ID harus disertakan" });
+  }
+
+  try {
+    // Menambahkan header Cache-Control
+    res.setHeader('Cache-Control', 'no-store');
+
+    // Update data logout pada log_session
+    const { data, error } = await supabase
+      .schema("siap_skpd")
+      .from("log_session")
+      .update({
+        logout_time: new Date().toISOString(), // Set waktu logout saat ini
+      })
+      .eq("session_id", session_id);
+
+    // Tangani error atau jika session tidak ditemukan
+    if (error) {
+      return res.status(500).json({ error: "Gagal melakukan update logout_time" });
     }
 
-    try {
-      // Perbarui log_session dengan waktu logout
-      const { error } = await supabase
-        .schema('siap_skpd') // Ganti dengan nama schema Anda 
-        .from("log_session") // Nama tabel log session
-        .update({
-          logout_time: new Date().toISOString(), // Catat waktu logout
-          label: "logout successful", // Ubah label
-        })
-        .eq("session_id", sessionId);
-
-      if (error) {
-        throw error;
-      }
-
-      res.status(200).json({ message: "Logout successful." });
-    } catch (err) {
-      console.error("Error saat logout:", err);
-      res.status(500).json({ error: "Failed to logout." });
-    }
-  } else {
-    res.setHeader("Allow", ["POST"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    // Kembalikan response sukses logout
+    return res.status(200).json({ message: "Logout berhasil", data });
+  } catch (err) {
+    console.error("Terjadi kesalahan:", err);
+    return res.status(500).json({ error: "Terjadi kesalahan pada server" });
   }
 }
