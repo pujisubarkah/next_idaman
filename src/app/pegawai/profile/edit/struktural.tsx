@@ -55,8 +55,7 @@ const RiwayatPelatihanStruktural = () => {
       );
       const sortedData = response.data.sort(
         (a: any, b: any) =>
-          new Date(a.diklat_mulai).getTime() -
-          new Date(b.diklat_mulai).getTime()
+          new Date(a.diklat_mulai).getTime() - new Date(b.diklat_mulai).getTime()
       );
 
       const mappedData: PelatihanStruktural[] = sortedData.map(
@@ -82,17 +81,21 @@ const RiwayatPelatihanStruktural = () => {
   };
 
   useEffect(() => {
-    // Mendapatkan NIP dari URL
     const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1];
     setNip(nipFromUrl);
 
     if (nipFromUrl) {
-      // Fetch data dari API
       fetchRiwayatPelatihan(nipFromUrl);
     }
-  }, [fetchRiwayatPelatihan]);
+  }, []); // Empty dependency array to fetch data only once
+
+  useEffect(() => {
+    if (nip) {
+      fetchRiwayatPelatihan(nip);
+    }
+  }, [nip]); // Dependency on 'nip' to fetch data when it changes
 
   return (
     <div id="pelatihan-struktural" className="p-4">

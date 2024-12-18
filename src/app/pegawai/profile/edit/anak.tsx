@@ -22,21 +22,20 @@ const RiwayatAnak = () => {
   const [nip, setNip] = useState<string | null>(null);
 
   // Fungsi untuk memformat tanggal
-  const formatTanggal = (tanggal) => {
+  const formatTanggal = (tanggal: string) => {
     const bulanIndo = [
-        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
-  
+
     const date = new Date(tanggal);
     const hari = date.getDate();
     const bulan = bulanIndo[date.getMonth()];
     const tahun = date.getFullYear();
-  
+
     return `${hari} - ${bulan} - ${tahun}`;
   };
-  
-  
+
   const fetchRiwayatAnak = async (nip: string) => {
     try {
       const response = await axios.get(`/api/riwayat?peg_id=${nip}&riw_status=1`);
@@ -69,12 +68,14 @@ const RiwayatAnak = () => {
     const segments = path.split("/"); // Memecah URL menjadi array
     const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
     setNip(nipFromUrl);
+  }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
 
-    if (nipFromUrl) {
-      // Fetch data dari API
-      fetchRiwayatAnak(nipFromUrl);
+  useEffect(() => {
+    if (nip) {
+      // Fetch data hanya jika nip tersedia
+      fetchRiwayatAnak(nip);
     }
-  }, [fetchRiwayatAnak]);
+  }, [nip]); // Dependency pada nip, hanya akan dijalankan ketika nip berubah
 
   return (
     <div id="anak" className="p-8">

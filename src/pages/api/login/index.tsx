@@ -34,7 +34,19 @@ export default async function handler(req, res) {
       .single();
 
     if (activeSession) {
-      return res.status(400).json({ error: "Anda sudah login di sesi lain." });
+      // Hapus sesi aktif sebelumnya sebelum login
+      await supabase
+        .schema("siap_skpd")
+        .from("log_session")
+        .delete()
+        .eq("session_id", activeSession.session_id);
+
+      // Optional: Hapus log login yang terkait dengan sesi lama
+      await supabase
+        .schema("siap_skpd")
+        .from("log_login")
+        .delete()
+        .eq("session_id", activeSession.session_id);
     }
 
     const { data: user, error } = await supabase
@@ -57,7 +69,7 @@ export default async function handler(req, res) {
     const ipAddress = await fetchIpAddress();
     const userAgent = req.headers["user-agent"] || "Unknown User Agent";
 
-    // Catat log login
+    // Catat log login baru
     await supabase
       .schema("siap_skpd")
       .from("log_login")
@@ -72,7 +84,7 @@ export default async function handler(req, res) {
         },
       ]);
 
-    // Catat sesi login
+    // Catat sesi login baru
     await supabase
       .schema("siap_skpd")
       .from("log_session")

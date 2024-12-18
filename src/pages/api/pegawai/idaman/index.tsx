@@ -7,6 +7,15 @@ export default async function handler(req, res) {
 
     console.log('Request received at /api/pegawai'); // Debugging log
 
+    // Validasi peg_id jika ada
+    if (peg_id && isNaN(peg_id)) {
+      return res.status(400).json({ error: 'ID pegawai tidak valid' });
+    }
+
+    // Parse page dan itemsPerPage menjadi angka
+    const pageNumber = parseInt(page) || 1;
+    const itemsPerPageNumber = parseInt(itemsPerPage) || 10;
+
     try {
       // Build Supabase query
       let query = supabase
@@ -14,7 +23,7 @@ export default async function handler(req, res) {
         .from('view_data_pegawai')
         .select('*', { count: 'exact' });
 
-      // Apply filter if `peg_nip` is provided
+      // Apply filter if `peg_id` is provided
       if (peg_id) {
         query = query.eq('peg_id', peg_id);
       }
@@ -24,14 +33,14 @@ export default async function handler(req, res) {
 
       // Apply pagination
       const { data, error, count } = await query.range(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage - 1
+        (pageNumber - 1) * itemsPerPageNumber,
+        pageNumber * itemsPerPageNumber - 1
       );
 
       // Handle Supabase errors
       if (error) {
         console.error('Error fetching data:', error);
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message || 'Error fetching data' });
       }
 
       // Handle empty data
@@ -39,8 +48,6 @@ export default async function handler(req, res) {
         console.log('No data found');
         return res.status(404).json({ message: 'Data not found' });
       }
-
-   
 
       // Return data with total count
       return res.status(200).json({

@@ -1,19 +1,87 @@
-import React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const RiwayatPelatihannonKlasikal = () => {
-const dataDummy = [
-    {
-        id: 1,
-        jenis: "Pelatihan Non Klasikal",
-        nama: "Pelatihan Teknis",
-        tanggalMulai: "01-01-2023",
-        tanggalSelesai: "10-01-2023",
-        nomorsurat: "STTP-001",
-        instansi: "Instansi Pelatihan B",
-        jumlahJam: 40,}
-];
+const RiwayatPelatihanNonKlasikal = () => {
+  interface DataPelatihanNonKlasikal {
+    no: number;
+    jenis: string;
+    nama: string;
+    tanggalMulai: string;
+    tanggalSelesai: string;
+    nomorsurat: string;
+    instansi: string;
+    jumlahJam: string;
+  }
+
+  const [data, setData] = useState<DataPelatihanNonKlasikal[]>([]);
+  const [nip, setNip] = useState<string | null>(null);
+
+  // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string) => {
+    const bulanIndo = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
+
+  const fetchRiwayatPelatihanNonKlasikal = async (nip: string) => {
+    try {
+      const response = await axios.get(
+        `/api/riwayat/pelatihan_non_klasikal?peg_id=${nip}`
+      );
+  
+
+      const sortedData = response.data.sort((a: any, b: any) => new Date(b.non_tgl_mulai).getTime() - new Date(a.non_tgl_mulai).getTime());
+
+      const mappedData = sortedData.map((item: any, index: number) => ({
+        no: index + 1,
+        jenis: item.jenis_pelatihan,
+        nama: item.non_nama,
+        tanggalMulai: item.non_tgl_mulai,
+        tanggalSelesai: item.non_tgl_selesai,
+        nomorsurat: item.non_sttp,
+        instansi: item.non_penyelenggara,
+        jumlahJam: item.diklat_jumlah_jam,
+      }));
+
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Gagal mengambil data. Silakan coba lagi nanti.");
+    }
+  };
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1];
+    setNip(nipFromUrl);
+  }, []);
+
+  useEffect(() => {
+    if (nip) {
+      fetchRiwayatPelatihanNonKlasikal(nip);
+    }
+  }, [nip]);
 
   return (
     <div id="pelatihan-Non-klasikal" className="p-4">
@@ -58,23 +126,23 @@ const dataDummy = [
         </thead>
 
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={12} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr
-                key={item.id}
+                key={index}
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
                 <td className="p-3 border border-teal-500">{index + 1}</td>
                 <td className="p-3 border border-teal-500">{item.jenis}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
-                <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
-                <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
+                <td className="p-3 border border-teal-500">{formatTanggal(item.tanggalMulai)}</td>
+                <td className="p-3 border border-teal-500">{formatTanggal(item.tanggalSelesai)}</td>
                 <td className="p-3 border border-teal-500">{item.nomorsurat}</td>
                 <td className="p-3 border border-teal-500">{item.instansi}</td>
                 <td className="p-3 border border-teal-500">{item.jumlahJam}</td>
@@ -103,4 +171,4 @@ const dataDummy = [
   );
 };
 
-export default RiwayatPelatihannonKlasikal;
+export default RiwayatPelatihanNonKlasikal;

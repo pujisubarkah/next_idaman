@@ -51,7 +51,7 @@ const RiwayatPelatihanFungsional = () => {
   const fetchRiwayatPelatihan = async (nip: string) => {
     try {
       const response = await axios.get(
-         `/api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`
+         `/api/riwayat/diklat?diklat_jenis=2&peg_id=${nip}`
       );
       const sortedData = response.data.sort(
         (a: any, b: any) =>
