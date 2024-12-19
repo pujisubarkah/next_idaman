@@ -1,20 +1,61 @@
-import React from "react";
+"use client";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Riwayattimkerja = () => {
-const dataDummy = [
-    {
-        id: 1,
-        namakegiatan: "Kegiatan A",
-        peran: "ketua",
-        nomorsk: "SK-001",
-        tahun: "2023",
-        tingkat: "Nasional",
-        penandatangan: "Bupati", 
-                },
-];
+  interface DataTimKerja {
+    no: number;
+    namakegiatan: string;
+    peran: string;
+    nomorsk: string;
+    tahun: string;
+    tingkat: string;
+    penandatangan: string;
+  }
+
+  const [data, setData] = useState<DataTimKerja[]>([]);
+    const [nip, setNip] = useState<string | null>(null);
+
+
+
+const fetchRiwayattimkerja = async (nip: string) => {
+  try {
+    const response = await axios.get(
+      `/api/kinerja/timkerja?peg_id=${nip}`
+    );
+    
+    const mappedData = response.data.map((item: any, index: number) => ({
+      no: index + 1,
+      namakegiatan: item.timkerja_nama,
+      peran: item.timkerja_peran,
+      nomorsk: item.timkerja_nomor,
+      tahun: item.timkerja_tahun,
+      tingkat: item.timkerja_tingkat,
+      penandatangan: item.timkerja_penandatangan,
+    }));
+
+    setData(mappedData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+useEffect(() => {
+  const path = window.location.pathname;
+  const segments = path.split("/");
+  const nipFromUrl = segments[segments.length - 1];
+  setNip(nipFromUrl);
+}, []);
+
+useEffect(() => {
+  if (nip) {
+    fetchRiwayattimkerja(nip);
+  }
+}, [nip]);
+
+
 
   return (
     <div id="timkerja" className="p-4">
@@ -51,16 +92,16 @@ const dataDummy = [
         </thead>
 
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={12} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr
-                key={item.id}
+                key={index}
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
                 <td className="p-3 border border-teal-500">{index + 1}</td>

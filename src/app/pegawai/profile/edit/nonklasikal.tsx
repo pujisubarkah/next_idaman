@@ -49,15 +49,14 @@ const RiwayatPelatihanNonKlasikal = () => {
         `/api/riwayat/pelatihan_non_klasikal?peg_id=${nip}`
       );
   
+    
 
-      const sortedData = response.data.sort((a: any, b: any) => new Date(b.non_tgl_mulai).getTime() - new Date(a.non_tgl_mulai).getTime());
-
-      const mappedData = sortedData.map((item: any, index: number) => ({
+      const mappedData = response.data.map((item: any, index: number) => ({
         no: index + 1,
         jenis: item.jenis_pelatihan,
         nama: item.non_nama,
-        tanggalMulai: item.non_tgl_mulai,
-        tanggalSelesai: item.non_tgl_selesai,
+        tanggalMulai: formatTanggal(item.non_tgl_mulai),
+        tanggalSelesai:formatTanggal(item.non_tgl_selesai),
         nomorsurat: item.non_sttp,
         instansi: item.non_penyelenggara,
         jumlahJam: item.diklat_jumlah_jam,
@@ -66,7 +65,7 @@ const RiwayatPelatihanNonKlasikal = () => {
       setData(mappedData);
     } catch (error) {
       console.error("Error fetching data:", error);
-      alert("Gagal mengambil data. Silakan coba lagi nanti.");
+      
     }
   };
 
@@ -141,8 +140,8 @@ const RiwayatPelatihanNonKlasikal = () => {
                 <td className="p-3 border border-teal-500">{index + 1}</td>
                 <td className="p-3 border border-teal-500">{item.jenis}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
-                <td className="p-3 border border-teal-500">{formatTanggal(item.tanggalMulai)}</td>
-                <td className="p-3 border border-teal-500">{formatTanggal(item.tanggalSelesai)}</td>
+                <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
+                <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
                 <td className="p-3 border border-teal-500">{item.nomorsurat}</td>
                 <td className="p-3 border border-teal-500">{item.instansi}</td>
                 <td className="p-3 border border-teal-500">{item.jumlahJam}</td>

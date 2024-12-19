@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
 const RiwayatPelatihanTeknis = () => {
-interface PelatihanTeknis  {
+  interface PelatihanTeknis {
     no: number;
     nama: string;
     lainnya: string;
@@ -16,13 +16,11 @@ interface PelatihanTeknis  {
     instansi: string;
     lokasi: string;
     instansiPenyelenggara: string;
-    
   }
-  
+
   const [data, setData] = useState<PelatihanTeknis[]>([]);
   const [nip, setNip] = useState<string | null>(null);
-  
-  // Fungsi untuk memformat tanggal
+
   const formatTanggal = (tanggal: string): string => {
     const bulanIndo = [
       "Januari",
@@ -47,7 +45,7 @@ interface PelatihanTeknis  {
     return `${hari} ${bulan} ${tahun}`;
   };
 
-  const fetchRiwayatPelatihan = async (nip: string) => {
+  const fetchRiwayatPelatihan = useCallback(async (nip: string) => {
     try {
       const response = await axios.get(
         `/api/riwayat/diklat?diklat_jenis=3&peg_id=${nip}`
@@ -62,7 +60,7 @@ interface PelatihanTeknis  {
         (item: any, index: number) => ({
           no: index + 1,
           kategori: item.m_spg_diklat_jenis.diklat_jenis_nama,
-          nama: item.m_spg_diklat_struk_kategori.kategori_nama,
+          nama: item.m_spg_diklat_teknis.diklat_teknis_nm,
           tanggalMulai: formatTanggal(item.diklat_mulai),
           tanggalSelesai: formatTanggal(item.diklat_selesai),
           jumlahJam: item.diklat_jumlah_jam,
@@ -76,21 +74,18 @@ interface PelatihanTeknis  {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
-  
+  }, []);
+
   useEffect(() => {
-    // Mendapatkan NIP dari URL
     const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1];
     setNip(nipFromUrl);
 
     if (nipFromUrl) {
-      // Fetch data dari API
       fetchRiwayatPelatihan(nipFromUrl);
     }
   }, [fetchRiwayatPelatihan]);
-  
 
   return (
     <div id="pelatihan-teknis" className="p-4">
@@ -111,36 +106,33 @@ interface PelatihanTeknis  {
             <th className="p-3 border border-teal-500" rowSpan={2}>
               Nama Pelatihan Teknis
             </th>
-            <th className="p-3 border border-teal-500" colSpan={2}>
-              Nama Teknis Lainnya
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Tanggal Mulai
             </th>
-            <th className="p-3 border border-teal-500" colSpan={2}>
-              Tanggal
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Tanggal Selesai
             </th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Jumlah Jam</th>
-            <th className="p-3 border border-teal-500" colSpan={3}>
-              STTP
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Jumlah Jam
+            </th>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Jabatan Penandatangan
             </th>
             <th className="p-3 border border-teal-500" rowSpan={2}>
               Instansi Penyelenggara
             </th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Pilihan</th>
-          </tr>
-          <tr className="bg-teal-900 text-white text-sm">
-            <th className="p-3 border border-teal-500">Mulai</th>
-            <th className="p-3 border border-teal-500">Selesai</th>
-            <th className="p-3 border border-teal-500">Nomor</th>
-            <th className="p-3 border border-teal-500">Tanggal</th>
-            <th className="p-3 border border-teal-500">Jabatan Penandatangan</th>
-            <th className="p-3 border border-teal-500">Instansi</th>
-            <th className="p-3 border border-teal-500">Lokasi</th>
-          </tr>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Lokasi
+            </th>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
+              Pilihan</th>
+              </tr>
+            
         </thead>
-
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={12} className="text-center p-4">
+              <td colSpan={8} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
@@ -152,11 +144,12 @@ interface PelatihanTeknis  {
               >
                 <td className="p-3 border border-teal-500">{index + 1}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
-                <td className="p-3 border border-teal-500">{item.lainnya}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
                 <td className="p-3 border border-teal-500">{item.jumlahJam}</td>
-                <td className="p-3 border border-teal-500">{item.jabatanPenandatangan}</td>
+                <td className="p-3 border border-teal-500">
+                  {item.jabatanPenandatangan}
+                </td>
                 <td className="p-3 border border-teal-500">{item.instansi}</td>
                 <td className="p-3 border border-teal-500">{item.lokasi}</td>
                 <td className="p-3 border border-teal-500">

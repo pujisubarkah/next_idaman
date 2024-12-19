@@ -12,7 +12,12 @@ export default async function handler(req, res) {
         const { data, error } = await supabase
             .schema('siap')
             .from('spg_riwayat_pangkat')
-            .select(`*`)
+            .select(`
+                * ,
+            m_spg_golongan(nm_gol)
+            
+            `)
+            
             .eq('peg_id', peg_id)
             .order('riw_pangkat_sktgl', { ascending: true });  // Ubah 'tingpend_id' ke kolom yang sesuai
 

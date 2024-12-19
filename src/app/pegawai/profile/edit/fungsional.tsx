@@ -48,20 +48,16 @@ const RiwayatPelatihanFungsional = () => {
     return `${hari} ${bulan} ${tahun}`;
   };
 
-  const fetchRiwayatPelatihan = async (nip: string) => {
+  const fetchRiwayatPelatihanfungsional = async (nip: string) => {
     try {
-      const response = await axios.get(
-         `/api/riwayat/diklat?diklat_jenis=2&peg_id=${nip}`
+      const response = await axios.get(`/api/riwayat/diklat?diklat_jenis=2&peg_id=${nip}`
       );
-      const sortedData = response.data.sort(
-        (a: any, b: any) =>
-          new Date(a.diklat_mulai).getTime() -
-          new Date(b.diklat_mulai).getTime()
-      );
-      const mappedData: PelatihanFungsional[] = sortedData.map(
+      
+
+      const mappedData: PelatihanFungsional[] = response.data.map(
         (item: any, index: number) => ({
           no: index + 1,
-          nama: item.m_spg_diklat_struk_kategori.kategori_nama,
+          nama: item.diklat_nama,
           tanggalMulai: formatTanggal(item.diklat_mulai),
           tanggalSelesai: formatTanggal(item.diklat_selesai),
           jumlahJam: item.diklat_jumlah_jam,
@@ -80,10 +76,19 @@ const RiwayatPelatihanFungsional = () => {
   };
 
   useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+  }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
+
+  useEffect(() => {
     if (nip) {
-      fetchRiwayatPelatihan(nip);
+      // Fetch data hanya jika nip tersedia
+      fetchRiwayatPelatihanfungsional(nip);
     }
-  }, [nip]);
+  }, [nip]); // D
 
   return (
     <div id="pelatihan-fungsional" className="p-4">

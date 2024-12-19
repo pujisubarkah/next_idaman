@@ -1,34 +1,78 @@
 "use client";
-
-import React from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RiwayatKepangkatan = () => {
-  const dataDummy = [
-    {
-      no: 1,
-      golRuang: "IV/A",
-      masaKerjaTahun: 10,
-      masaKerjaBulan: 5,
-      nomorSK: "12345",
-      tanggalSK: "01/01/2015",
-      jabatanPenandatangan: "Budi Santoso",
-      tmt: "01/06/2015",
-      unitKerja: "Dinas Pendidikan",
-    },
-    {
-      no: 2,
-      golRuang: "III/B",
-      masaKerjaTahun: 5,
-      masaKerjaBulan: 3,
-      nomorSK: "67890",
-      tanggalSK: "01/01/2020",
-      jabatanPenandatangan: "Agus Pratama",
-      tmt: "01/06/2020",
-      unitKerja: "Dinas Kesehatan",
-    },
-  ];
+  interface dataPangkat {
+    no: number;
+    golRuang: string;
+    masaKerjaTahun: string;
+    masaKerjaBulan: string;
+    nomorSK: string;
+    tanggalSK: string;
+    jabatanPenandatangan: string;
+    tmt: string;
+    unitKerja: string;
+  }
+    
+  const [data, setData] = useState<dataPangkat[]>([]);
+  const [nip, setNip] = useState<string | null>(null);
+
+    // Fungsi untuk memformat tanggal
+    const formatTanggal = (tanggal: string) => {
+      const bulanIndo = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+  
+      const date = new Date(tanggal);
+      const hari = date.getDate();
+      const bulan = bulanIndo[date.getMonth()];
+      const tahun = date.getFullYear();
+  
+      return `${hari} - ${bulan} - ${tahun}`;
+    };
+  
+    const fetchRiwayatpangkat = async (nip: string) => {
+      try {
+        const response = await axios.get(`/api/riwayat/pangkat?peg_id=${nip}`);
+      
+  
+        const mappedData = response.data.map((item: any, index: number) => ({
+          No: index + 1,
+          golRuang: item.m_spg_golongan.nm_gol,
+          masaKerjaTahun: item.riw_pangkat_thn,
+          masaKerjaBulan: item.riw_pangkat_bln,
+          nomorSK: item.riw_pangkat_sk,
+          tanggalSK: formatTanggal(item.riw_pangkat_sktgl),
+          jabatanPenandatangan: item.riw_pangkat_pejabat,
+          tmt: formatTanggal(item.riw_pangkat_tmt),
+          unitKerja: item.riw_pangkat_unit_kerja,
+        }));
+  
+        setData(mappedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    useEffect(() => {
+      // Mendapatkan NIP dari URL
+      const path = window.location.pathname;
+      const segments = path.split("/"); // Memecah URL menjadi array
+      const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+      setNip(nipFromUrl);
+    }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
+  
+    useEffect(() => {
+      if (nip) {
+        // Fetch data hanya jika nip tersedia
+        fetchRiwayatpangkat(nip);
+      }
+    }, [nip]); // Dependency pada nip, hanya akan dijalankan ketika nip berubah
+     
 
   return (
     <div id="kepangkatan" className="p-8">
@@ -60,14 +104,14 @@ const RiwayatKepangkatan = () => {
           </tr>
         </thead>
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={10} className="text-center p-4">Data tidak ditemukan.</td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
-                <td className="p-3 border border-teal-500">{item.no}</td>
+                <td className="p-3 border border-teal-500">{index+1}</td>
                 <td className="p-3 border border-teal-500">{item.golRuang}</td>
                 <td className="p-3 border border-teal-500">{item.masaKerjaTahun}</td>
                 <td className="p-3 border border-teal-500">{item.masaKerjaBulan}</td>
