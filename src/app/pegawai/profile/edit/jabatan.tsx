@@ -1,42 +1,85 @@
 "use client";
-
-import React from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RiwayatJabatan = () => {
-  const dataDummy = [
-    {
-      no: 1,
-      namaJabatan: "Manajer IT",
-      golRuang: "IV/a",
-      nomorSuratKeputusan: "1234/2024",
-      tanggalSuratKeputusan: "01/01/2024",
-      jabatanPenandatangan: "Kepala Dinas",
-      tmt: "01/01/2022",
-      tmtAkhir: "01/01/2025",
-      unitKerja: "IT Department",
-      instansiRumpun: "Dinas Kominfo",
-      eselon: "IIb",
-      migrasiSiasn: "Sudah",
-      jabatanAktif: "Aktif",
-    },
-    {
-      no: 2,
-      namaJabatan: "Asisten Manajer",
-      golRuang: "III/b",
-      nomorSuratKeputusan: "5678/2024",
-      tanggalSuratKeputusan: "01/02/2023",
-      jabatanPenandatangan: "Wakil Kepala Dinas",
-      tmt: "01/02/2021",
-      tmtAkhir: "01/02/2024",
-      unitKerja: "HRD",
-      instansiRumpun: "Dinas Pendidikan",
-      eselon: "IIIa",
-      migrasiSiasn: "Belum",
-      jabatanAktif: "Non-Aktif",
-    },
-  ];
+  interface dataJabatan {
+    no: number,
+    namaJabatan: string;
+    golRuang: string;
+    nomorSuratKeputusan: string;
+    tanggalSuratKeputusan: string;
+    jabatanPenandatangan: string;
+    tmt: string;
+    tmtAkhir: string;
+    unitKerja: string;
+    instansiRumpun: string;
+    eselon: string;
+    migrasiSiasn: string;
+   
+  }
+
+   const [data, setData] = useState<dataJabatan[]>([]);
+   const [nip, setNip] = useState<string | null>(null);
+      
+    const formatTanggal = (tanggal: string) => {
+      const bulanIndo = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+  
+      const date = new Date(tanggal);
+      const hari = date.getDate();
+      const bulan = bulanIndo[date.getMonth()];
+      const tahun = date.getFullYear();
+  
+      return `${hari} - ${bulan} - ${tahun}`;
+    };
+
+const fetchRiwayatJabatan = async (nip: string) => {
+  try { 
+    const response = await axios.get(`/api/riwayat/jabatan?peg_id=${nip}`);
+
+    const mappedData = response.data.map((item: any, index: number) => ({
+      no: index + 1,
+      namaJabatan: item.riw_jabatan_nm,
+      golRuang: item.gol_id,
+      nomorSuratKeputusan: item.riw_jabatan_no,
+      tanggalSuratKeputusan: item.riw_jabatan_tgl,
+      jabatanPenandatangan: item.riw_jabatan_pejabat,
+      tmt: item.riw_jabatan_tmt,
+      tmtAkhir: item.riw_jabatan_selesai_selesai_tmt,
+      unitKerja: item.unit_kerja_id,
+      instansiRumpun: item.rumpun_id,
+      eselon: item.eselon_id,
+      migrasiSiasn: item.sapk_synced,
+      }));
+
+    setData(mappedData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+
+    useEffect(() => {
+      // Mendapatkan NIP dari URL
+      const path = window.location.pathname;
+      const segments = path.split("/"); // Memecah URL menjadi array
+      const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+      setNip(nipFromUrl);
+    }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
+  
+    useEffect(() => {
+      if (nip) {
+        // Fetch data hanya jika nip tersedia
+        fetchRiwayatJabatan(nip);
+      }
+    }, [nip]); // Dependency pada nip, hanya akan dijalankan ketika nip berubah
+  
+    
 
   return (
     <div id="riwayat-jabatan" className="p-8">
@@ -61,7 +104,7 @@ const RiwayatJabatan = () => {
             <th rowSpan={2} className="p-3 border border-teal-500">Instansi & Rumpun</th>
             <th rowSpan={2} className="p-3 border border-teal-500">Eselon</th>
             <th rowSpan={2} className="p-3 border border-teal-500">Migrasi SIASN</th>
-            <th rowSpan={2} className="p-3 border border-teal-500">Jabatan Aktif</th>
+
             <th rowSpan={2} className="p-3 border border-teal-500">Pilihan</th>
           </tr>
           <tr>
@@ -71,12 +114,12 @@ const RiwayatJabatan = () => {
           </tr>
         </thead>
         <tbody>
-          {dataDummy.length === 0 ? (
+        {data.length === 0 ? (
             <tr>
               <td colSpan={14} className="text-center p-4">Data tidak ditemukan.</td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
                 <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.namaJabatan}</td>
@@ -90,7 +133,6 @@ const RiwayatJabatan = () => {
                 <td className="p-3 border border-teal-500">{item.instansiRumpun}</td>
                 <td className="p-3 border border-teal-500">{item.eselon}</td>
                 <td className="p-3 border border-teal-500">{item.migrasiSiasn}</td>
-                <td className="p-3 border border-teal-500">{item.jabatanAktif}</td>
                 <td className="p-3 border border-teal-500">
                   <div className="flex space-x-4">
                     <button

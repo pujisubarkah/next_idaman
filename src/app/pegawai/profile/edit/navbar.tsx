@@ -56,7 +56,7 @@ const Navbar = () => {
     {
       label: "Keluarga",
       subMenu: [
-        { label: "Istri", link: "#pasangan" },
+        { label: "Pasangan", link: "#pasangan" },
         { label: "Anak", link: "#anak" },
         { label: "Orang Tua", link: "#orangtua" },
         { label: "Saudara Lainnya", link: "#saudara" },

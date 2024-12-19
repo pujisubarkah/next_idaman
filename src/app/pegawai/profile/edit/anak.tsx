@@ -49,7 +49,7 @@ const RiwayatAnak = () => {
         namaAnak: item.riw_nama,
         jenisKelamin: item.riw_kelamin === "L" ? "Laki-laki" : "Perempuan",
         tempatTanggalLahir: `${item.riw_tempat_lahir}, ${formatTanggal(item.riw_tgl_lahir)}`,
-        statusPerkawinan: item.riw_status_perkawinan,
+        statusPerkawinan: item.riw_status_perkawinan ==="1" ? "Sudah Menikah" : "Belum Menikah",
         memperolehTunjangan: item.riw_status_tunj ? "Ya" : "Tidak",
         pendidikan: item.riw_pendidikan,
         pekerjaan: item.riw_pekerjaan,

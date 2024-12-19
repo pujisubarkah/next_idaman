@@ -11,15 +11,10 @@ export default async function handler(req, res) {
 
         const { data, error } = await supabase
             .schema('siap')
-            .from('spg_riwayat_cuti')
-            .select(`
-                * ,
-            m_spg_jenis_cuti(jeniscuti_nm)
-            `)
-
-
+            .from('spg_riwayat_sertifikat')
+            .select(`*`)
             .eq('peg_id', peg_id)
-            .order('cuti_mulai', { ascending: true });  // Ubah 'tingpend_id' ke kolom yang sesuai
+            .order('tanggal_sertifikat', { ascending: true });  // Ubah 'tingpend_id' ke kolom yang sesuai
 
         if (error) {
             throw error;

@@ -26,6 +26,16 @@ const RiwayatPenghargaan = () => {
     },
   ];
 
+
+
+
+
+
+
+
+
+
+  
   return (
     <div id="penghargaan" className="p-8">
       <h3 className="text-center text-xl font-semibold mb-8">RIWAYAT PENGHARGAAN</h3>
