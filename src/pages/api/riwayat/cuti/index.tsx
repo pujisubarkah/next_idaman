@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
 
             .eq('peg_id', peg_id)
-            .order('cuti_mulai', { ascending: true });  // Ubah 'tingpend_id' ke kolom yang sesuai
+            .order('cuti_mulai', { ascending: false });  // Ubah 'tingpend_id' ke kolom yang sesuai
 
         if (error) {
             throw error;

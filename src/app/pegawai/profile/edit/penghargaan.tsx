@@ -1,40 +1,74 @@
 "use client";
-
-import React from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RiwayatPenghargaan = () => {
-  const dataDummy = [
-    {
-      no: 1,
-      namaPenghargaan: "Penghargaan Satyalancana Karya Satya",
-      nomorSK: "12345",
-      tanggalSK: "01/06/2020",
-      jabatanPenandatangan: "Budi Santoso",
-      instansi: "Kementerian Pendidikan dan Kebudayaan",
-      lokasi: "Jakarta",
-    },
-    {
-      no: 2,
-      namaPenghargaan: "Penghargaan Pegawai Teladan",
-      nomorSK: "67890",
-      tanggalSK: "01/01/2022",
-      jabatanPenandatangan: "Agus Pratama",
-      instansi: "Kementerian Kesehatan",
-      lokasi: "Jakarta",
-    },
-  ];
+  interface DataPenghargaan {
+    no: number;
+    namaPenghargaan: string;
+    nomorSK: string;
+    tanggalSK: string;
+    jabatanPenandatangan: string;
+    instansi: string;
+    lokasi: string;
+  }
 
+const [data, setData] = useState<DataPenghargaan[]>([]);
+    const [nip, setNip] = useState<string | null>(null);
 
+    // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string) => {
+    const bulanIndo = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
 
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
 
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
 
+  const fetchRiwayatPenghargaan = async (nip: string) => {
+    try {
+      const response = await axios.get(`/api/kinerja/penghargaan?peg_id=${nip}`);
 
+      const mappedData = response.data.map((item: any, index: number) => ({
+        no: index + 1,
+        namaPenghargaan: item.penghargaan_id,
+        nomorSK: item.riw_penghargaan_sk,
+        tanggalSK: item.riw_penghargaan_tglsk,
+        jabatanPenandatangan: item.riw_penghargaan_pejabat,
+        instansi: item.riw_penghargaan_instansi,
+        lokasi: item.riw_penghargaan_lokasi,
+      }));
 
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
+  useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+  }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
 
+  useEffect(() => {
+    if (nip) {
+      // Fetch data hanya jika nip tersedia
+      fetchRiwayatPenghargaan(nip);
+    }
+  }, [nip]); // Dependency pada nip, hanya akan dijalankan ketika nip berubah
 
+  
   
   return (
     <div id="penghargaan" className="p-8">
@@ -64,12 +98,12 @@ const RiwayatPenghargaan = () => {
           </tr>
         </thead>
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={8} className="text-center p-4">Data tidak ditemukan.</td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
                 <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.namaPenghargaan}</td>

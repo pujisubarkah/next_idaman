@@ -1,22 +1,94 @@
-import React from "react";
+"use client";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RiwayatKGB = () => {
-const dataDummy = [
-    {
-        id: 1,
-        golongan: "III/B",
-        gaji: "Rp 3.000.000",
-        nomorkgb: "KGB-001",
-        tanggalsk: "01-01-2023",
-        yadkgb: "01-01-2023",
-        tahunkgb: "2023",
-        bulankgb: "Januari",
-        kgbtanggalsurat: "01-01-2023",
-        nosuratkgb: "KGB-001",
-     },
-];
+  interface DataKGB {
+    no: number;
+    golongan: string;
+    gaji: string;
+    nomorkgb: string;
+    tanggalsk: string;
+    yadkgb: string;
+    tahunkgb: string;
+    bulankgb: string;
+    kgbtanggalsurat: string;
+    nosuratkgb: string;
+  }
+
+   const [data, setData] = useState<DataKGB[]>([]);
+    const [nip, setNip] = useState<string | null>(null);
+
+    // Fungsi untuk memformat tanggal
+  const formatTanggal = (tanggal: string) => {
+    const bulanIndo = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
+
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
+
+  const formatRupiah = (amount) =>
+    new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(amount) + ',-';
+
+
+
+  const fetchRiwayatKgb = async (nip: string) => {
+    try {
+      const response = await axios.get(`/api/riwayat/kgb?peg_id=${nip}`);
+    
+
+      const mappedData = response.data.map((item: any, index: number) => ({
+        no: index + 1,
+        golongan: item.m_spg_golongan.nm_gol,
+        gaji: formatRupiah(item.m_spg_gaji.gaji_pokok), // Panggil fungsi formatRupiah di sini
+        nomorkgb: item.kgb_no_sk,
+        tanggalsk: item.kgb_tgl_sk,
+        yadkgb: item.kgb_yad,
+        tahunkgb: item.kgb_thn,
+        bulankgb: item.kgb_bln,
+        kgbtanggalsurat: item.kgb_tglsurat,
+        nosuratkgb: item.kgb_nosurat
+
+       
+      }));
+
+      setData(mappedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Mendapatkan NIP dari URL
+    const path = window.location.pathname;
+    const segments = path.split("/"); // Memecah URL menjadi array
+    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    setNip(nipFromUrl);
+  }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
+
+  useEffect(() => {
+    if (nip) {
+      // Fetch data hanya jika nip tersedia
+      fetchRiwayatKgb(nip);
+    }
+  }, [nip]); // Dependency pada nip, hanya akan dijalankan ketika nip berubah
+
+  
+
+
 
   return (
     <div id="kgb" className="p-4">
@@ -57,16 +129,16 @@ const dataDummy = [
         </thead>
 
         <tbody>
-          {dataDummy.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={12} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
           ) : (
-            dataDummy.map((item, index) => (
+            data.map((item, index) => (
               <tr
-                key={item.id}
+              key={index}
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
                 <td className="p-3 border border-teal-500">{index + 1}</td>

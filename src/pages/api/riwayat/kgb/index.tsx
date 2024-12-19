@@ -12,7 +12,11 @@ export default async function handler(req, res) {
         const { data, error } = await supabase
             .schema('siap')
             .from('spg_kgb')
-            .select(`*`)
+            .select(`
+                * ,
+            m_spg_gaji(gaji_pokok),
+            m_spg_golongan(nm_gol)
+            `)
             .eq('peg_id', peg_id)
             .order('kgb_tglsk', { ascending: true });  // Ubah 'tingpend_id' ke kolom yang sesuai
 
