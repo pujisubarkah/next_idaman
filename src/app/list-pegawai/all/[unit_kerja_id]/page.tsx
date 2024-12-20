@@ -130,7 +130,10 @@ const ListPegawai = () => {
                         <span className="text-teal-700 text-sm">View</span>
                       </div>
                       {/* Icon Edit */}
-                      <div className="flex items-center cursor-pointer hover:text-teal-500 mb-2">
+                      <div
+                        className="flex items-center cursor-pointer hover:text-teal-500 mb-2"
+                        onClick={() => router.push(`/edit-pegawai/${peg_nip}`)}
+                      >
                         <FontAwesomeIcon icon={faEdit} className="text-teal-700 mr-2" />
                         <span className="text-teal-700 text-sm">Edit</span>
                       </div>

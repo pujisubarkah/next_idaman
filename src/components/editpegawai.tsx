@@ -803,7 +803,7 @@ const EditPegawai = () => {
   return (
     <div className="m-2 w-full">
       <form onSubmit={handleSubmit} className="w-full mx-auto">
-        <h1 className="text-center font-bold uppercase mb-6">Tambah Pegawai Lembaga Administrasi Negara</h1>
+        <h1 className="text-center font-bold uppercase mb-6">Edit Pegawai Lembaga Administrasi Negara</h1>
         <div className="border p-4 rounded-lg">
           {formFields.map((field) => renderFormField(field))}
         </div>
