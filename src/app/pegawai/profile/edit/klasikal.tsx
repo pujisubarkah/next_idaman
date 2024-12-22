@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEdit, faTrash, faCheck } from "@fortawesome/free-solid-svg-icons";
 import KlasikalModal from "./klasikalmodal"; // Mengimpor modal dari klasikalmodal.tsx
 
 // Interface untuk data pelatihan klasikal
@@ -14,6 +14,8 @@ export interface DataPelatihanKlasikal {
   nomorsurat: string;
   instansi: string;
   jumlahJam: string;
+  isNew?: boolean; // Indikator data baru
+  isApproved?: boolean; // Indikator data sudah di-approve
 }
 
 const RiwayatPelatihanKlasikal = () => {
@@ -31,7 +33,6 @@ const RiwayatPelatihanKlasikal = () => {
     jumlahJam: "",
   });
 
-  // Fungsi untuk memformat tanggal
   const formatTanggal = (tanggal: string) => {
     const bulanIndo = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -46,12 +47,11 @@ const RiwayatPelatihanKlasikal = () => {
     return `${hari} - ${bulan} - ${tahun}`;
   };
 
-  // Fetch data pelatihan klasikal berdasarkan nip
   const fetchRiwayatPelatihanKlasikal = async (nip: string) => {
     try {
       const response = await axios.get(`/api/riwayat/pelatihan_klasikal?peg_id=${nip}`);
       const sortedData = response.data.sort(
-        (a: any, b: any) => new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()
+        (a: any, b: any) => new Date(a.non_tgl_mulai).getTime() - new Date(b.non_tgl_mulai).getTime()
       );
 
       const mappedData = sortedData.map((item: any, index: number) => ({
@@ -63,6 +63,7 @@ const RiwayatPelatihanKlasikal = () => {
         nomorsurat: item.non_sttp,
         instansi: item.non_penyelenggara,
         jumlahJam: item.diklat_jumlah_jam,
+        isApproved: item.is_approved || false, // Status approval
       }));
 
       setData(mappedData);
@@ -72,10 +73,9 @@ const RiwayatPelatihanKlasikal = () => {
     }
   };
 
-  // Handle modal form
   const handleOpenModal = (item?: DataPelatihanKlasikal) => {
     if (item) {
-      setFormData(item); // Edit mode
+      setFormData(item);
     } else {
       setFormData({
         no: 0,
@@ -86,7 +86,7 @@ const RiwayatPelatihanKlasikal = () => {
         nomorsurat: "",
         instansi: "",
         jumlahJam: "",
-      }); // Add mode
+      });
     }
     setModalOpen(true);
   };
@@ -95,21 +95,32 @@ const RiwayatPelatihanKlasikal = () => {
     setModalOpen(false);
   };
 
-  // Handle submit form
   const handleSubmitForm = async () => {
     try {
       if (formData.no === 0) {
-        // Tambah data
-        await axios.post("/api/riwayat/pelatihan_klasikal", formData);
+        const newData = { ...formData, isNew: true, isApproved: false };
+        await axios.post("/api/riwayat/pelatihan_klasikal", newData);
       } else {
-        // Edit data
         await axios.put(`/api/riwayat/pelatihan_klasikal/${formData.no}`, formData);
       }
-      fetchRiwayatPelatihanKlasikal(nip!); // Refresh data
-      setModalOpen(false); // Close modal
+      fetchRiwayatPelatihanKlasikal(nip!);
+      setModalOpen(false);
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("Gagal menyimpan data. Silakan coba lagi nanti.");
+      const response = await axios.put(`/api/riwayat/pelatihan_klasikal/${formData.no}`, formData);
+console.log(response.data); // Pastikan ada respons yang menunjukkan data yang terupdate.
+    }
+  };
+
+  const handleApprove = async (item: DataPelatihanKlasikal) => {
+    try {
+      await axios.put(`/api/riwayat/pelatihan_klasikal/${item.no}`, { isApproved: true });
+      const updatedData = data.map((row) =>
+        row.no === item.no ? { ...row, isApproved: true, isNew: false } : row
+      );
+      setData(updatedData);
+    } catch (error) {
+      console.error("Error approving data:", error);
+      alert("Gagal meng-approve data.");
     }
   };
 
@@ -142,24 +153,36 @@ const RiwayatPelatihanKlasikal = () => {
       <table className="w-full border border-teal-600 rounded-lg overflow-hidden">
         <thead className="bg-teal-900 text-white">
           <tr className="text-sm uppercase">
-            <th className="p-3 border border-teal-500" rowSpan={2}>No</th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Jenis Pelatihan</th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Nama Pelatihan</th>
-            <th className="p-3 border border-teal-500" colSpan={2}>Tanggal</th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Nomor Sertifikat/Surat Tugas</th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Instansi Penyelenggara</th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Jumlah Jam Pelajaran</th>
-            <th className="p-3 border border-teal-500" rowSpan={2}>Pilihan</th>
+            <th className="p-3 border border-teal-500">No</th>
+            <th className="p-3 border border-teal-500">Jenis Pelatihan</th>
+            <th className="p-3 border border-teal-500">Nama Pelatihan</th>
+            <th className="p-3 border border-teal-500">Tanggal Mulai</th>
+            <th className="p-3 border border-teal-500">Tanggal Selesai</th>
+            <th className="p-3 border border-teal-500">Nomor Sertifikat</th>
+            <th className="p-3 border border-teal-500">Instansi</th>
+            <th className="p-3 border border-teal-500">Jumlah Jam</th>
+            <th className="p-3 border border-teal-500">Pilihan</th>
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={9} className="text-center p-4">Tidak ada data.</td>
+              <td colSpan={9} className="text-center p-4">
+                Tidak ada data.
+              </td>
             </tr>
           ) : (
             data.map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
+              <tr
+                key={index}
+                className={`${
+                  item.isNew
+                    ? "bg-red-200"
+                    : item.isApproved
+                    ? "bg-white"
+                    : "bg-gray-50"
+                }`}
+              >
                 <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.jenis}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
@@ -177,9 +200,12 @@ const RiwayatPelatihanKlasikal = () => {
                       <FontAwesomeIcon icon={faEdit} /> Edit
                     </button>
                     <button
-                      className="text-red-500 hover:text-red-700"
-                      aria-label="Delete"
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => handleApprove(item)}
                     >
+                      <FontAwesomeIcon icon={faCheck} /> Approve
+                    </button>
+                    <button className="text-red-500 hover:text-red-700">
                       <FontAwesomeIcon icon={faTrash} /> Delete
                     </button>
                   </div>
@@ -196,7 +222,7 @@ const RiwayatPelatihanKlasikal = () => {
         setFormData={setFormData}
         handleCloseModal={handleCloseModal}
         handleSubmitForm={handleSubmitForm}
-        />
+      />
     </div>
   );
 };

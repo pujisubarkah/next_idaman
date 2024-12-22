@@ -97,7 +97,7 @@ export const sidebarData: SidebarItem[] = [
   },
   {
     label: "Semua Pegawai",
-    to: "#",
+    to: "/pns/search",
     icon: FaTable,
     roles: ["1"],
   },

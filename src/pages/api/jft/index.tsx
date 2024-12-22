@@ -6,8 +6,8 @@ export default async function handler(req, res) {
             // Mengambil data dari tabel m_spg_referensi_jf
             const { data: jfData, error: jfError } = await supabase
                 .schema('siap')
-                .from('m_spg_referensi_jfu')
-                .select('jfu_id, jfu_nama, jfu_pangkat_awal, jfu_pangkat_puncak');
+                .from('m_spg_referensi_jf')
+                .select('jf_id, jf_nama, jf_gol_awal_id, jf_gol_akhir_id, jf_skill');
 
             if (jfError) {
                 return res.status(500).json({ error: jfError.message });
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
             const { data: jabatanData, error: jabatanError } = await supabase
                 .schema('siap')
                 .from('m_spg_jabatan')
-                .select('jabatan_id, jfu_id');
+                .select('jabatan_id, jf_id');
 
             if (jabatanError) {
                 return res.status(500).json({ error: jabatanError.message });
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
             const groupedResult = jfData
                 .map(jf => {
                     // Menghubungkan data jabatan dengan jf_id
-                    const relatedJabatan = jabatanData.filter(jabatan => jabatan.jfu_id === jf.jfu_id);
+                    const relatedJabatan = jabatanData.filter(jabatan => jabatan.jf_id === jf.jf_id);
 
                     // Menghubungkan data pegawai dengan jabatan_id
                     const pegawai = relatedJabatan.flatMap(jabatan =>
@@ -68,10 +68,11 @@ export default async function handler(req, res) {
                     });
 
                     return {
-                        jf_id: jf.jfu_id,
-                        jf_nama: jf.jfu_nama,
-                        jf_gol_awal_id: jf.jfu_pangkat_awal,
-                        jf_gol_akhir_id: jf.jfu_pangkat_puncak,
+                        jf_id: jf.jf_id,
+                        jf_nama: jf.jf_nama,
+                        jf_gol_awal_id: jf.jf_gol_awal_id,
+                        jf_gol_akhir_id: jf.jf_gol_akhir_id,
+                        jf_skill: jf.jf_skill,
                         total_pegawai: pegawaiWithSatuanKerja.length, // Jumlah pegawai per jf_id
                         pegawai: pegawaiWithSatuanKerja,
                     };

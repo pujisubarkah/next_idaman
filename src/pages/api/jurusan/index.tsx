@@ -6,9 +6,9 @@ export default async function handler(req, res) {
       // Fetch data from Supabase sorted by satuan_kerja_nama
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema name is correct
-        .from('m_spg_satuan_kerja') // Ensure the table name is correct
+        .from('m_spg_jurusan') // Ensure the table name is correct
         .select('*')
-        .order('satuan_kerja_nama', { ascending: true }); // Sorting by satuan_kerja_nama in ascending order
+        .order('jurusan_id', { ascending: true }); // Sorting by satuan_kerja_nama in ascending order
 
       if (error) throw error;
 
@@ -20,18 +20,18 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { satuan_kerja_nama, kode_skpd, status } = req.body;
+      const { jurusan_nm} = req.body;
 
       // Validate input
-      if (!satuan_kerja_nama || !kode_skpd || status === undefined) {
+      if (!jurusan_nm) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
 
       // Insert data into Supabase
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema name is correct
-        .from('m_spg_satuan_kerja') // Ensure the table name is correct
-        .insert([{ satuan_kerja_nama, kode_skpd, status }]);
+        .from('m_spg_jurusan') // Ensure the table name is correct
+        .insert([{ jurusan_nm}]);
 
       if (error) throw error;
 

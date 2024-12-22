@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         if (req.method === 'GET') {
             // API GET: Ambil data berdasarkan id
             const { data, error } = await supabase
-                .schema('siap')
+                .schema('siap_skpd')
                 .from('spg_riwayat_nonformal')
                 .select('*')
                 .eq('id', id) // Menggunakan 'id' sebagai parameter pencarian
@@ -29,19 +29,27 @@ export default async function handler(req, res) {
         if (req.method === 'PUT') {
             // API PUT: Update data berdasarkan id
             const {
+                jenis_pelatihan,
+                non_nama,
                 non_tgl_mulai,
                 non_tgl_selesai,
-                non_deskripsi,
+                non_sttp,
+                non_penyelenggara,
+                diklat_jumlah_jam,
                 // Tambahkan field lain yang akan diedit
             } = req.body;
 
             const { data, error } = await supabase
-                .schema('siap')
+                .schema('siap_skpd')
                 .from('spg_riwayat_nonformal')
                 .update({
+                    jenis_pelatihan,
                     non_tgl_mulai,
                     non_tgl_selesai,
-                    non_deskripsi,
+                    non_sttp,
+                    non_penyelenggara,
+                    diklat_jumlah_jam,
+                    
                     // Tambahkan field lain yang ingin diperbarui
                 })
                 .eq('id', id); // Update berdasarkan 'id'
