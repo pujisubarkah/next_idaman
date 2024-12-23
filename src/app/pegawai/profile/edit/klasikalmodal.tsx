@@ -94,7 +94,7 @@ const PelatihanKlasikalModal: React.FC<PelatihanKlasikalModalProps> = ({
             className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800"
             onClick={handleSubmitForm}
           >
-            Simpan
+            Update
           </button>
           <button
             className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800"

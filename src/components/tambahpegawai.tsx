@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 // Daftar field form
 const formFields = [
+  { label: "Unit Kerja", key: "unitKerja", type: "text" },
     { label: "Unit Kerja", key: "unitKerja", type: "text" },
     { label: "NIP", key: "nip", type: "text" },
     { label: "Nama Lengkap", key: "namaLengkap", type: "text" },

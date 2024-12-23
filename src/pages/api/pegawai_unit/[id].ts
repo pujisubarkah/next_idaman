@@ -1,70 +1,71 @@
-import { supabase } from '../../../../lib/supabaseClient'; // Pastikan path sesuai dengan proyek Anda
+import { supabase } from '../../../../lib/supabaseClient';
 
 export default async function handler(req, res) {
   const { method } = req;
-  const { id } = req.query; // Mendapatkan ID dari URL parameter
+  const { id } = req.query;
+
+  if (!id) {
+    return res.status(400).json({ message: 'Parameter ID tidak ditemukan' });
+  }
 
   if (method === 'GET') {
     try {
-      // Fetch data from Supabase berdasarkan peg_id
       const { data, error } = await supabase
-        .schema('siap_skpd') // Pastikan nama schema benar
-        .from('spg_pegawai') // Pastikan nama tabel benar
-        .select('*')
-        .eq('peg_id', id); // Menggunakan peg_id sebagai filter
+      .schema('siap_skpd')
+        .from('spg_pegawai')
+        .select('peg_nama, peg_nip, peg_gelar_depan') // Kolom yang diambil
+        .eq('peg_id', id);
 
       if (error) throw error;
 
-      return res.status(200).json(data); // Mengirimkan data yang ditemukan
+      if (data.length === 0) {
+        return res.status(404).json({ message: 'Pegawai tidak ditemukan' });
+      }
+
+      return res.status(200).json(data[0]);
     } catch (error) {
       return res.status(500).json({ message: 'Error fetching data', error: error.message });
     }
   } else if (method === 'POST') {
     try {
-      // Mendapatkan semua kolom dari request body
-      const newRecord = req.body; 
+      const { peg_nama, peg_nip, peg_gelar_depan } = req.body;
 
-      // Validasi input: Anda bisa menambah validasi kolom tertentu jika diperlukan
-      if (!newRecord) {
-        return res.status(400).json({ message: 'Missing required fields' });
+      if (!peg_nama || !peg_nip) {
+        return res.status(400).json({ message: 'Nama dan NIP wajib diisi' });
       }
 
-      // Insert data into Supabase
       const { data, error } = await supabase
-        .schema('siap_skpd') // Pastikan nama schema benar
-        .from('spg_pegawai') // Pastikan nama tabel benar
-        .insert([newRecord]); // Insert semua kolom yang ada dalam request body
+      .schema('siap_skpd')
+        .from('spg_pegawai')
+        .insert([{ peg_nama, peg_nip, peg_gelar_depan }]);
 
       if (error) throw error;
 
-      return res.status(201).json(data); // Mengirimkan data yang baru dimasukkan
+      return res.status(201).json(data);
     } catch (error) {
       return res.status(500).json({ message: 'Error inserting data', error: error.message });
     }
   } else if (method === 'PUT') {
     try {
-      const updatedFields = req.body; // Mendapatkan semua kolom dari request body
+      const { peg_nama, peg_nip, peg_gelar_depan } = req.body;
 
-      // Validasi input: Anda bisa menambah validasi kolom tertentu jika diperlukan
-      if (!updatedFields) {
-        return res.status(400).json({ message: 'Missing required fields' });
+      if (!peg_nama && !peg_nip && !peg_gelar_depan) {
+        return res.status(400).json({ message: 'Tidak ada kolom untuk diperbarui' });
       }
 
-      // Update data berdasarkan peg_id
       const { data, error } = await supabase
-        .schema('siap_skpd') // Pastikan nama schema benar
-        .from('spg_pegawai') // Pastikan nama tabel benar
-        .update(updatedFields) // Update semua kolom yang ada dalam request body
-        .eq('peg_id', id); // Memperbarui data berdasarkan peg_id yang diterima dari query
+      .schema('siap_skpd')
+        .from('spg_pegawai')
+        .update({ peg_nama, peg_nip, peg_gelar_depan })
+        .eq('peg_id', id);
 
       if (error) throw error;
 
-      return res.status(200).json(data); // Data yang sudah diperbarui
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ message: 'Error updating data', error: error.message });
     }
   } else {
-    // Mengembalikan status 405 jika metode tidak diperbolehkan
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 }
