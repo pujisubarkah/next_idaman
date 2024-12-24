@@ -7,7 +7,8 @@ export default async function handler(req, res) {
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema is correct
         .from('m_spg_tingkat_pendidikan') // Ensure the table name is correct
-        .select('nm_tingpend'); // Adjust the fields to be fetched
+        .select('nm_tingpend') // Adjust the fields to be fetched
+        .order('tingpend_id', { ascending: true }); // Adjust the ordering if needed
 
       if (error) throw error;
 

@@ -16,13 +16,17 @@ interface Pendidikan {
   riw_pendidikan_lokasi: string;
 }
 
+interface TingkatPendidikan {
+  nm_tingpend: string;
+}
+
 const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
   const [dataPendidikan, setDataPendidikan] = useState<Pendidikan[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);
   const [selectedData, setSelectedData] = useState<Pendidikan | null>(null);
-  const [tingkatPendidikanOptions, setTingkatPendidikanOptions] = useState<string[]>([]);
+  const [tingkatPendidikanOptions, setTingkatPendidikanOptions] = useState<TingkatPendidikan[]>([]);
 
   const formatTanggal = (tanggal: string): string => {
     const bulanIndo = [
@@ -75,10 +79,11 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
   useEffect(() => {
     const fetchTingkatPendidikan = async () => {
       try {
-        const response = await axios.get('/api/tingkat-pendidikan');
-        setTingkatPendidikanOptions(response.data.map((item: any) => item.nm_tingpend));
+        const response = await axios.get('/api/master_data/pendidikan');
+        const data = response.data;
+        setTingkatPendidikanOptions(data);
       } catch (error) {
-        console.error("Error fetching tingkat pendidikan:", error);
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -260,40 +265,75 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
                 </div>
               </div>
             ) : (
-              <form onSubmit={modalType === "add" ? handleAdd : handleEdit}>
+              <form onSubmit={modalType === 'add' ? handleAdd : handleEdit}>
                 <div className="mb-4">
                   <label className="block font-medium">Tingkat Pendidikan</label>
                   <select
                     name="tingpend"
-                    className="border p-2 w-full"
+                    className="border p-2 w-full text-black bg-white"
                     required
                   >
-                    <option value="" disabled>
-                      Pilih Tingkat Pendidikan
-                    </option>
-                    {tingkatPendidikanOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                    <option value="">Pilih Tingkat Pendidikan</option>
+                    {tingkatPendidikanOptions.map((option, index) => (
+                      <option key={index} value={option.nm_tingpend}>
+                        {option.nm_tingpend}
                       </option>
                     ))}
                   </select>
                 </div>
+                <div className="mb-4">
+                  <label className="block font-medium">Nama Sekoloh</label>
+                  <input
+                    type="text"
+                    name="jurusan"
+                    className="border p-2 w-full"
+                    defaultValue={selectedData?.jurusan || ''}
+                  />
+                  </div>
+                  <div className="mb-4">
+                  <label className="block font-medium">Lokasi Sekolah</label>
+                  <input
+                    type="text"
+                    name="jurusan"
+                    className="border p-2 w-full"
+                    defaultValue={selectedData?.jurusan || ''}
+                  />
+                  </div>
+
                 <div className="mb-4">
                   <label className="block font-medium">Jurusan</label>
                   <input
                     type="text"
                     name="jurusan"
                     className="border p-2 w-full"
-                    defaultValue={selectedData?.jurusan || ""}
+                    defaultValue={selectedData?.jurusan || ''}
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block font-medium">STTB/Ijazah</label>
+                  <label className="block font-medium">Nomor Ijazah/STTB</label>
                   <input
                     type="text"
                     name="riw_pendidikan_sttb_ijazah"
                     className="border p-2 w-full"
-                    defaultValue={selectedData?.riw_pendidikan_sttb_ijazah || ""}
+                    defaultValue={selectedData?.riw_pendidikan_sttb_ijazah || ''}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block font-medium">Tanggal Ijazah/STTB</label>
+                  <input
+                    type="date"
+                    name="riw_pendidikan_tanggal"
+                    className="border p-2 w-full"
+                    defaultValue={selectedData?.riw_pendidikan_tanggal || ''}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block font-medium">Nama Kepala Sekolah/Rektor</label>
+                  <input
+                    type="text"
+                    name="riw_pendidikan_pejabat"
+                    className="border p-2 w-full"
+                    defaultValue={selectedData?.riw_pendidikan_pejabat || ''}
                   />
                 </div>
                 <div className="flex justify-end space-x-4">
