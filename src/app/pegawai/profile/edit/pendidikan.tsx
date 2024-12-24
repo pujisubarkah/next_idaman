@@ -22,7 +22,7 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);
   const [selectedData, setSelectedData] = useState<Pendidikan | null>(null);
-
+  const [tingkatPendidikanOptions, setTingkatPendidikanOptions] = useState<string[]>([]);
 
   const formatTanggal = (tanggal: string): string => {
     const bulanIndo = [
@@ -72,8 +72,6 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
     }
   };
 
-  const [tingkatPendidikanOptions, setTingkatPendidikanOptions] = useState<string[]>([]);
-
   useEffect(() => {
     const fetchTingkatPendidikan = async () => {
       try {
@@ -83,12 +81,9 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
         console.error("Error fetching tingkat pendidikan:", error);
       }
     };
-  
+
     fetchTingkatPendidikan();
   }, []);
-  
-  
-
 
   const openModal = (type: "add" | "edit" | "delete", data: Pendidikan | null = null) => {
     setModalType(type);
@@ -266,44 +261,41 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
               </div>
             ) : (
               <form onSubmit={modalType === "add" ? handleAdd : handleEdit}>
-              <div className="mb-4">
-  <label className="block font-medium">Tingkat Pendidikan</label>
-  <select
-    name="tingpend"
-    className="border p-2 w-full"
-    required
-  >
-    <option value="" disabled>
-      Pilih Tingkat Pendidikan
-    </option>
-    {tingkatPendidikanOptions.map((option) => (
-      <option key={option} value={option}>
-        {option}
-      </option>
-    ))}
-  </select>
-</div>
-
-
-                  <div className="mb-4">
-                    <label className="block font-medium">Jurusan</label>
-                    <input
-                      type="text"
-                      name="jurusan"
-                      className="border p-2 w-full"
-                      defaultValue={selectedData?.jurusan || ""}
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block font-medium">STTB/Ijazah</label>
-                    <input
-                      type="text"
-                      name="riw_pendidikan_sttb_ijazah"
-                      className="border p-2 w-full"
-                      defaultValue={selectedData?.riw_pendidikan_sttb_ijazah || ""}
-                    />
-                  </div>
-
+                <div className="mb-4">
+                  <label className="block font-medium">Tingkat Pendidikan</label>
+                  <select
+                    name="tingpend"
+                    className="border p-2 w-full"
+                    required
+                  >
+                    <option value="" disabled>
+                      Pilih Tingkat Pendidikan
+                    </option>
+                    {tingkatPendidikanOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label className="block font-medium">Jurusan</label>
+                  <input
+                    type="text"
+                    name="jurusan"
+                    className="border p-2 w-full"
+                    defaultValue={selectedData?.jurusan || ""}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block font-medium">STTB/Ijazah</label>
+                  <input
+                    type="text"
+                    name="riw_pendidikan_sttb_ijazah"
+                    className="border p-2 w-full"
+                    defaultValue={selectedData?.riw_pendidikan_sttb_ijazah || ""}
+                  />
+                </div>
                 <div className="flex justify-end space-x-4">
                   <button
                     type="button"

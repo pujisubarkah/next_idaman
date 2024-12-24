@@ -160,12 +160,7 @@ const EditPegawai: React.FC = () => {
     return (
       <div>
         <p className="text-red-600">{error}</p>
-        <a
-          href="/edit-pegawai"
-          className="text-blue-600 underline hover:text-blue-800"
-        >
-          Return to main page
-        </a>
+     
       </div>
     );
   }
