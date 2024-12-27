@@ -158,8 +158,8 @@ const FormPegawai = () => {
       // Special handling for Gelar to render front and back titles side by side
       return (
         <div key={field.key} className="mb-4 grid grid-cols-2 ml-20 mr-40 gap-4">
-         <label className="block text-gray-700 text-sm font-bold ml-80 ">
-            Gelar Depan:
+          <label className="block text-gray-700 text-sm font-bold ml-80">
+          Gelar Depan:
           </label>
           <div className="flex w-2/3 space-x-2">
             <input
@@ -795,12 +795,6 @@ const FormPegawai = () => {
     }
   };
   
-
-
-
-
-
-
   return (
     <div className="m-2 w-full">
       <form onSubmit={handleSubmit} className="w-full mx-auto">

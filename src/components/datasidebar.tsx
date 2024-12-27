@@ -204,13 +204,13 @@ export const sidebarData: SidebarItem[] = [
   },
   {
     label: "Ubah Password",
-    to: "#",
+    to: "/user/edit",
     icon: FaCog,
     roles: ["1", "4"],
   },
   {
     label: "Logout",
-    to: "#",
+    to: "/logout",
     icon: FaPowerOff,
     roles: ["1", "4"],
   },

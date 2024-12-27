@@ -4,19 +4,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import RootLayout from "../../pegawai/profile/edit/layout";
-import { FaPlus } from "react-icons/fa";
 
 export default function ListUnitPage() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [filteredStatuses, setFilteredStatuses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
- 
   const [searchTerm, setSearchTerm] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Modal form state
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
   const [satuanKerjaNama, setSatuanKerjaNama] = useState("");
   const [kodeSkpd, setKodeSkpd] = useState("");
   const [status, setStatus] = useState(1); // 1 for active, 0 for inactive
@@ -141,14 +139,13 @@ export default function ListUnitPage() {
               Search
             </button>
           </div>
-            <button
-            className="px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded shadow flex items-center"
+          <button
+            className="px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded shadow"
             onClick={toggleModal}
-            >
-            <FaPlus className="mr-2" />
+          >
             Add Satuan Kerja
-            </button>
-          </div>
+          </button>
+        </div>
 
         {/* Show the Loading Spinner while data is loading */}
         {loading ? (
