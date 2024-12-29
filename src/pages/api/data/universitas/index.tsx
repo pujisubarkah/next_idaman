@@ -1,4 +1,4 @@
-import { supabase } from '../../../../lib/supabaseClient'; // Adjust path accordingly
+import { supabase } from '../../../../../lib/supabaseClient'; // Adjust path accordingly
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -6,9 +6,9 @@ export default async function handler(req, res) {
       // Fetch data from Supabase sorted by satuan_kerja_nama
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema name is correct
-        .from('m_spg_satuan_kerja') // Ensure the table name is correct
-        .select('*')
-        .order('satuan_kerja_nama', { ascending: true }); // Sorting by satuan_kerja_nama in ascending order
+        .from('m_spg_universitas') // Ensure the table name is correct
+        .select('univ_id, univ_nmpti, univ_kota')
+        .order('univ_nmpti', { ascending: true }); // Sorting by satuan_kerja_nama in ascending order
 
       if (error) throw error;
 
@@ -20,18 +20,18 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { satuan_kerja_nama, kode_skpd, status } = req.body;
+      const {  univ_nmpti, univ_kota } = req.body;
 
       // Validate input
-      if (!satuan_kerja_nama || !kode_skpd || status === undefined) {
+      if (!univ_nmpti || !univ_kota) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
 
       // Insert data into Supabase
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema name is correct
-        .from('m_spg_satuan_kerja') // Ensure the table name is correct
-        .insert([{ satuan_kerja_nama, kode_skpd, status }]);
+        .from('m_spg_universitas') // Ensure the table name is correct
+        .insert([{ univ_nmpti, univ_kota }]);
 
       if (error) throw error;
 

@@ -1,4 +1,4 @@
-import { supabase } from '../../../../lib/supabaseClient'; // Pastikan path sesuai dengan proyek Anda
+import { supabase } from '../../../../../lib/supabaseClient'; // Pastikan path sesuai dengan proyek Anda
 
 export default async function handler(req, res) {
   const { method } = req;

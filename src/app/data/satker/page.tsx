@@ -33,7 +33,7 @@ export default function ListUnitPage() {
   const fetchStatuses = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/satuan_kerja");
+      const response = await axios.get("/api/data/satuan_kerja");
       const data = Array.isArray(response.data) ? response.data : [];
       setStatuses(data);
       setFilteredStatuses(data);
@@ -70,7 +70,7 @@ export default function ListUnitPage() {
   const handleCreateFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/satuan_kerja", {
+      const response = await axios.post("/api/data/satuan_kerja", {
         satuan_kerja_nama: satuanKerjaNama,
         kode_skpd: kodeSkpd,
         status: status,
@@ -104,7 +104,7 @@ export default function ListUnitPage() {
       return;
     }
     try {
-      const response = await axios.put(`/api/satuan_kerja/${editId}`, {
+      const response = await axios.put(`/api/data/satuan_kerja/${editId}`, {
         satuan_kerja_nama: satuanKerjaNama,
         kode_skpd: kodeSkpd,
         status: status,

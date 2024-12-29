@@ -23,7 +23,7 @@ const ListUnit = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/unit_kerja");
+        const response = await axios.get("/api/data/unit_kerja");
         const data = Array.isArray(response.data) ? response.data : [];
 
      // Fungsi untuk menyusun data dengan menghitung pegawai_count di setiap level

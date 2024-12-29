@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import LoadingSpinner from '../../../components/LoadingSpinner'; // Adjust the path as necessary
 import axios from 'axios'; // Axios for API call
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function ListUnitPage() {
@@ -21,7 +21,7 @@ export default function ListUnitPage() {
       setLoading(true);
       try {
         // Fetch unit data
-        const response = await axios.get('/api/universitas');
+        const response = await axios.get('/api/data/universitas');
         const data = Array.isArray(response.data) ? response.data : [];
 
         // Set units and initial filtered data
@@ -101,10 +101,10 @@ export default function ListUnitPage() {
                       <td className="px-4 py-2 border border-teal-300">{unit.univ_kota}</td>
                       <td className="px-4 py-2 border border-teal-300">
                         <button className="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600 mr-2">
-                          Edit
+                         <FontAwesomeIcon icon={faEdit} className="mr-2" /> Edit
                         </button>
                         <button className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600 mr-2">
-                          Hapus
+                          <FontAwesomeIcon icon={faTrash} className="mr-2" />Hapus
                         </button>
                       </td>
                     </tr>

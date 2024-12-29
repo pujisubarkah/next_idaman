@@ -21,7 +21,7 @@ export default function ListUnitPage() {
       setLoading(true);
       try {
         // Fetch unit data
-        const response = await axios.get('/api/jurusan');
+        const response = await axios.get('/api/data/jurusan');
         const data = Array.isArray(response.data) ? response.data : [];
 
         // Set units and initial filtered data

@@ -18,7 +18,7 @@ const Dashboard = () => {
   const fetchStatuses = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/jft");
+      const response = await axios.get("/api/data/jft");
       setStatuses(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching statuses:", error.response?.data || error.message);

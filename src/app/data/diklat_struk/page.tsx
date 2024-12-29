@@ -4,51 +4,60 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import RootLayout from "../../pegawai/profile/edit/layout";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faEye } from '@fortawesome/free-solid-svg-icons';
 
 export default function ListUnitPage() {
-  const [statuses, setStatuses] = useState<any[]>([]);
-  const [filteredStatuses, setFilteredStatuses] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Modal form state
-const [isModalOpen, setIsModalOpen] = useState(false);
-  const [satuanKerjaNama, setSatuanKerjaNama] = useState("");
-  const [kodeSkpd, setKodeSkpd] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [kategoriNama, setKategoriNama] = useState("");
+  const [isPegawaiModalOpen, setIsPegawaiModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<any[]>([]);
+  const [kategoriParent, setKategoriParent] = useState("");
   const [status, setStatus] = useState(1); // 1 for active, 0 for inactive
   const [editId, setEditId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchStatuses();
-  }, [currentPage, entriesPerPage]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm]);
-
-  const fetchStatuses = async () => {
+  const fetchCategories = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/satuan_kerja");
+      const response = await axios.get("/api/data/diklat_struktural");
       const data = Array.isArray(response.data) ? response.data : [];
-      setStatuses(data);
-      setFilteredStatuses(data);
+      setCategories(data);
+      setFilteredCategories(data);
+      setTotalPages(Math.ceil(data.length / entriesPerPage));
     } catch (error) {
-      console.error("Error fetching statuses:", error.response?.data || error.message);
+      console.error("Error fetching categories:", error.response?.data || error.message);
+      setError("Failed to fetch categories.");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchCategories();
+  }, [currentPage, entriesPerPage]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm, categories]);
+
   const handleSearch = () => {
-    const searchResults = statuses.filter(
+    const searchResults = categories.filter(
       (item) =>
-        item.satuan_kerja_nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.kode_skpd.toLowerCase().includes(searchTerm.toLowerCase())
+        item.kategori_nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.kategori_parent_name && item.kategori_parent_name.kategori_nama.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-    setFilteredStatuses(searchResults);
+    setFilteredCategories(searchResults);
+    setTotalPages(Math.ceil(searchResults.length / entriesPerPage)); // Update total pages based on search results
   };
 
   const handlePageChange = (page: number) => {
@@ -57,41 +66,46 @@ const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleEntriesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setEntriesPerPage(Number(event.target.value));
+    setCurrentPage(1); // Reset to first page when entries per page changes
   };
 
-  // Open and close modal
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+    if (isModalOpen) {
+      // Reset form when closing the modal
+      setKategoriNama("");
+      setKategoriParent("");
+      setStatus(1);
+      setEditId(null);
+    }
   };
 
-  // Handle form submit to create new Satuan Kerja
   const handleCreateFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/satuan_kerja", {
-        satuan_kerja_nama: satuanKerjaNama,
-        kode_skpd: kodeSkpd,
+      const response = await axios.post("/api/data/diklat_struktural", {
+        kategori_nama: kategoriNama,
+        kategori_parent: kategoriParent,
         status: status,
       });
-      console.log("Satuan Kerja created:", response.data);
-      // Close modal and refresh the data
+      console.log("Kategori created:", response.data);
       toggleModal();
-      fetchStatuses();
+      fetchCategories();
     } catch (error) {
-      console.error("Error creating satuan kerja:", error.response?.data || error.message);
+      console.error("Error creating kategori:", error.response?.data || error.message);
+      setError ("Failed to create kategori.");
     }
   };
 
   const handleEdit = (id: number) => {
-    const satuanKerja = statuses.find(item => item.satuan_kerja_id === id);
-    if (satuanKerja) {
-      setSatuanKerjaNama(satuanKerja.satuan_kerja_nama);
-      setKodeSkpd(satuanKerja.kode_skpd);
-      setStatus(satuanKerja.status);
-      setEditId(satuanKerja.satuan_kerja_id); // Pastikan editId di-set dengan benar
+    const kategori = categories.find(item => item.kategori_id === id);
+    if (kategori) {
+      setKategoriNama(kategori.kategori_nama);
+      setKategoriParent(kategori.kategori_parent);
+      setEditId(kategori.kategori_id);
       setIsModalOpen(true);
     } else {
-      console.error("Satuan Kerja not found for ID:", id);
+      console.error("Kategori not found for ID:", id);
     }
   };
 
@@ -102,16 +116,33 @@ const [isModalOpen, setIsModalOpen] = useState(false);
       return;
     }
     try {
-      const response = await axios.put(`/api/satuan_kerja/${editId}`, {
-        satuan_kerja_nama: satuanKerjaNama,
-        kode_skpd: kodeSkpd,
+      const response = await axios.put(`/api/data/diklat_struktural/${editId}`, {
+        kategori_nama: kategoriNama,
+        kategori_parent: kategoriParent,
         status: status,
       });
-      console.log("Satuan Kerja updated:", response.data);
-      toggleModal(); // Close the modal
-      fetchStatuses(); // Refresh the data after edit
+      console.log("Kategori updated:", response.data);
+      toggleModal();
+      fetchCategories();
     } catch (error) {
-      console.error("Error updating satuan kerja:", error.response?.data || error.message);
+      console.error("Error updating kategori:", error.response?.data || error.message);
+      setError("Failed to update kategori.");
+    }
+  };
+
+  const handleShowPegawai = (pegawai_in_kategori) => {
+    setModalData(pegawai_in_kategori);
+    setIsPegawaiModalOpen(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`/api/data/diklat_struktural/${id}`);
+      console.log("Kategori deleted");
+      fetchCategories();
+    } catch (error) {
+      console.error("Error deleting kategori:", error.response?.data || error.message);
+      setError("Failed to delete kategori.");
     }
   };
 
@@ -119,7 +150,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
     <RootLayout>
       <div className="flex-4 h-full px-4 overflow-auto">
         <div className="text-center mb-10">
-          <h3 className="text-lg font-bold font-poppins">DAFTAR SATUAN KERJA LEMBAGA ADMINISTRASI NEGARA</h3>
+          <h3 className="text-lg font-bold font-poppins">DAFTAR MASTER DIKLAT JABATAN STRUKTURAL</h3>
         </div>
 
         {/* Search and Add Button */}
@@ -128,22 +159,16 @@ const [isModalOpen, setIsModalOpen] = useState(false);
             <input
               type="text"
               className="px-3 py-2 border rounded-md w-64"
-              placeholder="Cari Satuan Kerja"
+              placeholder="Cari Kategori"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button
-              className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
           </div>
           <button
             className="px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded shadow"
             onClick={toggleModal}
           >
-            Add Satuan Kerja
+            Tambah Struktural Kategori
           </button>
         </div>
 
@@ -157,25 +182,36 @@ const [isModalOpen, setIsModalOpen] = useState(false);
             <table className="w-full border border-teal-600 rounded-lg overflow-hidden my-5">
               <thead>
                 <tr className="bg-teal-900 text-white">
-                  <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Nama</th>
-                  <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Kode Satuan Kerja</th>
-                  <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Status</th>
+                  <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Nama Kategori</th>
+                  <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Parent</th>
+                  <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Jumlah Pegawai</th>
                   <th className="p-3 border border-teal-700 text-left font-bold uppercase text-sm">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredStatuses.length > 0 ? (
-                  filteredStatuses.map(({ satuan_kerja_id, satuan_kerja_nama, kode_skpd, status }, index) => (
+                {filteredCategories.length > 0 ? (
+                  filteredCategories.map(({ kategori_id, kategori_nama, kategori_parent_name, pegawai_count, pegawai_in_kategori }, index) => (
                     <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
-                      <td className="px-4 py-2 border border-teal-300">{satuan_kerja_nama}</td>
-                      <td className="px-4 py-2 border border-teal-300">{kode_skpd}</td>
-                      <td className="px-4 py-2 border border-teal-300">{status === 1 ? "Aktif" : "Tidak Aktif"}</td>
+                      <td className="px-4 py-2 border border-teal-300">{kategori_nama}</td>
+                      <td className="px-4 py-2 border border-teal-300">{kategori_parent_name?.kategori_nama || 'N/A'}</td>
+                      <td
+                        className="px-4 py-2 border border-teal-300 cursor-pointer text-teal-700 hover:underline"
+                        onClick={() => handleShowPegawai(pegawai_in_kategori)}
+                      >
+                        {pegawai_count}
+                      </td>
                       <td className="px-4 py-2 border border-teal-300">
                         <button
                           className="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600 mr-2"
-                          onClick={() => handleEdit(satuan_kerja_id)}
+                          onClick={() => handleEdit(kategori_id)}
                         >
                           Edit
+                        </button>
+                        <button
+                          className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
+                          onClick={() => handleDelete(kategori_id)}
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -192,148 +228,55 @@ const [isModalOpen, setIsModalOpen] = useState(false);
           </div>
         )}
 
-        {/* Modal for Adding Satuan Kerja */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg w-96">
-              <h3 className="text-lg font-bold mb-4">Tambah Satuan Kerja</h3>
-              <form onSubmit={handleCreateFormSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Nama Satuan Kerja</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-md"
-                    value={satuanKerjaNama}
-                    onChange={(e) => setSatuanKerjaNama(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Kode Satuan Kerja</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-md"
-                    value={kodeSkpd}
-                    onChange={(e) => setKodeSkpd(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="status"
-                        value="1"
-                        checked={status === 1}
-                        onChange={() => setStatus(1)}
-                        className="mr-2"
-                      />
-                      Aktif
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="status"
-                        value="0"
-                        checked={status === 0}
-                        onChange={() => setStatus(0)}
-                        className="mr-2"
-                      />
-                      Tidak Aktif
-                    </label>
-                  </div>
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    className="px-4 py-2 text-white bg-gray-400 rounded"
-                    onClick={toggleModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-white bg-blue-600 rounded"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Modal for Edit Satuan Kerja */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg w-96">
-              <h3 className="text-lg font-bold mb-4">Edit Satuan Kerja</h3>
-              <form onSubmit={handleFormSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Nama Satuan Kerja</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-md"
-                    value={satuanKerjaNama}
-                    onChange={(e) => setSatuanKerjaNama(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Kode Satuan Kerja</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-md"
-                    value={kodeSkpd}
-                    onChange={(e) => setKodeSkpd(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="status"
-                        value="1"
-                        checked={status === 1}
-                        onChange={() => setStatus(1)}
-                        className="mr-2"
-                      />
-                      Aktif
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="status"
-                        value="0"
-                        checked={status === 0}
-                        onChange={() => setStatus(0)}
-                        className="mr-2"
-                      />
-                      Tidak Aktif
-                    </label>
-                  </div>
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    className="px-4 py-2 text-white bg-gray-400 rounded"
-                    onClick={toggleModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-white bg-blue-600 rounded"
-                  >
-                    Update
-                  </button>
-                </div>
-              </form>
+        {isPegawaiModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg w-3/4 max-h-[80%]">
+              <h2 className="text-lg font-bold mb-4">Detail Pegawai</h2>
+              <div className="overflow-y-auto max-h-[400px]">
+                <table className="w-full border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="p-2 border border-gray-300 text-left">NIP</th>
+                      <th className="p-2 border border-gray-300 text-left">Nama</th>
+                      <th className="p-2 border border-gray-300 text-left">Satuan Kerja</th>
+                      <th className="p-2 border border-gray-300 text-left">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {modalData.map(({ peg_nip, peg_nama, satuan_kerja_nama }, index) => (
+                      <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                        <td className="p-2 border border-gray-300">{peg_nip}</td>
+                        <td className="p-2 border border-gray-300">{peg_nama}</td>
+                        <td className="p-2 border border-gray-300">{satuan_kerja_nama}</td>
+                        <td className="p-2 border border-gray-300">
+                          <div className="flex gap-x-2">
+                            <button
+                              className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center"
+                              onClick={() => window.open(`/pegawai/profile/edit/${peg_nip}`, "_blank")}
+                            >
+                              <FontAwesomeIcon icon={faEye} className="mr-2" />
+                              View
+                            </button>
+                            <button
+                              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 flex items-center"
+                              onClick={() => window.open(`/edit-pegawai/${peg_nip}`, "_blank")}
+                            >
+                              <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                              Edit
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <button
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={() => setIsPegawaiModalOpen(false)}
+              >
+                Close
+              </button>
             </div>
           </div>
         )}
@@ -348,21 +291,22 @@ const [isModalOpen, setIsModalOpen] = useState(false);
             >
               Previous
             </button>
-            {[1, 2, 3].map((page) => (
+            {[...Array(totalPages)].map((_, index) => (
               <button
-                key={page}
+                key={index}
                 className={`px-3 py-1 text-sm rounded ${
-                  page === currentPage
+                  index + 1 === currentPage
                     ? "text-white bg-blue-600 hover:bg-blue-700"
                     : "text-gray-600 border border-gray-300 hover:bg-gray-100"
                 }`}
-                onClick={() => handlePageChange(page)}
+                onClick={() => handlePageChange(index + 1)}
               >
-                {page}
+                {index + 1}
               </button>
             ))}
             <button
               className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-100"
+              disabled={currentPage === totalPages}
               onClick={() => handlePageChange(currentPage + 1)}
             >
               Next

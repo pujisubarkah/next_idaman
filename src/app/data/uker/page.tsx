@@ -16,7 +16,7 @@ export default function ListUnitPage() {
       setLoading(true);
       try {
         // Fetch unit data
-        const response = await axios.get('/api/unit_kerja');
+        const response = await axios.get('/api/data/unit_kerja');
         const data = Array.isArray(response.data) ? response.data : [];
 
         // Recursive function to calculate employee count and structure data

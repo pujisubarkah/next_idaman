@@ -41,7 +41,8 @@ const ListPegawai = () => {
         if (isMounted) {
           const fetchedData = Array.isArray(response.data) ? response.data : [];
           setData(fetchedData);
-          // Cek struktur respons untuk unit_kerja_nama
+
+          // Check if the response has the unit_kerja_nama
           if (response.data.data && response.data.data.unit_kerja_nama) {
             setUnitKerjaNama(response.data.data.unit_kerja_nama); // Assuming this field is in the response
           } else {
@@ -65,7 +66,9 @@ const ListPegawai = () => {
     <RootLayout>
       <div className="p-4">
         <div className="overflow-x-auto">
-          <h3 className="text-center text-xl font-semibold my-8">DAFTAR PEGAWAI UNIT KERJA {unitKerjaNama}</h3>
+          <h3 className="text-center text-xl font-semibold my-8">
+            DAFTAR PEGAWAI UNIT KERJA {unitKerjaNama ? unitKerjaNama : 'Loading...'} {/* Show "Loading..." if unitKerjaNama is empty */}
+          </h3>
           <div className="flex justify-end items-center mb-4">
             <button
               onClick={() => window.location.href = '/tambah-pegawai'}
