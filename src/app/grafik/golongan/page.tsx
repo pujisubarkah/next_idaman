@@ -1,43 +1,91 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import RootLayout from '../../pegawai/profile/edit/layout'; // Mengimpor layout dari home/layout.js
 
-// Dummy data for each Satuan Kerja (this can be replaced with actual data from an API)
-const dataForSatuanKerja = {
-  'Satuan Kerja 1': [
-    { category: 'Ia', value: 400 },
-    { category: 'Ib', value: 300 },
-    { category: 'Ic', value: 200 },
-    { category: 'Id', value: 278 },
-  ],
-  'Satuan Kerja 2': [
-    { category: 'Ia', value: 500 },
-    { category: 'Ib', value: 350 },
-    { category: 'Ic', value: 250 },
-    { category: 'Id', value: 320 },
-  ],
-  'Satuan Kerja 3': [
-    { category: 'Ia', value: 450 },
-    { category: 'Ib', value: 330 },
-    { category: 'Ic', value: 280 },
-    { category: 'Id', value: 310 },
-  ],
-};
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = [
+  '#0088FE', '#00C49F', '#FFBB28', '#FF8042', // Original colors
+  '#FF6347', '#4682B4', '#32CD32', '#FFD700', '#8A2BE2', // Additional colors
+  '#FF4500', '#6A5ACD', '#7FFF00', '#D2691E', '#DC143C'  // Even more variations
+];
 
 const TestPage = () => {
-  // State to manage the selected Satuan Kerja and corresponding chart data
-  const [selectedSatuanKerja, setSelectedSatuanKerja] = useState('Satuan Kerja 1');
-  const [data, setData] = useState(dataForSatuanKerja[selectedSatuanKerja]);
+  const [selectedSatuanKerja, setSelectedSatuanKerja] = useState<string>('');
+  const [data, setData] = useState<{ category: string; value: any }[]>([]);
+  const [story, setStory] = useState<string>(''); // State for the narrative story
+
+  interface SatuanKerja {
+    satuan_kerja_id: number;
+    satuan_kerja_nama: string;
+    golongan_details: GolonganDetails;
+  }
+
+  const [satuanKerjaList, setSatuanKerjaList] = useState<SatuanKerja[]>([]);
+
+  // Fetch the data from API
+  useEffect(() => {
+    const fetchGolonganData = async () => {
+      try {
+        const response = await fetch('/api/rekap/golongan');
+        const result = await response.json();
+        // Set the first "satuan_kerja_nama" as the default selected satuan kerja
+        setSatuanKerjaList(result);
+        setSelectedSatuanKerja(result[0]?.satuan_kerja_nama);
+        setData(transformDataForChart(result[0]?.golongan_details)); // Transform the data
+        generateStory(result[0]?.golongan_details); // Generate narrative based on data
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchGolonganData();
+  }, []);
+
+  // Transform the data into a format that can be used by the chart
+  interface GolonganDetails {
+    [key: string]: {
+      total: number;
+    };
+  }
+
+  const transformDataForChart = (golonganDetails: GolonganDetails) => {
+    if (!golonganDetails) return [];
+    return Object.entries(golonganDetails).map(([category, { total }]) => ({
+      category,
+      value: total,
+    }));
+  };
+
+  // Generate the story (narrative) based on the chart data
+  const generateStory = (golonganDetails: GolonganDetails) => {
+    if (!golonganDetails) return;
+
+    const categories = Object.entries(golonganDetails);
+    let narrative = 'Berikut adalah narasi data yang dapat dilihat berdasarkan kategori golongan: ';
+
+    // Add dynamic narrative based on data
+    categories.forEach(([category, { total }], index) => {
+      narrative += `Kategori ${category} memiliki total ${total} orang. `;
+      if (index === categories.length - 1) {
+        narrative += `Secara keseluruhan, data ini menunjukkan distribusi golongan yang cukup beragam.`;
+      }
+    });
+
+    setStory(narrative);
+  };
 
   // Handle change in selected Satuan Kerja and update chart data
-  const handleSatuanKerjaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSatuanKerja = event.target.value;
-    setSelectedSatuanKerja(newSatuanKerja);
-    setData(dataForSatuanKerja[newSatuanKerja]);
+  const handleSatuanKerjaChange = (event) => {
+    const selected = event.target.value;
+    setSelectedSatuanKerja(selected);
+    const selectedSatuanKerjaData = satuanKerjaList.find(
+      (item) => item.satuan_kerja_nama === selected
+    );
+    if (selectedSatuanKerjaData) {
+      setData(transformDataForChart(selectedSatuanKerjaData.golongan_details));
+      generateStory(selectedSatuanKerjaData.golongan_details); // Re-generate story
+    }
   };
 
   return (
@@ -55,11 +103,15 @@ const TestPage = () => {
             onChange={handleSatuanKerjaChange}
             style={{ padding: '10px', marginLeft: '10px' }}
           >
-            <option value="Satuan Kerja 1">Satuan Kerja 1</option>
-            <option value="Satuan Kerja 2">Satuan Kerja 2</option>
-            <option value="Satuan Kerja 3">Satuan Kerja 3</option>
+            {satuanKerjaList.map((item) => (
+              <option key={item.satuan_kerja_id} value={item.satuan_kerja_nama}>
+                {item.satuan_kerja_nama}
+              </option>
+            ))}
           </select>
         </div>
+
+     
 
         {/* Responsive Bar Chart */}
         <ResponsiveContainer width="80%" height={400}>
@@ -77,6 +129,11 @@ const TestPage = () => {
           </BarChart>
         </ResponsiveContainer>
       </div>
+         {/* Narrative / Story about the data */}
+         <div style={{ marginBottom: '20px' }}>
+          <h3 className="text-xl font-semibold">Analisis Data:</h3>
+          <p>{story}</p>
+        </div>
     </RootLayout>
   );
 };

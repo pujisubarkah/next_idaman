@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import RootLayout from '../../pegawai/profile/edit/layout'; // Mengimpor layout dari home/layout.js
@@ -18,32 +18,39 @@ const RekapGenerasi: React.FC = () => {
     const [data, setData] = useState<RekapGenerasiData[]>([]);
 
     useEffect(() => {
-        // Dummy data - this can later be replaced with an API fetch
+        // Fetching data from the API
         const fetchData = async () => {
-            // Simulating API fetch
-            const dummyData: RekapGenerasiData[] = [
-                {
-                    no: 1,
-                    satker: 'Satker 1',
-                    babyBoomers: 4,
-                    generasiX: 6,
-                    generasiY: 5,
-                    generasiZ: 8,
-                    generasiAlpha: 2,
-                    jumlahSeluruh: 25,
-                },
-                {
-                    no: 2,
-                    satker: 'Satker 2',
-                    babyBoomers: 7,
-                    generasiX: 5,
-                    generasiY: 9,
-                    generasiZ: 6,
-                    generasiAlpha: 3,
-                    jumlahSeluruh: 30,
-                },
-            ];
-            setData(dummyData);
+            try {
+                // Make sure the API path is correct based on your backend structure
+                const response = await fetch('/api/rekap/generasi');
+                const apiData = await response.json();
+
+                // Transform the API data into the format you expect
+                const transformedData = apiData.map((item: any, index: number) => {
+                    const babyBoomers = item.pegawai_by_generation['Baby Boomers']?.count || 0;
+                    const generasiX = item.pegawai_by_generation['Generation X']?.count || 0;
+                    const generasiY = item.pegawai_by_generation['Millennials (Generation Y)']?.count || 0;
+                    const generasiZ = item.pegawai_by_generation['Generation Z']?.count || 0;
+                    const generasiAlpha = item.pegawai_by_generation['Generation Alpha']?.count || 0;
+                    const jumlahSeluruh =
+                        babyBoomers + generasiX + generasiY + generasiZ + generasiAlpha;
+
+                    return {
+                        no: index + 1,
+                        satker: item.satuan_kerja_nama,
+                        babyBoomers,
+                        generasiX,
+                        generasiY,
+                        generasiZ,
+                        generasiAlpha,
+                        jumlahSeluruh,
+                    };
+                });
+
+                setData(transformedData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         };
 
         fetchData();
