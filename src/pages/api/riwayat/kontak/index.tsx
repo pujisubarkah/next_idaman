@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
     // Filter untuk riw_status NOT IN (1, 2, 3, 4)
     const { data, error } = await supabase
-        .schema('siap')
+        .schema('siap_skpd')
         .from('spg_riwayat_kontak')
         .select('*')
         .eq('peg_id', peg_id) // Filter berdasarkan peg_id

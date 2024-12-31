@@ -108,7 +108,7 @@ const formattedUnits = data.flatMap((satuan) =>
                 className="bg-teal-500 text-white px-2 py-1 rounded hover:bg-teal-700"
                 onClick={() => handleSearchClick(unit_kerja_id)}
               >
-                Lihat Detail
+                Lihat Data Pegawai
               </button>
             </td>
           </tr>

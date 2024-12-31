@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit, faTrash, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import KlasikalModal from "./klasikalmodal"; // Mengimpor modal dari klasikalmodal.tsx
 
 // Interface untuk data pelatihan klasikal
@@ -15,7 +15,6 @@ export interface DataPelatihanKlasikal {
   instansi: string;
   jumlahJam: string;
   isNew?: boolean; // Indikator data baru
-  isApproved?: boolean; // Indikator data sudah di-approve
 }
 
 const RiwayatPelatihanKlasikal = () => {
@@ -63,7 +62,6 @@ const RiwayatPelatihanKlasikal = () => {
         nomorsurat: item.non_sttp,
         instansi: item.non_penyelenggara,
         jumlahJam: item.diklat_jumlah_jam,
-        isApproved: item.is_approved || false, // Status approval
       }));
 
       setData(mappedData);
@@ -98,29 +96,18 @@ const RiwayatPelatihanKlasikal = () => {
   const handleSubmitForm = async () => {
     try {
       if (formData.no === 0) {
-        const newData = { ...formData, isNew: true, isApproved: false };
+        const newData = { ...formData, isNew: true };
         await axios.post("/api/riwayat/pelatihan_klasikal", newData);
       } else {
+        const editId = formData.no; // Assuming 'no' is the ID for editing
         await axios.put(`/api/riwayat/pelatihan_klasikal/${formData.no}`, formData);
+
       }
       fetchRiwayatPelatihanKlasikal(nip!);
       setModalOpen(false);
     } catch (error) {
-      const response = await axios.put(`/api/riwayat/pelatihan_klasikal/${formData.no}`, formData);
-console.log(response.data); // Pastikan ada respons yang menunjukkan data yang terupdate.
-    }
-  };
-
-  const handleApprove = async (item: DataPelatihanKlasikal) => {
-    try {
-      await axios.put(`/api/riwayat/pelatihan_klasikal/${item.no}`, { isApproved: true });
-      const updatedData = data.map((row) =>
-        row.no === item.no ? { ...row, isApproved: true, isNew: false } : row
-      );
-      setData(updatedData);
-    } catch (error) {
-      console.error("Error approving data:", error);
-      alert("Gagal meng-approve data.");
+      console.error("Error submitting form:", error);
+      alert("Gagal menyimpan data. Silakan coba lagi.");
     }
   };
 
@@ -173,16 +160,7 @@ console.log(response.data); // Pastikan ada respons yang menunjukkan data yang t
             </tr>
           ) : (
             data.map((item, index) => (
-              <tr
-                key={index}
-                className={`${
-                  item.isNew
-                    ? "bg-red-200"
-                    : item.isApproved
-                    ? "bg-white"
-                    : "bg-gray-50"
-                }`}
-              >
+              <tr key={index} className={item.isNew ? "bg-red-200" : "bg-white"}>
                 <td className="p-3 border border-teal-500">{item.no}</td>
                 <td className="p-3 border border-teal-500">{item.jenis}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
@@ -198,12 +176,6 @@ console.log(response.data); // Pastikan ada respons yang menunjukkan data yang t
                       onClick={() => handleOpenModal(item)}
                     >
                       <FontAwesomeIcon icon={faEdit} /> Edit
-                    </button>
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handleApprove(item)}
-                    >
-                      <FontAwesomeIcon icon={faCheck} /> Approve
                     </button>
                     <button className="text-red-500 hover:text-red-700">
                       <FontAwesomeIcon icon={faTrash} /> Delete

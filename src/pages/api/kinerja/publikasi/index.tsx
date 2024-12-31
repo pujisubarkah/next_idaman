@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         }
 
         const { data, error } = await supabase
-            .schema('siap')
+            .schema('siap_skpd')
             .from('spg_riwayat_publikasi')
             .select(`*`)
             .eq('peg_id', peg_id)

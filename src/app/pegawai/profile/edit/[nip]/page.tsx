@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Navbar from "../navbar";
+import ProfileButton from "../profilebutton";
 import Datapribadi from "../data-pribadi";
 import FilePegawai from "../file-pegawai";
 import Fungsional from "../fungsional";
@@ -65,6 +66,7 @@ const Page = () => {
     <div className="space-y-4">
       <Navbar />
       <Profile nip={nip} />
+      <ProfileButton />
 
       <main className="container mx-auto p-2 space-y-4">
         {activeTab === "#data-pribadi" && (

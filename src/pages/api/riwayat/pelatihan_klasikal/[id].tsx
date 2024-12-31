@@ -15,7 +15,7 @@ export default async function handler(req, res) {
                 .schema('siap_skpd')
                 .from('spg_riwayat_nonformal')
                 .select('*')
-                .eq('id', id) // Menggunakan 'id' sebagai parameter pencarian
+                .eq('non_id', id) // Menggunakan 'id' sebagai parameter pencarian
                 .single(); // Ambil satu data
 
             if (error) throw error;
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
         if (req.method === 'PUT') {
             // API PUT: Update data berdasarkan id
             const {
+                non_id,
                 jenis_pelatihan,
                 non_nama,
                 non_tgl_mulai,
@@ -43,6 +44,7 @@ export default async function handler(req, res) {
                 .schema('siap_skpd')
                 .from('spg_riwayat_nonformal')
                 .update({
+                    non_id,
                     jenis_pelatihan,
                     non_tgl_mulai,
                     non_tgl_selesai,
@@ -52,7 +54,7 @@ export default async function handler(req, res) {
                     
                     // Tambahkan field lain yang ingin diperbarui
                 })
-                .eq('id', id); // Update berdasarkan 'id'
+                .eq('non_id', id); // Update berdasarkan 'id'
 
             if (error) throw error;
 
@@ -62,10 +64,10 @@ export default async function handler(req, res) {
         if (req.method === 'DELETE') {
             // API DELETE: Hapus data berdasarkan id
             const { data, error } = await supabase
-                .schema('siap')
+                .schema('siap_skpd')
                 .from('spg_riwayat_nonformal')
                 .delete()
-                .eq('id', id); // Hapus berdasarkan 'id'
+                .eq('non_id', id); // Hapus berdasarkan 'id'
 
             if (error) throw error;
 

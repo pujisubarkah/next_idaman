@@ -90,19 +90,20 @@ const PelatihanKlasikalModal: React.FC<PelatihanKlasikalModalProps> = ({
 
         {/* Buttons */}
         <div className="flex justify-end space-x-2">
-          <button
-            className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800"
-            onClick={handleSubmitForm}
-          >
-            Update
-          </button>
-          <button
-            className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800"
-            onClick={handleCloseModal}
-          >
-            Batal
-          </button>
-        </div>
+  <button
+    className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800"
+    onClick={handleSubmitForm}
+  >
+    {formData.no === 0 ? "Tambah" : "Update"}
+  </button>
+  <button
+    className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800"
+    onClick={handleCloseModal}
+  >
+    Batal
+  </button>
+</div>
+
       </div>
     </div>
   );

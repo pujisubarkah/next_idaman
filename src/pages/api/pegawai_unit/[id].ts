@@ -17,6 +17,7 @@ export default async function handler(req, res) {
                   unit_kerja_id,
                    peg_nip,
                    peg_nip_lama,
+                   id_goldar,
                    peg_nama,
                    peg_gelar_depan,
                    peg_gelar_belakang,
@@ -61,7 +62,7 @@ export default async function handler(req, res) {
     }
   } else if (method === 'POST') {
     try {
-      const { peg_nama, peg_nip, peg_gelar_depan, satuan_kerja_id, unit_kerja_id, peg_nip_lama, peg_gelar_belakang, peg_lahir_tempat, peg_lahir_tanggal, peg_foto, peg_jenis_kelamin, peg_status_perkawinan, id_agama, peg_jenis_asn, peg_jenis_pns, status_tkd, peg_status_kepegawaian, peg_cpns_tmt, peg_pns_tmt, id_pend_awal, peg_pend_awal_th, id_pend_akhir, peg_pend_akhir_th, jabatan_id, peg_status_gaji, kedudukan_pegawai, gol_id_awal, peg_gol_awal_tmt, gol_id_akhir, peg_gol_akhir_tmt, peg_karpeg, peg_no_askes, peg_karsutri, peg_bapertarum } = req.body;
+      const { peg_nama, peg_nip, peg_gelar_depan, satuan_kerja_id, unit_kerja_id, peg_nip_lama, peg_gelar_belakang, peg_lahir_tempat, peg_lahir_tanggal, peg_foto, peg_jenis_kelamin, peg_status_perkawinan, id_agama, peg_jenis_asn, peg_jenis_pns, status_tkd, peg_status_kepegawaian, peg_cpns_tmt, peg_pns_tmt, id_pend_awal, peg_pend_awal_th, id_pend_akhir, peg_pend_akhir_th, jabatan_id, peg_status_gaji, kedudukan_pegawai, gol_id_awal, peg_gol_awal_tmt, gol_id_akhir, peg_gol_akhir_tmt, peg_karpeg, peg_no_askes, peg_karsutri, peg_bapertarum, id_goldar } = req.body;
 
       if (!peg_nama || !peg_nip) {
         return res.status(400).json({ message: 'Nama dan NIP wajib diisi' });
@@ -75,6 +76,7 @@ export default async function handler(req, res) {
           unit_kerja_id,
           peg_nip,
           peg_nip_lama,
+          id_goldar,
           peg_nama,
           peg_gelar_depan,
           peg_gelar_belakang,
@@ -115,7 +117,7 @@ export default async function handler(req, res) {
     }
   } else if (method === 'PUT') {
     try {
-      const { peg_nama, peg_nip, peg_gelar_depan, satuan_kerja_id, unit_kerja_id, peg_nip_lama, peg_gelar_belakang, peg_lahir_tempat, peg_lahir_tanggal, peg_foto, peg_jenis_kelamin, peg_status_perkawinan, id_agama, peg_jenis_asn, peg_jenis_pns, status_tkd, peg_status_kepegawaian, peg_cpns_tmt, peg_pns_tmt, id_pend_awal, peg_pend_awal_th, id_pend_akhir, peg_pend_akhir_th, jabatan_id, peg_status_gaji, kedudukan_pegawai, gol_id_awal, peg_gol_awal_tmt, gol_id_akhir, peg_gol_akhir_tmt, peg_karpeg, peg_no_askes, peg_karsutri, peg_bapertarum } = req.body;
+      const { peg_nama, peg_nip, id_goldar, peg_gelar_depan, satuan_kerja_id, unit_kerja_id, peg_nip_lama, peg_gelar_belakang, peg_lahir_tempat, peg_lahir_tanggal, peg_foto, peg_jenis_kelamin, peg_status_perkawinan, id_agama, peg_jenis_asn, peg_jenis_pns, status_tkd, peg_status_kepegawaian, peg_cpns_tmt, peg_pns_tmt, id_pend_awal, peg_pend_awal_th, id_pend_akhir, peg_pend_akhir_th, jabatan_id, peg_status_gaji, kedudukan_pegawai, gol_id_awal, peg_gol_awal_tmt, gol_id_akhir, peg_gol_akhir_tmt, peg_karpeg, peg_no_askes, peg_karsutri, peg_bapertarum } = req.body;
 
       if (!peg_nama && !peg_nip && !peg_gelar_depan) {
         return res.status(400).json({ message: 'Tidak ada kolom untuk diperbarui' });
@@ -128,6 +130,7 @@ export default async function handler(req, res) {
           unit_kerja_id,
           peg_nip,
           peg_nip_lama,
+          id_goldar,
           peg_nama,
           peg_gelar_depan,
           peg_gelar_belakang,

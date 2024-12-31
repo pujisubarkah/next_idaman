@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
         // Query dengan join antar tabel spg_riwayat dan spg_pegawai, serta filter berdasarkan peg_id dan riw_status
         const { data, error } = await supabase
-            .schema('siap') // Jika skema default adalah public, hapus baris ini
+            .schema('siap_skpd') // Jika skema default adalah public, hapus baris ini
             .from('spg_riwayat')
             .select(`
                 *, 

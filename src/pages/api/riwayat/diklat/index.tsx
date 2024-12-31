@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
         // Mulai membangun query
         let query = supabase
-            .schema('siap') // Pastikan schema sudah benar
+            .schema('siap_skpd') // Pastikan schema sudah benar
             .from('spg_riwayat_diklat') // Tabel utama
             .select(`
                 * ,

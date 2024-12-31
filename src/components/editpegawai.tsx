@@ -7,9 +7,11 @@ import axios from "axios";
 interface Pegawai {
   satuan_kerja_id?: string;
   unit_kerja_id?: string;
+
   peg_nip?: string;
   peg_nip_lama?: string;
   peg_nama?: string;
+  id_goldar?: string;
   peg_gelar_depan?: string;
   peg_gelar_belakang?: string;
   peg_lahir_tempat?: string;
@@ -41,13 +43,18 @@ interface Pegawai {
   peg_bapertarum?: string | null;
 }
 
-const EditPegawai: React.FC = () => {
+const EditPegawai: React.FC = (): React.ReactElement => {
   const router = useRouter();
   const { pegid } = useParams() as { pegid: string };
+
   const [pegawai, setPegawai] = useState<Pegawai | null>(null);
   const [unitKerjaData, setUnitKerjaData] = useState<any[]>([]);
+  const [agamaData, setAgamaData] = useState<any[]>([]);
+  const [goldarData, setGoldarData] = useState<any[]>([]);
   const [selectedSatuanKerja, setSelectedSatuanKerja] = useState<string | null>(null);
   const [selectedUnitKerja, setSelectedUnitKerja] = useState<string | null>(null);
+  const [selectedAgama, setSelectedAgama] = useState<string | null>(null);
+  const [selectedGoldar, setSelectedGoldar] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -60,28 +67,29 @@ const EditPegawai: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const pegawaiResponse = await axios.get(`/api/pegawai_unit/${pegid}`);
+        const [pegawaiResponse, unitKerjaResponse, agamaResponse, goldarResponse] = await Promise.all([
+          axios.get(`/api/pegawai_unit/${pegid}`),
+          axios.get("/api/master_data/unit_kerja"),
+          axios.get("/api/master_data/agama"),
+          axios.get("/api/master_data/goldar"),
+        ]);
+
         setPegawai(pegawaiResponse.data);
         setSelectedSatuanKerja(pegawaiResponse.data.satuan_kerja_id);
         setSelectedUnitKerja(pegawaiResponse.data.unit_kerja_id);
-      } catch {
-        setError("Failed to load employee data. Please try again.");
+        setUnitKerjaData(unitKerjaResponse.data);
+        setAgamaData(agamaResponse.data);
+        setSelectedAgama(pegawaiResponse.data.id_agama);
+        setGoldarData(goldarResponse.data);
+        setSelectedGoldar(pegawaiResponse.data.id_goldar);
+      } catch (error) {
+        setError("Failed to load data. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchUnitKerjaData = async () => {
-      try {
-        const response = await axios.get("/api/master_data/unit_kerja");
-        setUnitKerjaData(response.data);
-      } catch {
-        console.error("Failed to load unit kerja data.");
-      }
-    };
-
     fetchData();
-    fetchUnitKerjaData();
   }, [pegid, router]);
 
   const filteredUnitKerja = unitKerjaData
@@ -98,10 +106,31 @@ const EditPegawai: React.FC = () => {
   };
 
   const handleUnitKerjaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target .value;
+    const value = e.target.value;
     setSelectedUnitKerja(value);
     if (pegawai) {
       setPegawai({ ...pegawai, unit_kerja_id: value });
+    }
+  };
+
+  const handleAgamaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedAgama(e.target.value);
+    if (pegawai) {
+      setPegawai({ ...pegawai, id_agama: e.target.value });
+    }
+  };
+
+  const handleGoldarChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedGoldar(e.target.value);
+    if (pegawai) {
+      setPegawai({ ...pegawai, id_goldar: e.target.value });
+    }
+  };
+
+  const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (pegawai) {
+      setPegawai({ ...pegawai, peg_jenis_kelamin: value });
     }
   };
 
@@ -131,12 +160,8 @@ const EditPegawai: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  if (error !== null) {
-    return (
-      <div>
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
+  if (error) {
+    return <div className="text-red-600">{error}</div>;
   }
 
   return (
@@ -144,13 +169,12 @@ const EditPegawai: React.FC = () => {
       <form onSubmit={handleSubmit} className="w-full mx-auto">
         <h1 className="text-center font-bold uppercase mb-6">Edit Pegawai</h1>
         <div className="border p-4 rounded-lg">
-          
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 text-right">Satuan Kerja:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-2">Satuan Kerja:</label>
             <select
               value={selectedSatuanKerja || ""}
               onChange={handleSatuanKerjaChange}
-              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
             >
               <option value="">Pilih Satuan Kerja</option>
               {unitKerjaData.map((item) => (
@@ -163,11 +187,11 @@ const EditPegawai: React.FC = () => {
 
           {selectedSatuanKerja && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 text-right">Unit Kerja:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/3 pr-2">Unit Kerja:</label>
               <select
                 value={selectedUnitKerja || ""}
                 onChange={handleUnitKerjaChange}
-                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
               >
                 <option value="">Pilih Unit Kerja</option>
                 {filteredUnitKerja.map((unit) => (
@@ -179,31 +203,98 @@ const EditPegawai: React.FC = () => {
             </div>
           )}
 
-          {pegawai && Object.keys(pegawai).map((key) => (
-            key !== 'satuan_kerja_id' && key !== 'unit_kerja_id' && (
-              <div key={key} className="mb-4 flex items-center">
-                <label htmlFor={key} className="block text-gray-700 text-sm font-bold w-1/3 pr-4 text-right">
-                  {key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())}:
-                </label>
+          {pegawai &&
+            Object.keys(pegawai).map((key) =>
+              key !== "satuan_kerja_id" &&
+              key !== "unit_kerja_id" && (
+                <div key={key} className="mb-4 flex items-center">
+                  <label
+                    htmlFor={key}
+                    className="block text-gray-700 text-sm font-bold w-1/3 pr-2"
+                  >
+                    {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}:
+                  </label>
+                  <input
+                    id={key}
+                    name={key}
+                    type="text"
+                    value={pegawai[key as keyof Pegawai] || ""}
+                    onChange={handleChange}
+                    className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+                  />
+                </div>
+              )
+            )}
+
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-2">Agama:</label>
+            <select
+              value={selectedAgama || ""}
+              onChange={handleAgamaChange}
+              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Pilih Agama</option>
+              {agamaData.map((agama) => (
+                <option key={agama.id_agama} value={agama.id_agama}>
+                  {agama.nm_agama}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-2">Golongan Darah:</label>
+            <select
+              value={selectedGoldar || ""}
+              onChange={handleGoldarChange}
+              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Pilih Golongan Darah</option>
+              {goldarData.map((goldar) => (
+                <option key={goldar.id_goldar} value={goldar.id_goldar}>
+                  {goldar.nm_goldar}
+                </option>
+              ))}
+            </select>
+            </div>
+
+              
+
+
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-2">Jenis Kelamin:</label>
+            <div className="flex items-center">
+              <label className="mr-4">
                 <input
-                  id={key}
-                  name={key}
-                  type="text"
-                  value={pegawai[key as keyof Pegawai] || ""}
-                  onChange={handleChange}
-                  className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-300"
+                  type="radio"
+                  name="peg_jenis_kelamin"
+                  value="Laki-laki"
+                  checked={pegawai?.peg_jenis_kelamin === "Laki-laki"}
+                  onChange={handleGenderChange}
                 />
-              </div>
-            )
-          ))}
-        </div>
-        <div className="flex items-center justify-center mt-4">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Simpan
-          </button>
+                Laki-laki
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="peg_jenis_kelamin"
+                  value="Perempuan"
+                  checked={pegawai?.peg_jenis_kelamin === "Perempuan"}
+                  onChange={handleGenderChange}
+                />
+                Perempuan
+              </label>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center mt-4">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Update
+            </button>
+          </div>
         </div>
       </form>
     </div>
