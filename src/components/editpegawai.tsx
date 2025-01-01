@@ -21,28 +21,50 @@ interface Pegawai {
   id_agama?: string;
   peg_jenis_asn?: string;
   peg_jenis_pns?: string;
-  status_tkd?: string;
   peg_status_kepegawaian?: string;
   peg_cpns_tmt?: string;
   peg_pns_tmt?: string;
-  id_pend_awal?: string;
-  peg_pend_awal_th?: string;
-  id_pend_akhir?: string;
-  peg_pend_akhir_th?: string;
-  jabatan_id?: string;
-  peg_status_gaji?: string;
-  kedudukan_pegawai?: string;
   gol_id_awal?: string;
-  peg_gol_tmt_awal?: string;
-  gol_id_akhir?: string;
-  peg_gol_tmt_akhir?: string;
+  peg_status_gaji?: string;
   peg_karpeg?: string;
   peg_no_askes?: string;
   peg_karsutri?: string;
+  peg_ktp?: string;
+  peg_npwp?: string;
+  peg_jabatan_tmt?: string;
+  peg_skpd_tmt?: string;
+  peg_eselon_tmt?: string;
+  id_status_kepegawaian?: string;
+  peg_no_rekening?: string;
+  peg_tmt_kgb?: string;
+  peg_gol_awal_tmt?: string;
   peg_bapertarum?: string | null;
+  peg_rumah_alamat?: string;
+  id_provinsi?: string;
+  id_kota?: string;
+  id_kec?: string;
+  id_kel?: string;
+  peg_alamat_rt?: string;
+  peg_alamat_rw?: string;
+  peg_kodepos?: string;
+  peg_tel?: string;
+  peg_telp_hp?: string;
+  peg_email?: string;
+  peg_email_resmi?: string;
+  peg_rumah_alamat_ktp?: string;
+  id_provinsi_ktp?: string;
+  id_kota_ktp?: string;
+  id_kec_ktp?: string;
+  id_kel_ktp?: string;
+  peg_alamat_rt_ktp?: string;
+  peg_alamat_rw_ktp?: string;
+  peg_kodepos_ktp?: string;
+  peg_telp?: string;
+
+
 }
 
-const EditPegawai: React.FC = (): React.ReactElement => {
+const EditPegawai: React.FC = (): JSX.Element => {
   const router = useRouter();
   const { pegid } = useParams() as { pegid: string };
 
@@ -53,7 +75,10 @@ const EditPegawai: React.FC = (): React.ReactElement => {
   const [statusKawinData, setStatusKawinData] = useState<any[]>([]);
   const [jenisAsnData, setJenisAsnData] = useState<any[]>([]);
   const [jenisPnsData, setJenisPnsData] = useState<any[]>([]);
-  
+  const [statusPegawaiData, setStatusPegawaiData] = useState<any[]>([]);
+  const [statusKepegawaianData, setStatusKepegawaianData] = useState<any[]>([]);
+  const [golonganData, setGolonganData] = useState<any[]>([]);
+
   const [selectedSatuanKerja, setSelectedSatuanKerja] = useState<string | null>(null);
   const [selectedUnitKerja, setSelectedUnitKerja] = useState<string | null>(null);
   const [selectedAgama, setSelectedAgama] = useState<string | null>(null);
@@ -61,9 +86,10 @@ const EditPegawai: React.FC = (): React.ReactElement => {
   const [selectedStatusKawin, setSelectedStatusKawin] = useState<string | null>(null);
   const [selectedJenisAsn, setSelectedJenisAsn] = useState<string | null>(null);
   const [selectedJenisPns, setSelectedJenisPns] = useState<string | null>(null);
+  const [selectedStatusPegawai, setSelectedStatusPegawai] = useState<string | null>(null);
+  const [selectedStatusKepegawaian, setSelectedStatusKepegawaian] = useState<string | null>(null);
   const [selectedGolongan, setSelectedGolongan] = useState<string | null>(null);
-  
-  
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -76,13 +102,18 @@ const EditPegawai: React.FC = (): React.ReactElement => {
 
     const fetchData = async () => {
       try {
-        const [pegawaiResponse, 
-          unitKerjaResponse, 
-          agamaResponse, 
-          goldarResponse, 
-          statusKawinResponse, 
-          jenisAsnResponse, 
-          jenisPnsResponse, golonganResponse] = await Promise.all([
+        const [
+          pegawaiResponse,
+          unitKerjaResponse,
+          agamaResponse,
+          goldarResponse,
+          statusKawinResponse,
+          jenisAsnResponse,
+          jenisPnsResponse,
+          statusPegawaiResponse,
+          statusKepegawaianResponse,
+          golonganResponse,
+        ] = await Promise.all([
           axios.get(`/api/pegawai_unit/${pegid}`),
           axios.get("/api/master_data/unit_kerja"),
           axios.get("/api/master_data/agama"),
@@ -90,11 +121,10 @@ const EditPegawai: React.FC = (): React.ReactElement => {
           axios.get('/api/master_data/status_kawin'),
           axios.get('/api/master_data/jenis_asn'),
           axios.get('/api/master_data/jenis_pns'),
-          axios.get('/api/master_data/golongan')
+          axios.get('/api/master_data/status_pegawai'),
+          axios.get('/api/master_data/status_kepegawaian'),
+          axios.get('/api/master_data/golongan'),
         ]);
-
-       
-
 
         setPegawai(pegawaiResponse.data);
         setSelectedSatuanKerja(pegawaiResponse.data.satuan_kerja_id);
@@ -103,14 +133,23 @@ const EditPegawai: React.FC = (): React.ReactElement => {
         setAgamaData(agamaResponse.data);
         setSelectedAgama(pegawaiResponse.data.id_agama);
         setGoldarData(goldarResponse.data);
+        setSelectedGoldar(pegawaiResponse.data.id_goldar);
         setSelectedStatusKawin(pegawaiResponse.data.peg_status_perkawinan);
         setStatusKawinData(statusKawinResponse.data);
         setJenisAsnData(jenisAsnResponse.data);
         setSelectedJenisAsn(pegawaiResponse.data.peg_jenis_asn);
-        setJenisPnsData(jenisPnsResponse.data); // Set the jenis PNS data
+        setJenisPnsData(jenisPnsResponse.data);
         setSelectedJenisPns(pegawaiResponse.data.peg_jenis_pns);
-        
+        setStatusPegawaiData(statusPegawaiResponse.data);
+        setSelectedStatusPegawai(pegawaiResponse.data.peg_status_kepegawaian);
+        setStatusKepegawaianData(statusKepegawaianResponse.data);
+        setSelectedStatusKepegawaian(pegawaiResponse.data.id_status_kepegawaian);
+        setGolonganData(golonganResponse.data);
         setSelectedGolongan(pegawaiResponse.data.gol_id_awal);
+
+
+
+
       } catch (error) {
         setError("Failed to load data. Please try again.");
       } finally {
@@ -125,74 +164,7 @@ const EditPegawai: React.FC = (): React.ReactElement => {
     .filter((item) => item.satuan_kerja_id === selectedSatuanKerja)
     .flatMap((item) => item.units);
 
-  const handleSatuanKerjaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedSatuanKerja(value);
-    setSelectedUnitKerja(null);
-    if (pegawai) {
-      setPegawai({ ...pegawai, satuan_kerja_id: value, unit_kerja_id: undefined });
-    }
-  };
-
-  const handleUnitKerjaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedUnitKerja(value);
-    if (pegawai) {
-      setPegawai({ ...pegawai, unit_kerja_id: value });
-    }
-  };
-
-  const handleAgamaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedAgama(e.target.value);
-    if (pegawai) {
-      setPegawai({ ...pegawai, id_agama: e.target.value });
-    }
-  };
-
-  const handleGoldarChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedGoldar(e.target.value);
-    if (pegawai) {
-      setPegawai({ ...pegawai, id_goldar: e.target.value });
-    }
-  };
-
-  const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (pegawai) {
-      setPegawai({ ...pegawai, peg_jenis_kelamin: value });
-    }
-  };
-
-  const handleStatusKawinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (pegawai) {
-      setPegawai({ ...pegawai, peg_status_perkawinan: value });
-    }
-  };
-
-  const handleJenisAsnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (pegawai) {
-      setPegawai({ ...pegawai, peg_jenis_asn: value });
-    }
-  };
-
-  const handleJenisPnsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedJenisPns(value);
-    if (pegawai) {
-      setPegawai({ ...pegawai, peg_jenis_pns: value });
-    }
-  };
-
-  const handleGolonganChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (pegawai) {
-      setPegawai({ ...pegawai, gol_id_awal: value, gol_id_akhir: value });
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (pegawai) {
       setPegawai({ ...pegawai, [name]: value });
@@ -225,14 +197,21 @@ const EditPegawai: React.FC = (): React.ReactElement => {
   return (
     <div className="m-2 w-full">
       <form onSubmit={handleSubmit} className="w-full mx-auto">
-        <h1 className="text-center font-bold uppercase mb-6">Edit Pegawai</h1>
+        {/* Form content */}
+      <h1 className="text-center font-bold uppercase mb-6">Edit Pegawai</h1>
         <div className="border p-4 rounded-lg">
           {/* Satuan Kerja */}
           <div className="mb-4 flex items-center">
             <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Satuan Kerja:</label>
             <select
               value={selectedSatuanKerja || ""}
-              onChange={handleSatuanKerjaChange}
+              onChange={(e) => {
+                setSelectedSatuanKerja(e.target.value);
+                setSelectedUnitKerja(null);
+                if (pegawai) {
+                  setPegawai({ ...pegawai, satuan_kerja_id: e.target.value, unit_kerja_id: undefined });
+                }
+              }}
               className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
             >
               <option value="">Pilih Satuan Kerja</option>
@@ -245,24 +224,50 @@ const EditPegawai: React.FC = (): React.ReactElement => {
           </div>
 
           {/* Unit Kerja */}
-          {selectedSatuanKerja && (
-            <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Unit Kerja:</label>
-              <select
-                value={selectedUnitKerja || ""}
-                onChange={handleUnitKerjaChange}
-                className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-              >
-                <option value="">Pilih Unit Kerja</option>
-                {filteredUnitKerja.map((unit) => (
-                  <option key={unit.unit_kerja_id} value={unit.unit_kerja_id}>
-                    {unit.unit_kerja_nama}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+{selectedSatuanKerja && (
+  <div className="mb-4 flex items-center">
+    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Unit Kerja:</label>
+    <select
+      value={selectedUnitKerja || ""}
+      onChange={(e) => {
+        setSelectedUnitKerja(e.target.value);
+        if (pegawai) {
+          setPegawai({ ...pegawai, unit_kerja_id: e.target.value });
+        }
+      }}
+      className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+    >
+      <option value="">Pilih Unit Kerja</option>
+      {filteredUnitKerja.map((unit) => (
+        <option key={unit.unit_kerja_id} value={unit.unit_kerja_id}>
+          {unit.unit_kerja_nama}
+        </option>
+      ))}
+    </select>
 
+    {/* Buttons */}
+    <div className="ml-4 flex space-x-2">
+      <button
+        type="button"
+        className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        onClick={() => {
+          // Handle Update Unit Internal
+        }}
+      >
+        Update Unit Internal
+      </button>
+      <button
+        type="button"
+        className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        onClick={() => {
+          // Handle Update Jabatan
+        }}
+      >
+        Update Jabatan
+      </button>
+    </div>
+  </div>
+)}
           {/* Pegawai NIP */}
           {pegawai && (
             <div className="mb-4 flex items-center">
@@ -342,7 +347,7 @@ const EditPegawai: React.FC = (): React.ReactElement => {
                 id="peg_tgl_lahir"
                 name="peg_tgl_lahir"
                 type="date"
-                value={pegawai.peg_tgl_lahir ? new Date(pegawai.peg_tgl_lahir).toISOString().split(' T')[0] : ""}
+                value={pegawai.peg_tgl_lahir || ""}
                 onChange={handleChange}
                 className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
               />
@@ -394,7 +399,7 @@ const EditPegawai: React.FC = (): React.ReactElement => {
                   name="peg_jenis_kelamin"
                   value="Laki-laki"
                   checked={pegawai?.peg_jenis_kelamin !== "P"}
-                  onChange={handleGenderChange}
+                  onChange={handleChange}
                 />
                 Laki-laki
               </label>
@@ -404,7 +409,7 @@ const EditPegawai: React.FC = (): React.ReactElement => {
                   name="peg_jenis_kelamin"
                   value="Perempuan"
                   checked={pegawai?.peg_jenis_kelamin === "P"}
-                  onChange={handleGenderChange}
+                  onChange={handleChange}
                 />
                 Perempuan
               </label>
@@ -422,7 +427,7 @@ const EditPegawai: React.FC = (): React.ReactElement => {
                     name="peg_status_perkawinan"
                     value={status.id}
                     checked={selectedStatusKawin === status.id}
-                    onChange={handleStatusKawinChange}
+                    onChange={handleChange}
                   />
                   {status.status}
                 </label>
@@ -435,7 +440,8 @@ const EditPegawai: React.FC = (): React.ReactElement => {
             <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Agama:</label>
             <select
               value={selectedAgama || ""}
-              onChange={handleAgamaChange}
+              onChange={handleChange}
+              name="id_agama"
               className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
               <option value="">Pilih Agama</option>
@@ -446,86 +452,579 @@ const EditPegawai: React.FC = (): React.ReactElement => {
               ))}
             </select>
           </div>
-         {/* Jenis ASN */}
+
+          {/* Jenis ASN */}
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis ASN:</label>
+            <select
+              value={selectedJenisAsn || ""}
+              onChange={handleChange}
+              name="peg_jenis_asn"
+              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Pilih Jenis ASN</option>
+              {jenisAsnData.map((jenis_asn) => (
+                <option key={jenis_asn.id} value={jenis_asn.id}>
+                  {jenis_asn.nama}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Jenis PNS */}
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis PNS:</label>
+            <select
+              value={selectedJenisPns || ""}
+              onChange={handleChange}
+              name="peg_jenis_pns"
+              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Jenis PNS</option>
+              {jenisPnsData.map((jenis_pns) => (
+                <option key={jenis_pns.id_jen_pns} value={jenis_pns.id_jen_pns}>
+                  {jenis_pns.nama_jenis}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status Pegawai */}
 <div className="mb-4 flex items-center">
-  <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
-    Jenis ASN:
-  </label>
+  <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Status Pegawai:</label>
+  <div className="flex items-center w-1/8">
+    {statusPegawaiData.map((statuspegawai) => (
+      <label key={statuspegawai.status_kepegawaian_id} className="mr-4">
+        <input
+          type="radio"
+          name="peg_status_kepegawaian"
+          value={statuspegawai.status_kepegawaian_id}
+          checked={selectedStatusPegawai === statuspegawai.status_kepegawaian_id}
+          onChange={handleChange}
+        />
+        {statuspegawai.stspeg_nama}
+      </label>
+    ))}
+  </div>
+
+  {/* TMT CPNS */}
+  {pegawai && (
+    <div className="flex items-center w-1/4 ml-4">
+      <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">TMT CPNS:</label>
+      <input
+        id="peg_cpns_tmt"
+        name="peg_cpns_tmt"
+        type="date"
+        value={pegawai.peg_cpns_tmt || ""}
+        onChange={handleChange}
+        className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+      />
+    </div>
+  )}
+
+  {/* TMT PNS */}
+  {pegawai && (
+    <div className="flex items-center w-1/4 ml-4">
+      <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">TMT PNS:</label>
+      <input
+        id="peg_pns_tmt"
+        name="peg_pns_tmt"
+        type="date"
+        value={pegawai.peg_pns_tmt || ""}
+        onChange={handleChange}
+        className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+      />
+    </div>
+  )}
+</div>
+
+          {/* Pegawai jabatan tmt */}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">TMT Jabatan:</label>
+              <input
+                id="peg_jabatan_tmt"
+                name="peg_jabatan_tmt"
+                type="date"
+                value={pegawai.peg_jabatan_tmt || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+
+          {/* Pegawai unit tmt */}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">TMT Unit:</label>
+              <input
+                id="peg_unit_tmt"
+                name="peg_skpd_tmt"
+                type="date"
+                value={pegawai.peg_skpd_tmt || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+            />
+            </div>
+          )}
+
+          {/* Pegawai eselon tmt */}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">TMT Eselon:</label>
+              <input
+                id="peg_gol_awal_tmt"
+                name="peg_gol_awal_tmt"
+                type="date"
+                value={pegawai.peg_gol_awal_tmt || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+
+          {/* Status Gaji */}
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Status Gaji:</label>
+            <select
+              name="peg_status_gaji"
+              value={pegawai?.peg_status_gaji || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+            >
+              <option value="" disabled>Status Gaji</option>
+              <option value="1">APBN</option>
+              <option value="2">Non APBN</option>
+            </select>
+          </div>
+
+          {/* Status Kepegawaian */}
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Kedudukan Pegawai:</label>
+            <select
+              value={selectedStatusKepegawaian || ""}
+              onChange={handleChange}
+              name="id_status_kepegawaian"
+              className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Kedudukan Pegawai</option>
+              {statusKepegawaianData.map((statuskepegawaian) => (
+                <option key={statuskepegawaian.id_status_kepegawaian} value={statuskepegawaian.id_status_kepegawaian}>
+                  {statuskepegawaian.status}
+                </option>
+              ))}
+            </select>
+          </div>
+
+      {/* Golongan and TMT Eselon */}
+<div className="mb-4 flex items-center">
+  <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Golongan Awal:</label>
   <select
-    value={selectedJenisAsn || ""}
-    onChange={handleJenisAsnChange}
-    className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    value={selectedGolongan || ""}
+    onChange={handleChange}
+    name="gol_id_awal"
+    className="shadow border rounded w-2/8 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
   >
-    <option value="">Pilih Jenis ASN</option>
-    {jenisAsnData.map((jenis_asn) => (
-      <option key={jenis_asn.peg_jenis_asn} value={jenis_asn.id}>
-        {jenis_asn.nama}
+    <option value="">Pilih Golongan</option>
+    {golonganData && golonganData.map((golongan) => (
+      <option key={golongan.gol_id} value={golongan.gol_id}>
+        {golongan.nm_gol}
       </option>
     ))}
   </select>
-</div>
-  {/* Jenis PNS */}
-<div className="mb-4 flex items-center">
-  <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis PNS:</label>
-  <select
-    value={selectedJenisPns || ""}
-    onChange={handleJenisPnsChange}
-    className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-  >
-    <option value="">Jenis PNS</option>
-    {jenisPnsData.map((jenis_pns) => (
-      <option key={jenis_pns.id_jen_pns} value={jenis_pns.id_jen_pns}>
-        {jenis_pns.nama_jenis}
-      </option>
-    ))}
-  </select>
+
+  {pegawai && (
+    <div className="flex items-center ml-4 w-1/3">
+      <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">TMT Golongan Awal:</label>
+      <input
+        id="peg_eselon_tmt"
+        name="peg_eselon_tmt"
+        type="date"
+        value={pegawai.peg_eselon_tmt || ""}
+        onChange={handleChange}
+        className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+      />
+    </div>
+  )}
 </div>
 
 
 
+          {/* Karpeg dan Karsutri */}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Karpeg:</label>
+              <input
+                id="peg_karpeg"
+                name="peg_karpeg"
+                type="text"
+                value={pegawai.peg_karpeg || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Karis/Karsu:</label>
+              <input
+                id="peg_karsutri"
+                name="peg_karsutri"
+                type="text"
+                value={pegawai.peg_karsutri || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
 
+          {/* Askes */}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Askes:</label>
+              <input
+                id="peg_no_askes"
+                name="peg_no_askes"
+                type="text"
+                value={pegawai.peg_no_askes || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+            </div>
+          )}
 
+          {/* KTP dan NPWP */}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No KTP:</label>
+              <input
+                id="peg_ktp"
+                name="peg_ktp"
+                type="text"
+                value={pegawai.peg_ktp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">NPWP:</label>
+              <input
+                id="peg_npwp"
+                name="peg_npwp"
+                type="text"
+                value={pegawai.peg_npwp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
 
           {/* Golongan Darah */}
           <div className="mb-4 flex items-center">
             <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Golongan Darah:</label>
             <select
               value={selectedGoldar || ""}
-              onChange={handleGoldarChange}
+              onChange={handleChange}
+              name="id_goldar"
               className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
               <option value="">Pilih Golongan Darah</option>
-              {goldarData.map ((goldar) => (
+              {goldarData.map((goldar) => (
                 <option key={goldar.id_goldar} value={goldar.id_goldar}>
                   {goldar.nm_goldar}
                 </option>
               ))}
             </select>
           </div>
+          {/* Bapetarum */}
 
-          {/* Additional Fields */}
-          {pegawai &&
-            Object.keys(pegawai).map((key) =>
-              key !== "satuan_kerja_id" &&
-              key !== "unit_kerja_id" && (
-                <div key={key} className="mb-4 flex items-center">
-                  <label
-                    htmlFor={key}
-                    className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2"
-                  >
-                    {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}:
-                  </label>
-                  <input
-                    id={key}
-                    name={key}
-                    type="text"
-                    value={pegawai[key as keyof Pegawai] || ""}
-                    onChange={handleChange}
-                    className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
-                  />
-                </div>
-              )
-            )}
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">BAPETARUM:</label>
+            <select
+              name="peg_status_bapertarum"
+              value={pegawai?.peg_bapertarum || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/2 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+            >
+              <option value="" disabled>pilih</option>
+              <option value="1">Sudah Diambil</option>
+              <option value="2">Belum Diambil</option>
+            </select>
+          </div>
+
+          {/* TMT Gaji Berkala*/}
+          {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">TMT Gaji Berkala Terakhir :</label>
+              <input
+                id="peg_tmt_kgb"
+                name="peg_tmt_kgb"
+                type="date"
+                value={pegawai.peg_tmt_kgb || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+            </div>
+          )}
+
+      {/* No rekening */}
+        {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Rekening:</label>
+              <input
+                id="peg_no_rekening"
+                name="peg_no_rekening"
+                type="text"
+                value={pegawai.peg_no_rekening || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+            </div>
+          )}
+
+ {/* alamat rumah */}
+ {pegawai && (
+            <div className="mb-4 flex items-center">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Alamat Rumah:</label>
+              <input
+                id="peg_rumah_alamat"
+                name="peg_rumah_alamat"
+                type="text"
+                value={pegawai.peg_rumah_alamat || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+            </div>
+          )}
+{/* Provinsi, kab, kec, kel */}
+
+        {pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Provinsi:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RT:</label>
+              <input
+                id="peg_alamat_rt"
+                name="peg_alamat_rt"
+                type="text"
+                value={pegawai.peg_alamat_rt || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kab/Kota:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RW:</label>
+              <input
+                id="peg_alamat_rw"
+                name="peg_alamat_rw"
+                type="text"
+                value={pegawai.peg_alamat_rw || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kec :</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+  </div>
+          )}
+
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kel/Desa:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kode Pos:</label>
+              <input
+                id="peg_kodepos"
+                name="peg_kodepos"
+                type="text"
+                value={pegawai.peg_kodepos || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Telp:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_telp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">HP:</label>
+              <input
+                id="peg_telp_hp"
+                name="peg_telp_hp"
+                type="text"
+                value={pegawai.peg_telp_hp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+          {pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Email:</label>
+              <input
+                id="peg_email"
+                name="peg_email"
+                type="text"
+                value={pegawai.peg_email || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Email Resmi:</label>
+              <input
+                id="peg_email_resmi"
+                name="peg_email_resmi"
+                type="text"
+                value={pegawai.peg_email_resmi || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+
+          {/* alamat rumah KTP */}
+
+
+          {pegawai && (
+  <div className="mb-4">
+    <h2 className="text-lg font-bold mb-2">Alamat Domisili (Sesuai KTP)</h2>
+    
+    <div className="flex items-center mb-4">
+      <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Alamat Rumah:</label>
+      <input
+        id="peg_rumah_alamat"
+        name="peg_rumah_alamat"
+        type="text"
+        value={pegawai.peg_rumah_alamat || ""}
+        onChange={handleChange}
+        className="shadow border rounded w-2/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+      />
+    </div>
+  </div>
+)}
+
+{/* Provinsi, kab, kec, kel */}
+
+        {pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Provinsi:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RT:</label>
+              <input
+                id="peg_alamat_rt_ktp"
+                name="peg_alamat_rt_ktp"
+                type="text"
+                value={pegawai.peg_alamat_rt_ktp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kab/Kota:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RW:</label>
+              <input
+                id="peg_alamat_rw_ktp"
+                name="peg_alamat_rw_ktp"
+                type="text"
+                value={pegawai.peg_alamat_rw_ktp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kec :</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+  </div>
+          )}
+
+{pegawai && (
+            <div className="mb-4 flex justify-start ml-60">
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kel/Desa:</label>
+              <input
+                id="peg_gelar_depan"
+                name="peg_gelar_depan"
+                type="text"
+                value={pegawai.peg_gelar_depan || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+              />
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kode Pos:</label>
+              <input
+                id="peg_kodepos_ktp"
+                name="peg_kodepos_ktp"
+                type="text"
+                value={pegawai.peg_kodepos_ktp || ""}
+                onChange={handleChange}
+                className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+              />
+            </div>
+          )}
+
+          
+
 
           {/* Submit Button */}
           <div className="flex items-center justify-center mt-4">

@@ -6,8 +6,8 @@ export default async function handler(req, res) {
       // Fetch data from Supabase
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema is correct
-        .from('jenis_pegawai') // Ensure the table name is correct
-        .select('status_kepegawaian_id, stspeg_nama');
+        .from('m_spg_status_kepegawaian') // Ensure the table name is correct
+        .select('id_status_kepegawaian, status');
 
       if (error) throw error;
 
