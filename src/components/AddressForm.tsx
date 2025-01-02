@@ -82,60 +82,123 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
     }
   };
 
-  const InputField = ({
-    id,
-    label,
-    value,
-    onChange,
-  }: {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  }) => (
-    <div className="flex items-center mb-4">
-      <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">{label}:</label>
-      <input
-        id={id}
-        name={id}
-        type="text"
-        value={value || ""}
-        onChange={onChange}
-        className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
-      />
-    </div>
-  );
-
   return (
     <>
       {pegawai && (
         <>
+          {/* Provinsi and RT in one row */}
           <div className="mb-4 flex justify-start ml-60">
             <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Provinsi:</label>
             <Select
               options={dataprov}
               value={dataprov.find((option) => option.value === pegawai.id_provinsi) || null}
               onChange={(e) => handleSelectChange("id_provinsi", e?.value || null)}
+              className="w-2/6 mr-2"
+            />
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RT:</label>
+            <input
+              id="peg_alamat_rt"
+              name="peg_alamat_rt"
+              type="text"
+              value={pegawai.peg_alamat_rt || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
             />
           </div>
+
+          {/* Kab/Kota and RW in one row */}
           <div className="mb-4 flex justify-start ml-60">
             <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kab/Kota:</label>
             <Select
               options={datakota}
               value={datakota.find((option) => option.value === pegawai.id_kota) || null}
               onChange={(e) => handleSelectChange("id_kota", e?.value || null)}
+              className="w-2/6 mr-2"
+            />
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RW:</label>
+            <input
+              id="peg_alamat_rw"
+              name="peg_alamat_rw"
+              type="text"
+              value={pegawai.peg_alamat_rw || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
             />
           </div>
+
+          {/* Kecamatan in a single row */}
           <div className="mb-4 flex justify-start ml-60">
-            <InputField id="peg_alamat_rt" label="RT" value={pegawai.peg_alamat_rt} onChange={handleChange} />
-            <InputField id="peg_alamat_rw" label="RW" value={pegawai.peg_alamat_rw} onChange={handleChange} />
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kecamatan:</label>
+            <Select
+              options={datakec}
+              value={datakec.find((option) => option.value === pegawai.id_kec) || null}
+              onChange={(e) => handleSelectChange("id_kec", e?.value || null)}
+              className="w-2/6 mr-2"
+            />
           </div>
+
+          {/* Kelurahan and Kode Pos in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <InputField id="peg_kodepos" label="Kode Pos" value={pegawai.peg_kodepos} onChange={handleChange} />
-            <InputField id="peg_telp" label="Telp" value={pegawai.peg_telp} onChange={handleChange} />
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kelurahan:</label>
+            <Select
+              options={dakel}
+              value={dakel.find((option) => option.value === pegawai.id_kel) || null}
+              onChange={(e) => handleSelectChange("id_kel", e?.value || null)}
+              className="w-2/6 mr-2"
+            />
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kode Pos:</label>
+            <input
+              id="peg_kodepos"
+              name="peg_kodepos"
+              type="text"
+              value={pegawai.peg_kodepos || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+            />
           </div>
+
+          {/* Telp and HP in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <InputField id="peg_telp_hp" label="HP" value={pegawai.peg_telp_hp} onChange={handleChange} />
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Telp:</label>
+            <input
+              id="peg_telp"
+              name="peg_telp"
+              type="text"
+              value={pegawai.peg_telp || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+            />
+            <label className="block text-gray-700 text-sm font-bold w-1/8 pr-8 bg-teal-100 p-2">HP:</label>
+            <input
+              id="peg_telp_hp"
+              name="peg_telp_hp"
+              type="text"
+              value={pegawai.peg_telp_hp || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+            />
+          </div>
+
+          {/* Email and Email Resmi in one row */}
+          <div className="mb-4 flex justify-start ml-60">
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Email:</label>
+            <input
+              id="peg_email"
+              name="peg_email"
+              type="text"
+              value={pegawai.peg_email || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
+            />
+            <label className="block text-gray-700 text-sm font-bold w-1/8 pr-8 bg-teal-100 p-2">Email Resmi:</label>
+            <input
+              id="peg_email_resmi"
+              name="peg_email_resmi"
+              type="text"
+              value={pegawai.peg_email_resmi || ""}
+              onChange={handleChange}
+              className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
+            />
           </div>
         </>
       )}
