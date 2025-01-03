@@ -7,6 +7,7 @@ import axios from "axios";
 import AddressForm from "./AddressForm"; // Adjust the path as necessary
 import AddressFormKTP from "./AddressFormKTP"; // Adjust the path as necessary
 import SatuanDanUnitKerja from "./SatuanDanUnitKerja" // Adjust the path as necessary
+import GolonganForm from "./GolonganForm"; // Adjust the path as necessary
 
 
 
@@ -30,7 +31,9 @@ interface Pegawai {
   peg_status_kepegawaian?: string;
   peg_cpns_tmt?: string;
   peg_pns_tmt?: string;
-  gol_id_awal?: string;
+  gol_id_awal?: string | null;
+  gol_id_akhir?: string | null;
+  peg_gol_akhir_tmt?: string;
   peg_status_gaji?: string;
   peg_karpeg?: string;
   peg_no_askes?: string;
@@ -155,6 +158,7 @@ const EditPegawai: React.FC = (): JSX.Element => {
         setSelectedStatusKepegawaian(pegawaiResponse.data.id_status_kepegawaian);
         setGolonganData(golonganResponse.data);
         setSelectedGolongan(pegawaiResponse.data.gol_id_awal);
+        setSelectedGolongan(pegawaiResponse.data.gol_id_akhir);
 
 
 
@@ -196,6 +200,8 @@ const EditPegawai: React.FC = (): JSX.Element => {
       setError("No data to save.");
       return;
     }
+
+    setLoading(true); // Set loading to true while the request is being processed
 
     try {
       await axios.put(`/api/pegawai_unit/${pegid}`, pegawai);
@@ -578,37 +584,18 @@ const EditPegawai: React.FC = (): JSX.Element => {
   </select>
 </div>
 
-{/* Golongan and TMT gol awal */}
-<div className="mb-4 flex items-center">
-  <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Golongan Awal:</label>
-  <select
-    value={selectedGolongan || ""}
-    onChange={handleChange}
-    name="gol_id_awal"
-    className="shadow border rounded w-2/8 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-  >
-    <option value="">Pilih Golongan</option>
-    {golonganData && golonganData.map((golongan) => (
-      <option key={golongan.gol_id} value={golongan.gol_id}>
-        {golongan.nm_gol}
-      </option>
-    ))}
-  </select>
-
-  {pegawai && (
-    <div className="flex items-center ml-4 w-1/3">
-      <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">TMT Golongan Awal:</label>
-      <input
-        id="peg_eselon_tmt"
-        name="peg_eselon_tmt"
-        type="date"
-        value={pegawai.peg_gol_awal_tmt || ""}
-        onChange={handleChange}
-        className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
-      />
-    </div>
-  )}
-</div>
+ {/* Golongan Form */}
+{pegawai && (
+  <GolonganForm
+    pegawai={pegawai}
+    handleChange={handleChange}
+    setPegawai={setPegawai}
+    golonganOptions={golonganData.map(golongan => ({
+      value: golongan.gol_id,
+      label: golongan.nm_gol,
+    }))}
+  />
+)}
 
 {/* Karpeg dan Karsutri */}
 {pegawai && (
