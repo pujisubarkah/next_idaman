@@ -1,5 +1,5 @@
-// UpdateJabatanModal.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Select from "react-select"; // Import react-select
 
 interface UpdateJabatanModalProps {
   isOpen: boolean;
@@ -9,10 +9,10 @@ interface UpdateJabatanModalProps {
 
 const UpdateJabatanModal: React.FC<UpdateJabatanModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    satuanKerja: "",
-    unitKerja: "",
-    jenisJabatan: "",
-    namaJabatan: "",
+    satuanKerja: null,
+    unitKerja: null,
+    jenisJabatan: null,
+    namaJabatan: null, // Change to null for Select
     noSK: "",
     tanggalSK: "",
     jabatanPenandatangan: "",
@@ -21,9 +21,39 @@ const UpdateJabatanModal: React.FC<UpdateJabatanModalProps> = ({ isOpen, onClose
     tmtEselon: "",
   });
 
+  const [satuanKerjaOptions, setSatuanKerjaOptions] = useState([]);
+  const [unitKerjaOptions, setUnitKerjaOptions] = useState([]);
+  const [jenisJabatanOptions, setJenisJabatanOptions] = useState([]);
+  const [namaJabatanOptions, setNamaJabatanOptions] = useState([]); // New state for nama jabatan options
+
+  useEffect(() => {
+    if (isOpen) {
+      // Fetch options from the API when the modal opens
+      const fetchOptions = async () => {
+        try {
+          const response = await fetch('/api/jabatan');
+          const data = await response.json();
+          // Assuming the API returns an array of objects with id and name
+          setSatuanKerjaOptions(data.satuanKerja); // Adjust based on your API response structure
+          setUnitKerjaOptions(data.unitKerja); // Adjust based on your API response structure
+          setJenisJabatanOptions(data.jenisJabatan); // Adjust based on your API response structure
+          setNamaJabatanOptions(data.namaJabatan); // Fetch nama jabatan options
+        } catch (error) {
+          console.error('Error fetching options:', error);
+        }
+      };
+
+      fetchOptions();
+    }
+  }, [isOpen]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, selectedOption: any) => {
+    setFormData((prev) => ({ ...prev, [name]: selectedOption }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,48 +72,52 @@ const UpdateJabatanModal: React.FC<UpdateJabatanModalProps> = ({ isOpen, onClose
           {/* Satuan Kerja */}
           <div className="mb-4">
             <label className="block text-gray-700">Satuan Kerja:</label>
-            <input
+            <Select
               name="satuanKerja"
-              type="text"
               value={formData.satuanKerja}
-              onChange={handleChange}
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+              onChange={(selectedOption) => handleSelectChange('satuanKerja', selectedOption)}
+              options={satuanKerjaOptions}
+              className="basic-single"
+              classNamePrefix="select"
             />
           </div>
 
           {/* Unit Kerja */}
           <div className="mb-4">
             <label className="block text-gray-700">Unit Kerja:</label>
-            <input
+            <Select
               name="unitKerja"
-              type="text"
               value={formData.unitKerja}
-              onChange={handleChange}
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+              onChange={(selectedOption) => handleSelectChange('unitKerja', selectedOption)}
+              options={unitKerjaOptions}
+              className="basic-single"
+              classNamePrefix="select"
             />
           </div>
 
           {/* Jenis Jabatan */}
           <div className="mb-4">
             <label className="block text-gray-700">Jenis Jabatan:</label>
-            <input
+            <Select
               name="jenisJabatan"
-              type="text"
               value={formData.jenisJabatan}
-              onChange={handleChange}
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+              onChange={(selectedOption) => handleSelectChange('jenisJabatan', selectedOption)}
+              options={ jenisJabatanOptions}
+              className="basic-single"
+              classNamePrefix="select"
             />
           </div>
 
           {/* Nama Jabatan */}
           <div className="mb-4">
             <label className="block text-gray-700">Nama Jabatan:</label>
-            <input
+            <Select
               name="namaJabatan"
-              type="text"
               value={formData.namaJabatan}
-              onChange={handleChange}
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+              onChange={(selectedOption) => handleSelectChange('namaJabatan', selectedOption)}
+              options={namaJabatanOptions} // Use the new state for options
+              className="basic-single"
+              classNamePrefix="select"
             />
           </div>
 

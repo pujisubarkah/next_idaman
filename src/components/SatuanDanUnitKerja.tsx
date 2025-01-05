@@ -1,6 +1,7 @@
 // SatuanDanUnitKerja.tsx
 import React, { useState } from "react";
 import UpdateJabatanModal from "./UpdateJabatanModal"; // Adjust the path as necessary
+import Select from "react-select"; // Import react-select
 
 interface SatuanDanUnitKerjaProps {
   selectedSatuanKerja: string | null;
@@ -31,6 +32,18 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
     setIsModalOpen(false); // Close the modal after submission
   };
 
+  // Prepare options for Satuan Kerja
+  const satuanKerjaOptions = unitKerjaData.map(item => ({
+    value: item.satuan_kerja_id,
+    label: item.satuan_kerja_nama,
+  }));
+
+  // Prepare options for Unit Kerja
+  const unitKerjaOptions = filteredUnitKerja.map(unit => ({
+    value: unit.unit_kerja_id,
+    label: unit.unit_kerja_nama,
+  }));
+
   return (
     <>
       {/* Satuan Kerja */}
@@ -38,26 +51,22 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
         <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
           Satuan Kerja:
         </label>
-        <select
-          value={selectedSatuanKerja || ""}
-          onChange={(e) => {
-            setSelectedSatuanKerja(e.target.value);
+        <Select
+          value={satuanKerjaOptions.find(option => option.value === selectedSatuanKerja) || null}
+          onChange={(selectedOption) => {
+            setSelectedSatuanKerja(selectedOption ? selectedOption.value : null);
             setSelectedUnitKerja(null);
             setPegawai((prev) => ({
               ...prev,
-              satuan_kerja_id: e.target.value,
+              satuan_kerja_id: selectedOption ? selectedOption.value : null,
               unit_kerja_id: undefined,
             }));
           }}
-          className="shadow border rounded w-2/3 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-        >
-          <option value="">Pilih Satuan Kerja</option>
-          {unitKerjaData.map((item) => (
-            <option key={item.satuan_kerja_id} value={item.satuan_kerja_id}>
-              {item.satuan_kerja_nama}
-            </option>
-          ))}
-        </select>
+          options={satuanKerjaOptions}
+          className="w-2/3"
+          classNamePrefix="react-select"
+          placeholder="Pilih Satuan Kerja"
+        />
       </div>
 
       {/* Unit Kerja */}
@@ -66,24 +75,20 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
           <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
             Unit Kerja:
           </label>
-          <select
-            value={selectedUnitKerja || ""}
-            onChange={(e) => {
-              setSelectedUnitKerja(e.target.value);
+          <Select
+            value={unitKerjaOptions.find(option => option.value === selectedUnitKerja) || null}
+            onChange={(selectedOption) => {
+              setSelectedUnitKerja(selectedOption ? selectedOption.value : null);
               setPegawai((prev) => ({
                 ...prev,
-                unit_kerja_id: e.target.value,
+                unit_kerja_id: selectedOption ? selectedOption.value : null,
               }));
             }}
-            className="shadow border rounded w-2/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-          >
-            <option value="">Pilih Unit Kerja</option>
-            {filteredUnitKerja.map((unit) => (
-              <option key={unit.unit_kerja_id} value={unit.unit_kerja_id}>
-                {unit.unit_kerja_nama}
-              </option>
-            ))}
-          </select>
+            options={unitKerjaOptions}
+            className="w-2/6"
+            classNamePrefix="react-select"
+            placeholder="Pilih Unit Kerja"
+          />
           {/* Buttons */}
           <div className="ml-4 flex space-x-2">
             <button
@@ -93,8 +98,7 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
                 // Handle Update Unit Internal
               }}
             >
-              Update Unit Internal
-            </button>
+              Update Unit Internal </button>
             <button
               type="button"
               className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -102,7 +106,7 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
             >
               Update Jabatan
             </button>
- </div>
+          </div>
         </div>
       )}
 

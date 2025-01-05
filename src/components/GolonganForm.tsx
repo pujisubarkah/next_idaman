@@ -126,7 +126,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
             </div>
 
             {/* Modal Component */}
-            <UpdateGolonganModal isOpen={isModalOpen} onClose={closeModal} golonganData={golonganData} />
+            <UpdateGolonganModal isOpen={isModalOpen} onClose={closeModal} golonganData={golonganData} onSubmit={(formData) => { /* handle form submission */ }} />
         </>
     );
 };

@@ -18,35 +18,41 @@ const DataSaudaraLainnya = () => {
   }
 
   const [dataSaudara, setDataSaudara] = useState<DataSaudara[]>([]);
-
-  // const [data, setData] = useState<DataDummy[]>([]);
   const [nip, setNip] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<DataSaudara>({
+    no: 0,
+    nikNip: "",
+    namaSaudara: "",
+    hubungan: "",
+    jenisKelamin: "",
+    tempatTanggalLahir: "",
+    pendidikan: "",
+    pekerjaan: "",
+    keterangan: "",
+  });
 
-// Fungsi untuk memformat tanggal
-const formatTanggal = (tanggal) => {
-  const bulanIndo = [
+  const formatTanggal = (tanggal: string) => {
+    const bulanIndo = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-  ];
+    ];
 
-  const date = new Date(tanggal);
-  const hari = date.getDate();
-  const bulan = bulanIndo[date.getMonth()];
-  const tahun = date.getFullYear();
+    const date = new Date(tanggal);
+    const hari = date.getDate();
+    const bulan = bulanIndo[date.getMonth()];
+    const tahun = date.getFullYear();
 
-  return `${hari} - ${bulan} - ${tahun}`;
-};
-
+    return `${hari} - ${bulan} - ${tahun}`;
+  };
 
   useEffect(() => {
-    // Mendapatkan NIP dari URL
     const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1];
     setNip(nipFromUrl);
 
     if (nipFromUrl) {
-      // Fetch data dari API
       fetchRiwayatSaudara(nipFromUrl);
     }
   }, []);
@@ -76,11 +82,32 @@ const formatTanggal = (tanggal) => {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(formData);
+    closeModal();
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div id="saudara" className="p-8">
       <h3 className="text-center text-xl font-semibold mb-6">DATA SAUDARA LAINNYA</h3>
 
-      {/* Keterangan Petunjuk */}
       <div className="mb-8 p-4 bg-teal-100 border border-teal-500 rounded-lg">
         <h4 className="font-bold text-teal-900">PETUNJUK:</h4>
         <ul className="list-decimal list-inside mt-2 text-teal-800">
@@ -93,7 +120,7 @@ const formatTanggal = (tanggal) => {
       </div>
 
       <div className="flex justify-end mb-4">
-        <button className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800">
+        <button onClick={openModal} className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800">
           <FaPlus className="inline-block mr-2" />
           Tambah
         </button>
@@ -135,7 +162,7 @@ const formatTanggal = (tanggal) => {
                 <td className="p-3 border border-teal-500">{item.keterangan}</td>
                 <td className="p-3 border border-teal-500">
                   <div className="flex space-x-4">
-                  <button
+                    <button
                       className="text-green-500 hover:text-green-700"
                       aria-label="Edit"
                     >
@@ -154,6 +181,153 @@ const formatTanggal = (tanggal) => {
           )}
         </tbody>
       </table>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg w-1/3">
+            <h3 className="text-xl font-semibold mb-4">Tambah Data Saudara</h3>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="nikNip" className="block text-sm font-semibold w-1/3">NIK/NIP</label>
+                <input
+                  type="text"
+                  id="nikNip"
+                  name="nikNip"
+                  value={formData.nikNip}
+                  onChange={handleChange}
+                  className="w-2/3 px-4 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="namaSaudara" className="block text-sm font-semibold w-1/3">Nama Saudara</label>
+                <input
+                  type="text"
+                  id="namaSaudara"
+                  name="namaSaudara"
+                  value={formData.namaSaudara}
+                  onChange={handleChange}
+                  className="w-2/3 px-4 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="hubungan" className="block text-sm font-semibold w-1/3">Hubungan</label>
+                <div className="w-2/3 flex flex-wrap">
+                  {["Saudara Kandung", "Sepupu", "Keponakan", "Menantu", "Mertua", "Ipar", "Paman", "Bibi", "Kerabat Jauh", "Kakak", "Adik", "Saudara Tiri"].map((option) => (
+                    <div key={option} className="flex items-center mr-4 mb-2">
+                      <input
+                        type="radio"
+                        id={option}
+                        name="hubungan"
+                        value={option}
+                        checked={formData.hubungan === option}
+                        onChange={handleChange}
+                        className="mr-1"
+                        required
+                      />
+                      <label htmlFor={option} className="text-sm">{option}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="jenisKelamin" className="block text-sm font-semibold w-1/3">Jenis Kelamin</label>
+                <div className="w-2/3 flex flex-wrap">
+                  <div className="flex items-center mr-4 mb-2">
+                    <input
+                      type="radio"
+                      id="laki-laki"
+                      name="jenisKelamin"
+                      value="Laki-laki"
+                      checked={formData.jenisKelamin === "Laki-laki"}
+                      onChange={handleChange}
+                      className="mr-1"
+                      required
+                    />
+                    <label htmlFor="laki-laki" className="text-sm">Laki-laki</label>
+                  </div>
+                  <div className="flex items-center mr-4 mb-2">
+                    <input
+                      type="radio"
+                      id="perempuan"
+                      name="jenisKelamin"
+                      value="Perempuan"
+                      checked={formData.jenisKelamin === "Perempuan"}
+                      onChange={handleChange}
+                      className="mr-1"
+                      required
+                    />
+                    <label htmlFor="perempuan" className="text-sm">Perempuan</label>
+                  </div>
+                </div>
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="tempatTanggalLahir" className="block text-sm font-semibold w-1/3">Tempat dan Tanggal Lahir</label>
+                <input
+                  type="text"
+                  id="tempatTanggalLahir"
+                  name="tempatTanggalLahir"
+                  value={formData.tempatTanggalLahir}
+                  onChange={handleChange}
+                  className="w-2/3 px-4 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="pendidikan" className="block text-sm font-semibold w-1/3">Pendidikan</label>
+                <input
+                  type="text"
+                  id="pendidikan"
+                  name="pendidikan"
+                  value={formData.pendidikan}
+                  onChange={handleChange}
+                  className="w-2/3 px-4 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="pekerjaan" className="block text-sm font-semibold w-1/3">Pekerjaan</label>
+                <input
+                  type="text"
+                  id="pekerjaan"
+                  name="pekerjaan"
+                  value={formData.pekerjaan}
+                  onChange={handleChange}
+                  className="w-2/3 px-4 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4 flex items-center">
+                <label htmlFor="keterangan" className="block text-sm font-semibold w-1/3">Keterangan</label>
+                <textarea
+                  id="keterangan"
+                  name="keterangan"
+                  value={formData.keterangan}
+                  onChange={handleChange}
+                  className="w-2/3 px-4 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800"
+                >
+                  Simpan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -31,7 +31,8 @@ const ProfileInfo = ({ nip }) => {
           setProfileData({
             nip: data.peg_nip || "",
             nipLama: data.peg_nip_lama || "",
-            namaLengkap: data.peg_nama_lengkap || "",
+            namaLengkap: [data.peg_gelar_depan, data.peg_nama, data.peg_gelar_belakang]
+            .filter(Boolean).join(" ") || "",
             photoUrl: data.peg_foto || null,
           });
         }

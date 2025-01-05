@@ -6,16 +6,11 @@ export default async function handler(req, res) {
       // Fetch data from Supabase
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema is correct
-        .from('m_spg_pendidikan') // Corrected table name
-        .select('id_pend,nm_pend');
+        .from('m_spg_tingkat_pendidikan') // Ensure the table name is correct
+        .select('nm_tingpend') // Adjust the fields to be fetched
+        .order('tingpend_id', { ascending: true }); // Adjust the ordering if needed
 
-
-       if (error) {
-        console.error('Error fetching data:', error); // Log the error for debugging
-        throw error;
-      }
-
-      
+      if (error) throw error;
 
       // Send the fetched data in the response
       return res.status(200).json(data); // Return fetched data

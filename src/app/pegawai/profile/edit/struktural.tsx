@@ -9,6 +9,7 @@ const RiwayatPelatihanStruktural = () => {
   interface PelatihanStruktural {
     no: number;
     kategori: string;
+    kategoriParent: string;
     nama: string;
     tanggalMulai: string;
     tanggalSelesai: string;
@@ -61,8 +62,9 @@ const RiwayatPelatihanStruktural = () => {
       const mappedData: PelatihanStruktural[] = sortedData.map(
         (item: any, index: number) => ({
           no: index + 1,
-          kategori: item.m_spg_diklat_jenis.diklat_jenis_nama,
-          nama: item.m_spg_diklat_struk_kategori.kategori_nama,
+          kategori: item.diklat_jenis.diklat_jenis_nama,
+          kategoriParent: item.kategori.kategori_parent_nama || "Tidak Ada",
+          nama: item.kategori.kategori_nama,
           tanggalMulai: formatTanggal(item.diklat_mulai),
           tanggalSelesai: formatTanggal(item.diklat_selesai),
           jumlahJam: item.diklat_jumlah_jam,
@@ -163,7 +165,9 @@ const RiwayatPelatihanStruktural = () => {
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
                 <td className="p-3 border border-teal-500">{item.no}</td>
-                <td className="p-3 border border-teal-500">{item.kategori}</td>
+                <td className="p-3 border border-teal-500">
+                  {item.kategori} ({item.kategoriParent})
+                </td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
                 <td className="p-3 border border-teal-500">
                   {item.tanggalMulai}

@@ -5,22 +5,23 @@ import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
 const RiwayatPelatihanTeknis = () => {
+  // Definisi tipe data untuk state
   interface PelatihanTeknis {
     no: number;
+    kategori: string;
     nama: string;
-    lainnya: string;
     tanggalMulai: string;
     tanggalSelesai: string;
     jumlahJam: number;
     jabatanPenandatangan: string;
     instansi: string;
     lokasi: string;
-    instansiPenyelenggara: string;
   }
 
   const [data, setData] = useState<PelatihanTeknis[]>([]);
   const [nip, setNip] = useState<string | null>(null);
 
+  // Fungsi untuk memformat tanggal
   const formatTanggal = (tanggal: string): string => {
     const bulanIndo = [
       "Januari",
@@ -59,16 +60,17 @@ const RiwayatPelatihanTeknis = () => {
       const mappedData: PelatihanTeknis[] = sortedData.map(
         (item: any, index: number) => ({
           no: index + 1,
-          kategori: item.m_spg_diklat_jenis.diklat_jenis_nama,
-          nama: item.m_spg_diklat_teknis.diklat_teknis_nm,
+          kategori: item.diklat_jenis.diklat_jenis_nama,
+          nama: `${item.diklat_teknis ? item.diklat_teknis.diklat_teknis_nm : "Tidak Ada"} - ${item.diklat_nama || "Tidak Ada"}`,
           tanggalMulai: formatTanggal(item.diklat_mulai),
           tanggalSelesai: formatTanggal(item.diklat_selesai),
           jumlahJam: item.diklat_jumlah_jam,
-          jabatanPenandatangan: item.diklat_sttp_pej,
+          jabatanPenandatangan: item.diklat_sttp_pej || "Tidak Ada",
           instansi: item.diklat_penyelenggara,
           lokasi: item.diklat_tempat,
         })
       );
+
 
       setData(mappedData);
     } catch (error) {
@@ -104,6 +106,9 @@ const RiwayatPelatihanTeknis = () => {
           <tr className="text-sm uppercase">
             <th className="p-3 border border-teal-500" rowSpan={2}>No</th>
             <th className="p-3 border border-teal-500" rowSpan={2}>
+              Kategori
+            </th>
+            <th className="p-3 border border-teal-500" rowSpan={2}>
               Nama Pelatihan Teknis
             </th>
             <th className="p-3 border border-teal-500" rowSpan={2}>
@@ -125,14 +130,14 @@ const RiwayatPelatihanTeknis = () => {
               Lokasi
             </th>
             <th className="p-3 border border-teal-500" rowSpan={2}>
-              Pilihan</th>
-              </tr>
-            
+              Pilihan
+            </th>
+          </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={8} className="text-center p-4">
+              <td colSpan={10} className="text-center p-4">
                 Tidak ada data.
               </td>
             </tr>
@@ -142,7 +147,8 @@ const RiwayatPelatihanTeknis = () => {
                 key={index}
                 className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}
               >
-                <td className="p-3 border border-teal-500">{index + 1}</td>
+                <td className="p-3 border border-teal-500">{item.no}</td>
+                <td className="p-3 border border-teal-500">{item.kategori}</td>
                 <td className="p-3 border border-teal-500">{item.nama}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalMulai}</td>
                 <td className="p-3 border border-teal-500">{item.tanggalSelesai}</td>
