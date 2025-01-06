@@ -54,8 +54,8 @@ const RiwayatKGB = () => {
         no: index + 1,
         golongan: item.m_spg_golongan.nm_gol,
         gaji: formatRupiah(item.m_spg_gaji.gaji_pokok), // Panggil fungsi formatRupiah di sini
-        nomorkgb: item.kgb_no_sk,
-        tanggalsk: item.kgb_tgl_sk,
+        nomorkgb: item.kgb_nosk,
+        tanggalsk: item.kgb_tglsk,
         yadkgb: item.kgb_yad,
         tahunkgb: item.kgb_thn,
         bulankgb: item.kgb_bln,

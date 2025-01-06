@@ -59,12 +59,12 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
 
       const mappedData = sortedData.map((item: any, index: number) => ({
         no: index + 1,
-        tingpend: item.m_spg_tingkat_pendidikan.nm_tingpend,
-        jurusan: item.m_spg_jurusan ? item.m_spg_jurusan.jurusan_nm : " ",
+        tingpend: item.nm_tingpend,
+        jurusan: item.nama_jurusan, 
         riw_pendidikan_sttb_ijazah: item.riw_pendidikan_sttb_ijazah,
         riw_pendidikan_tanggal: formatTanggal(item.riw_pendidikan_tgl),
         riw_pendidikan_pejabat: item.riw_pendidikan_pejabat,
-        riw_pendidikan_nm: item.riw_pendidikan_nm || item.m_spg_universitas.univ_nmpti,
+        riw_pendidikan_nm: item.riw_pendidikan_nm || item.nama_univ,
         riw_pendidikan_lokasi: item.riw_pendidikan_lokasi,
       }));
 

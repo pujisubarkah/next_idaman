@@ -42,7 +42,7 @@ const RiwayatKepangkatan = () => {
   
         const mappedData = response.data.map((item: any, index: number) => ({
           No: index + 1,
-          golRuang: item.m_spg_golongan.nm_gol,
+          golRuang: item.nama_golongan,
           masaKerjaTahun: item.riw_pangkat_thn,
           masaKerjaBulan: item.riw_pangkat_bln,
           nomorSK: item.riw_pangkat_sk,

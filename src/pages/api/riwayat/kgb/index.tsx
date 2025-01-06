@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         }
 
         const { data, error } = await supabase
-            .schema('siap_skpd')
+            .schema('siap')
             .from('spg_kgb')
             .select(`
                 * ,

@@ -283,11 +283,7 @@ export default async function handler(req, res) {
     }
     });
 
-    // Create a mapping of pendidikan awal
-    const pendidikanAwalMap = {};
-    pendidikanAwal?.forEach(pendidikanawal => {
-    pendidikanAwalMap[pendidikanawal.id_pend] = pendidikanawal.nm_pend;
-    });
+    
 
     // Now, create a mapping for parent names
     const unitkerjaParentMap = {};
@@ -333,17 +329,23 @@ export default async function handler(req, res) {
     kabkotMap[kabkot.kabupaten_id] = kabkot.kabupaten_nm;
     });
 
-   // Create a mapping of kecamatan
+    // Create a mapping of kecamatan
     const kecamatanMap = {};
-    kecamatan?.forEach(kec => {
-    kecamatanMap[kec.kecamatan_id] = kec.kecamatan_nm;
-    });
+    kecamatan?.forEach(kecamatan => {
+    kecamatanMap[kecamatan.kecamatan_id] = kecamatan.kecamatan_nm;
+    });    
 
 
     // Create a mapping of kelurahan
     const kelurahanMap = {};
     kelurahan?.forEach(kelurahan => {
     kelurahanMap[kelurahan.id] = kelurahan.nama;
+    });
+
+    // Create a mapping of pendidikan awal
+    const pendidikanAwalMap = {};
+    pendidikanAwal?.forEach(pendidikanawal => {
+    pendidikanAwalMap[pendidikanawal.id_pend] = pendidikanawal.nm_pend;
     });
 
     
