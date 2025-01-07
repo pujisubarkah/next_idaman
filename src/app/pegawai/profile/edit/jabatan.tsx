@@ -45,15 +45,15 @@ const RiwayatJabatan = () => {
       const mappedData = response.data.map((item: any, index: number) => ({
         no: index + 1,
         namaJabatan: item.riw_jabatan_nm,
-        golRuang: item.gol_id,
+        golRuang: item.nama_golongan,
         nomorSuratKeputusan: item.riw_jabatan_no,
-        tanggalSuratKeputusan: item.riw_jabatan_tgl,
+        tanggalSuratKeputusan: formatTanggal(item.riw_jabatan_tgl), // Format tanggal di sini
         jabatanPenandatangan: item.riw_jabatan_pejabat,
-        tmt: item.riw_jabatan_tmt,
+        tmt: formatTanggal(item.riw_jabatan_tmt),
         tmtAkhir: item.riw_jabatan_selesai_selesai_tmt,
-        unitKerja: item.unit_kerja_id,
+        unitKerja: item.nama_unit_kerja,
         instansiRumpun: item.rumpun_id,
-        eselon: item.eselon_id,
+        eselon: item.nama_eselon,
         migrasiSiasn: item.sapk_synced,
       }));
 

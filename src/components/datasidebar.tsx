@@ -197,6 +197,7 @@ export const sidebarData: SidebarItem[] = [
     children: [
       { label: "Tidak Hadir", to: "#", icon: FaCircle, roles: ["4"] },
       { label: "Cuti", to: "#", icon: FaCircle, roles: ["4"] },
+      { label: "Presensi", to: "/daftar-hadir/presensi", icon: FaCircle, roles: ["4"] },
    
     ],
     roles: ["4"],
