@@ -22,7 +22,7 @@ const ProfileInfo = ({ nip }) => {
       }
 
       try {
-        const res = await axios.get(`/api/pegawai/idaman?peg_id=${nip}`, {
+        const res = await axios.get(`/api/pegawai/profile?peg_id=${nip}`, {
           headers: { "Cache-Control": "no-cache" },
         });
         const data = res.data.data.find((item) => item.peg_nip === nip);
