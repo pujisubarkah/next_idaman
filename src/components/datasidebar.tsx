@@ -195,11 +195,17 @@ export const sidebarData: SidebarItem[] = [
     dropdown: true,
     icon: FaUsers,
     children: [
-      { label: "Tidak Hadir", to: "#", icon: FaCircle, roles: ["4"] },
+      { label: "Ijin", to: "/daftar-hadir/ijin", icon: FaCircle, roles: ["4"] },
       { label: "Cuti", to: "/daftar-hadir/cuti", icon: FaCircle, roles: ["4"] },
       { label: "Presensi", to: "/daftar-hadir/presensi", icon: FaCircle, roles: ["4"] },
    
     ],
+    roles: ["4"],
+  },
+  {
+    label: "Penilian Kinerja",
+    to: "/penilaian-kinerja",
+    icon: FaUser,
     roles: ["4"],
   },
   {
