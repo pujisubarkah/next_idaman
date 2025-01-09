@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Gunakan useRouter untuk navigasi
 import { FaBell, FaPowerOff } from "react-icons/fa";
 
+
 const NavbarComponent = () => {
     const [userName, setUserName] = useState("");
     const router = useRouter(); // Gunakan useRouter untuk navigasi
@@ -19,40 +20,12 @@ const NavbarComponent = () => {
         }
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            const sessionId = localStorage.getItem("session_id");
-
-            if (!sessionId) {
-                console.error("Session ID tidak ditemukan.");
-                return;
-            }
-
-            // Panggil API logout
-            const response = await fetch("/api/logout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ sessionId }), // Kirim sessionId ke API
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error dari API logout:", errorData.error);
-                return;
-            }
-
-            // Hapus data sesi dari localStorage
-            localStorage.removeItem("user");
-            localStorage.removeItem("session_id");
-
-            // Redirect ke halaman login
-            router.push("/login");
-        } catch (err) {
-            console.error("Error saat logout:", err);
-        }
+    const handleLogout = () => {  
+        // Redirect to the Logout component  
+        router.push("/logout");  
     };
+
+       
 
     return (
         <div className="flex justify-between items-center p-4 bg-[#333] text-white">
