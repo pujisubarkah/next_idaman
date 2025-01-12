@@ -33,7 +33,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
             <div className="mb-4">
                 {/* Golongan Awal Dropdown */}
                 <div className="mb-4 flex items-center">
-                    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
+                    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">
                         Golongan Awal:
                     </label>
                     <Select
@@ -50,7 +50,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
                     />
                     {pegawai && (
                         <div className="flex items-center ml-4 w-1/3">
-                            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">
+                            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-[#87ceeb] p-2">
                                 TMT Golongan Awal:
                             </label>
                             <input
@@ -67,7 +67,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
 
                 {/* Golongan Akhir Dropdown */}
                 <div className="mb-4 flex items-center">
-                    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
+                    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">
                         Golongan Akhir:
                     </label>
                     <Select
@@ -84,7 +84,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
                     />
                     {pegawai && (
                         <div className="flex items-center ml-4 w-1/3">
-                            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">
+                            <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-[#87ceeb] p-2">
                                 TMT Golongan Akhir:
                             </label>
                             <input
@@ -101,7 +101,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
 
                 {/* Masa Kerja Golongan and Update Button */}
                 <div className="flex items-center mb-4">
-                    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
+                    <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">
                         Masa Kerja Golongan:
                     </label>
                     <input
@@ -116,7 +116,7 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
                     <div className="flex items-center ml-4 w-1/3">
                         <button
                             type="button"
-                            className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            className="bg-[#3781c7] hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             onClick={openModal}
                         >
                             Update Golongan

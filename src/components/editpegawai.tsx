@@ -108,7 +108,7 @@ const EditPegawai: React.FC = () => {
     jenisAsn: null,
     jenisPns: null,
     statusPegawai: null,
- statusKepegawaian: null,
+    statusKepegawaian: null,
     golongan: null,
     bapertarum: null,
   });
@@ -201,12 +201,10 @@ const EditPegawai: React.FC = () => {
   const goldarOptions = mapOptions(goldarData, 'id_goldar', 'nm_goldar');
 
   const handleCancel = () => {
-    // Redirect to the previous page or another page
     router.push("/edit-pegawai"); // Adjust the path as necessary
   };
 
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement >) => {
     const { name, value } = e.target;
     setPegawai(prev => prev ? ({ ...prev, [name]: value } as Pegawai) : null);
   };
@@ -221,9 +219,10 @@ const EditPegawai: React.FC = () => {
     e.preventDefault();
     if (!pegawai) {
       setError("No data to save.");
-      return }
+      return;
+    }
 
-    setLoading(true); // Set loading to true while the request is being processed
+    setLoading(true);
 
     try {
       await axios.put(`/api/pegawai_unit/${pegid}`, pegawai);
@@ -246,8 +245,7 @@ const EditPegawai: React.FC = () => {
   return (
     <div className="m-2 w-full">
       <form onSubmit={handleSubmit} className="w-full mx-auto">
-        {/* Add your form fields here */}
-      <h1 className="text-center font-bold uppercase mb-6">Edit Pegawai</h1>
+        <h1 className="text-center font-bold uppercase mb-6">Edit Pegawai</h1>
         <div className="border p-4 rounded-lg">
           <SatuanDanUnitKerja
             selectedSatuanKerja={selectedOptions.satuanKerja}
@@ -261,7 +259,7 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai NIP */}
           {pegawai !== null && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">NIP:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">NIP:</label>
               <input
                 id="peg_nip"
                 name="peg_nip"
@@ -270,7 +268,7 @@ const EditPegawai: React.FC = () => {
                 onChange={handleChange}
                 className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
               />
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">NIP Lama:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">NIP Lama:</label>
               <input
                 id="peg_nip_lama"
                 name="peg_nip_lama"
@@ -285,7 +283,7 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai Nama */}
           {pegawai !== null && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Nama Lengkap:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Nama Lengkap:</label>
               <input
                 id="peg_nama"
                 name="peg_nama"
@@ -300,7 +298,7 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai Gelar */}
           {pegawai !== null && (
             <div className="mb-4 flex justify-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Gelar Depan:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">Gelar Depan:</label>
               <input
                 id="peg_gelar_depan"
                 name="peg_gelar_depan"
@@ -309,7 +307,7 @@ const EditPegawai: React.FC = () => {
                 onChange={handleChange}
                 className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
               />
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Gelar Belakang:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">Gelar Belakang:</label>
               <input
                 id="peg_gelar_belakang"
                 name="peg_gelar_belakang"
@@ -322,10 +320,9 @@ const EditPegawai: React.FC = () => {
           )}
 
           {/* Pegawai Tempat dan Tanggal Lahir */}
-
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Tempat, Tanggal Lahir:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">Tempat, Tanggal Lahir:</label>
               <input
                 id="peg_lahir_tempat"
                 name="peg_lahir_tempat"
@@ -348,7 +345,7 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai Foto */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Foto:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Foto:</label>
               <input
                 id="peg_foto"
                 name="peg_foto"
@@ -382,7 +379,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Jenis Kelamin */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis Kelamin:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Jenis Kelamin:</label>
             <div className="flex items-center">
               <label className="mr-4">
                 <input
@@ -409,7 +406,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Status Perkawinan */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Status Perkawinan:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Status Perkawinan:</label>
             <div className="flex items-center">
               {statusKawinData.map((status) => (
                 <label key={status.id} className="mr-4">
@@ -420,7 +417,7 @@ const EditPegawai: React.FC = () => {
                     checked={selectedOptions.statusKawin === status.id}
                     onChange={handleChange}
                   />
-                  {status.status}
+                  {status .status}
                 </label>
               ))}
             </div>
@@ -428,7 +425,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Agama */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Agama:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Agama:</label>
             <Select
               value={agamaOptions.find(option => option.value === selectedOptions.agama) || null}
               onChange={(selectedOption) => handleSelectChange('agama', selectedOption)}
@@ -437,12 +434,11 @@ const EditPegawai: React.FC = () => {
               classNamePrefix="react-select"
               placeholder="Pilih Agama"
             />
-          
           </div>
 
           {/* Jenis ASN */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis ASN:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Jenis ASN:</label>
             <Select
               value={jenisAsnOptions.find(option => option.value === selectedOptions.jenisAsn) || null}
               onChange={(selectedOption) => handleSelectChange('jenisAsn', selectedOption)}
@@ -455,7 +451,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Jenis PNS */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis PNS:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Jenis PNS:</label>
             <Select
               value={jenisPnsOptions.find(option => option.value === selectedOptions.jenisPns) || null}
               onChange={(selectedOption) => handleSelectChange('jenisPns', selectedOption)}
@@ -468,7 +464,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Status Pegawai */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Status Pegawai:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Status Pegawai:</label>
             <div className="flex items-center w-1/8">
               {statusPegawaiData.map((statuspegawai) => (
                 <label key={statuspegawai.status_kepegawaian_id} className="mr-4">
@@ -487,7 +483,7 @@ const EditPegawai: React.FC = () => {
             {/* TMT CPNS */}
             {pegawai && (
               <div className="flex items-center w-1/4 ml-4">
-                <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">TMT CPNS:</label>
+                <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-[#87ceeb] p-2">TMT CPNS:</label>
                 <input
                   id="peg_cpns_tmt"
                   name="peg_cpns_tmt"
@@ -502,7 +498,7 @@ const EditPegawai: React.FC = () => {
             {/* TMT PNS */}
             {pegawai && (
               <div className="flex items-center w-1/4 ml-4">
-                <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-teal-100 p-2">TMT PNS:</label>
+                <label className="block text-gray-700 text-sm font-bold w-1/3 pr-4 bg-[#87ceeb] p-2">TMT PNS:</label>
                 <input
                   id="peg_pns_tmt"
                   name="peg_pns_tmt"
@@ -521,7 +517,8 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai jabatan tmt */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">TMT Jabatan:</label>
+              <label className="block text-gray-700 text-sm font ```javascript
+              bold w-1/6 border rounded-md bg-[#87ceeb] p-2">TMT Jabatan:</label>
               <input
                 id="peg_jabatan_tmt"
                 name="peg_jabatan_tmt"
@@ -536,8 +533,7 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai unit tmt */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block ```javascript
-              text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">TMT Unit:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">TMT Unit:</label>
               <input
                 id="peg_unit_tmt"
                 name="peg_skpd_tmt"
@@ -552,7 +548,7 @@ const EditPegawai: React.FC = () => {
           {/* Pegawai eselon tmt */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">TMT Eselon:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">TMT Eselon:</label>
               <input
                 id="peg_tmt_eselon"
                 name="peg_tmt_eselon"
@@ -566,7 +562,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Status Gaji */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Status Gaji:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Status Gaji:</label>
             <select
               name="peg_status_gaji"
               value={pegawai?.peg_status_gaji || ""}
@@ -581,7 +577,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Status Kepegawaian */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Kedudukan Pegawai:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Kedudukan Pegawai:</label>
             <Select
               value={statusKepegawaianOptions.find(option => option.value === selectedOptions.statusKepegawaian) || null}
               onChange={(selectedOption) => handleSelectChange('statusKepegawaian', selectedOption)}
@@ -609,7 +605,7 @@ const EditPegawai: React.FC = () => {
           {/* Karpeg dan Karsutri */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Karpeg:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">No Karpeg:</label>
               <input
                 id="peg_karpeg"
                 name="peg_karpeg"
@@ -618,7 +614,8 @@ const EditPegawai: React.FC = () => {
                 onChange={handleChange}
                 className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
               />
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Karis/Karsu:</label>
+              <label className="block text-gray- ```javascript
+700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">No Karis/Karsu:</label>
               <input
                 id="peg_karsutri"
                 name="peg_karsutri"
@@ -633,8 +630,7 @@ const EditPegawai: React.FC = () => {
           {/* Askes */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 ```javascript
-              text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Askes:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">No Askes:</label>
               <input
                 id="peg_no_askes"
                 name="peg_no_askes"
@@ -649,7 +645,7 @@ const EditPegawai: React.FC = () => {
           {/* KTP dan NPWP */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No KTP:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">No KTP:</label>
               <input
                 id="peg_ktp"
                 name="peg_ktp"
@@ -658,7 +654,7 @@ const EditPegawai: React.FC = () => {
                 onChange={handleChange}
                 className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
               />
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">NPWP:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">NPWP:</label>
               <input
                 id="peg_npwp"
                 name="peg_npwp"
@@ -672,7 +668,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Golongan Darah */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Golongan Darah:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Golongan Darah:</label>
             <Select
               value={goldarOptions.find(option => option.value === selectedOptions.goldar) || null}
               onChange={(selectedOption) => handleSelectChange('goldar', selectedOption)}
@@ -685,7 +681,7 @@ const EditPegawai: React.FC = () => {
 
           {/* Bapetarum */}
           <div className="mb-4 flex items-center">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">BAPETARUM:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">BAPETARUM:</label>
             <Select
               name="peg_bapertarum"
               value={selectedOptions.bapertarum ? { value: selectedOptions.bapertarum, label: selectedOptions.bapertarum === "1" ? "Sudah Diambil" : "Belum Diambil" } : null}
@@ -707,7 +703,7 @@ const EditPegawai: React.FC = () => {
           {/* TMT Gaji Berkala */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">TMT Gaji Berkala Terakhir:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">TMT Gaji Berkala Terakhir:</label>
               <input
                 id="peg_tmt_kgb"
                 name="peg_tmt_kgb"
@@ -722,7 +718,7 @@ const EditPegawai: React.FC = () => {
           {/* No Rekening */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">No Rekening:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">No Rekening:</label>
               <input
                 id="peg_no_rekening"
                 name="peg_no_rekening"
@@ -737,7 +733,7 @@ const EditPegawai: React.FC = () => {
           {/* Alamat Rumah */}
           {pegawai && (
             <div className="mb-4 flex items-center">
-              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Alamat Rumah:</label>
+              <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">Alamat Rumah:</label>
               <input
                 id="peg_rumah_alamat"
                 name="peg_rumah_alamat"
@@ -756,7 +752,7 @@ const EditPegawai: React.FC = () => {
             <div className="mb-4">
               <h2 className="text-lg font-bold mb-2">Alamat Domisili (Sesuai KTP)</h2>
               <div className="flex items-center mb-4">
-                <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Alamat Rumah:</label>
+                <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-[#87ceeb] p-2">Alamat Rumah:</label>
                 <input
                   id="peg_rumah_alamat_ktp"
                   name="peg_rumah_alamat_ktp"
@@ -771,8 +767,8 @@ const EditPegawai: React.FC = () => {
 
           <AddressFormKTP pegawai={pegawai} handleChange={handleChange} setPegawai={setPegawai} />
 
-           {/* Submit and Cancel Buttons */}
-           <div className="flex items-center justify-center mt-4">
+          {/* Submit and Cancel Buttons */}
+          <div className="flex items-center justify-center mt-4">
             <button
               type="button"
               onClick={handleCancel}

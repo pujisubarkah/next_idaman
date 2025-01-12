@@ -74,7 +74,7 @@ const Navbar = () => {
               {menu.subMenu ? (
                 <>
                   <button
-                    className="flex items-center text-white hover:text-teal-800 bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded-md transition duration-200 transform hover:scale-105"
+                    className="flex items-center text-white hover:text-teal-800 bg-[#3781c7] hover:bg-blue-200 px-4 py-2 rounded-md transition duration-200 transform hover:scale-105"
                     onClick={() => toggleMenu(menu.label)}
                   >
                     {menu.label}
@@ -84,12 +84,12 @@ const Navbar = () => {
                     />
                   </button>
                   {activeMenu === menu.label && (
-                    <ul className="absolute top-full left-0 bg-teal-50 mt-2 rounded-lg shadow-lg w-48">
+                    <ul className="absolute top-full left-0 bg-blue-50 mt-2 rounded-lg shadow-lg w-48">
                       {menu.subMenu.map((subItem, subIndex) => (
                         <li key={subIndex}>
                           <a
                             href={subItem.link}
-                            className="block px-4 py-2 text-teal-800 hover:bg-teal-200 transition duration-150"
+                            className="block px-4 py-2 text-blue-800 hover:bg-blue-200 transition duration-150"
                           >
                             {subItem.label}
                           </a>
@@ -101,7 +101,7 @@ const Navbar = () => {
               ) : (
                 <a
                   href={menu.link}
-                  className="flex items-center text-white hover:text-teal-800 bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded-md transition duration-200 transform hover:scale-105"
+                  className="flex items-center text-white hover:text-teal-800 bg-[#3781c7] hover:bg-blue-200 px-4 py-2 rounded-md transition duration-200 transform hover:scale-105"
                 >
                   {menu.label}
                 </a>

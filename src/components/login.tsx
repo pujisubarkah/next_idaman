@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -59,7 +58,7 @@ const Login = () => {
       <div className="w-1/4 flex flex-col justify-center items-center bg-white p-8">
         <div className="flex flex-col items-center mb-6">
           <Image src="/lanri.png" alt="Logo LANRI" className="w-20 mb-4" width={80} height={80} />
-          <h1 className="text-4xl font-bold mb-2 text-teal-600">IDAMAN LAN</h1>
+          <h1 className="text-4xl font-bold mb-2 text-[#3781c7]">IDAMAN LAN</h1>
           <p className="text-gray-600 text-center">
             Sistem Informasi Sumber Daya Manusia Lembaga Administrasi Negara
           </p>
@@ -105,7 +104,7 @@ const Login = () => {
               <label className="inline-flex items-center">
                 <input
                   type="checkbox"
-                  className="form-checkbox text-teal-600"
+                  className="form-checkbox text-[#3781c7]"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
@@ -114,7 +113,7 @@ const Login = () => {
             </div>
             <div className="flex items-center justify-between">
               <button
-                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 w-full rounded focus:outline-none focus:shadow-outline"
+                className="bg-[#3781c7] hover:bg-[#2d6ca1] text-white font-bold py-2 w-full rounded focus:outline-none focus:shadow-outline"
                 type="submit"
               >
                 Next

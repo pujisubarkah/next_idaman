@@ -18,7 +18,6 @@ const ProfileEditButtons: React.FC = () => {
     const toggleSetCutiModal = () => setIsSetCutiModalOpen((prev) => !prev);
     const toggleSetBerhentiModal = () => setIsSetBerhentiModalOpen((prev) => !prev);
 
-
     const dropdownOptions = [
         { label: 'Set Pensiun', action: toggleSetPensiunModal },
         { label: 'Set Meninggal Dunia', action: toggleSetMeninggalModal },
@@ -31,18 +30,18 @@ const ProfileEditButtons: React.FC = () => {
         <div id="profile-container" className="w-full p-2 rounded-md bg-transparent">
             {/* Buttons */}
             <div className="flex justify-end mb-4 pr-4 space-x-2">
-                <button className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700">
+                <button className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700">
                     <FaPencilAlt className="mr-2" /> Edit
                 </button>
                 <button
-                    className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                    className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                     onClick={toggleModal}
                 >
                     <FaExclamationTriangle className="mr-2" /> Update Kedudukan Pegawai
                 </button>
                 <div className="relative">
                     <button
-                        className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                        className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                         onClick={toggleDropdown}
                     >
                         <FaExclamationTriangle className="mr-2" /> Update Status Kepegawaian
@@ -68,17 +67,17 @@ const ProfileEditButtons: React.FC = () => {
                     )}
                 </div>
                 <button
-                            className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
-                            onClick={() => {
-                                const isConfirmed = window.confirm ("Apakah Anda yakin?");
-                                if (isConfirmed) {
-                                    alert("Data telah disubmit!"); // Replace this with your actual submission logic
-                                }
-                            }}
-                        >
-                            <FaPaperPlane className="mr-2" /> Submit
-                        </button>
-                <button className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700">
+                    className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
+                    onClick={() => {
+                        const isConfirmed = window.confirm("Apakah Anda yakin?");
+                        if (isConfirmed) {
+                            alert("Data telah disubmit!"); // Replace this with your actual submission logic
+                        }
+                    }}
+                >
+                    <FaPaperPlane className="mr-2" /> Submit
+                </button>
+                <button className="flex items-center bg-[#378 1c7] text-white py-2 px-4 rounded hover:bg-blue-700">
                     <FaDownload className="mr-2" /> Download Data Pegawai
                 </button>
             </div>
@@ -96,7 +95,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="kedudukan"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -106,7 +105,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="nomorSk"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -116,7 +115,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="date"
                                     id="tanggalSk"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -126,7 +125,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="date"
                                     id="tmt"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="flex justify-end">
@@ -139,7 +138,7 @@ const ProfileEditButtons: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                                 >
                                     Simpan
                                 </button>
@@ -149,8 +148,8 @@ const ProfileEditButtons: React.FC = () => {
                 </div>
             )}
 
-            {/* Modal for Set Pensiun */}
-            {isSetPensiunModalOpen && (
+             {/* Modal for Set Pensiun */}
+             {isSetPensiunModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 w-1/3">
                         <h2 className="text-lg font-semibold mb-4">Cek Status Update Pegawai</h2>
@@ -162,7 +161,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="noSkPensiun"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -172,7 +171,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="date"
                                     id="tmtSkPensiun"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="flex justify-end">
@@ -185,7 +184,7 @@ const ProfileEditButtons: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                                 >
                                     Simpan
                                 </button>
@@ -195,8 +194,8 @@ const ProfileEditButtons: React.FC = () => {
                 </div>
             )}
 
-            {/* Modal for Set Meninggal */}
-            {isSetMeninggalModalOpen && (
+           {/* Modal for Set Meninggal */}
+           {isSetMeninggalModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 w-1/3">
                         <h2 className="text-lg font-semibold mb-4">Cek Update Status Kepegawaian</h2>
@@ -208,7 +207,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="noSkMeninggal"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -218,7 +217,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="date"
                                     id="tmtSkMeninggal"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -228,7 +227,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="penyebabKematian"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -239,7 +238,7 @@ const ProfileEditButtons: React.FC = () => {
                                     type="file"
                                     id="suratKeterangan"
                                     accept=".pdf, .doc, .docx, .jpg, .png"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="flex justify-end">
@@ -252,7 +251,7 @@ const ProfileEditButtons: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                                 >
                                     Simpan
                                 </button>
@@ -261,9 +260,9 @@ const ProfileEditButtons: React.FC = () => {
                     </div>
                 </div>
             )}
-            
+
             {/* Modal for Set Pindah */}
-            {isSetPindahModalOpen && (
+                {isSetPindahModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 w-1/3">
                         <h2 className="text-lg font-semibold mb-4">Cek Update Status Kepegawaian</h2>
@@ -275,7 +274,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="noSkPindah"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -285,7 +284,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="date"
                                     id="tmtSkPindah"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -295,11 +294,9 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="pindah"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
-
-
                             <div className="flex justify-end">
                                 <button
                                     type="button"
@@ -310,7 +307,7 @@ const ProfileEditButtons: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                                 >
                                     Simpan
                                 </button>
@@ -320,20 +317,20 @@ const ProfileEditButtons: React.FC = () => {
                 </div>
             )}
 
-            {/* Modal for Set Cuti */} 
+            {/* Modal for Set Cuti */}
             {isSetCutiModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 w-1/3">
                         <h2 className="text-lg font-semibold mb-4">Cek Update Status Kepegawaian</h2>
                         <form>
-                        <div className="mb-4">
-                                <label htmlFor="noSkCuti" className="block text-sm font-medium text-gray-700">
+                            <div className="mb-4">
+                                <label htmlFor="jenisCuti" className="block text-sm font-medium text-gray-700">
                                     Jenis Cuti
                                 </label>
                                 <input
                                     type="text"
-                                    id="noSkCuti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    id="jenisCuti"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -343,27 +340,27 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="noSkCuti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="CutiMulai" className="block text-sm font-medium text-gray-700">
+                                <label htmlFor="tmtCutiMulai" className="block text-sm font-medium text-gray-700">
                                     Tanggal Cuti Mulai
                                 </label>
                                 <input
                                     type="date"
-                                    id="tmtSkCuti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    id="tmtCutiMulai"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="CutiSelesai" className="block text-sm font-medium text-gray-700">
+                                <label htmlFor="tmtCutiSelesai" className="block text-sm font-medium text-gray-700">
                                     Tanggal Cuti Selesai
                                 </label>
                                 <input
                                     type="date"
-                                    id="tmtSkCuti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    id="tmtCutiSelesai"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="flex justify-end">
@@ -376,7 +373,7 @@ const ProfileEditButtons: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                                 >
                                     Simpan
                                 </button>
@@ -399,7 +396,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="text"
                                     id="noSkBerhenti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="mb-4">
@@ -409,17 +406,7 @@ const ProfileEditButtons: React.FC = () => {
                                 <input
                                     type="date"
                                     id="tmtSkBerhenti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="noSkBerhenti" className="block text-sm font-medium text-gray-700">
-                                    No SK Berhenti
-                                </label>
-                                <input
-                                    type="text"
-                                    id="noSkBerhenti"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-[#3781c7] focus:border-[#3781c7]"
                                 />
                             </div>
                             <div className="flex justify-end">
@@ -432,7 +419,7 @@ const ProfileEditButtons: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                                 >
                                     Simpan
                                 </button>
@@ -441,11 +428,9 @@ const ProfileEditButtons: React.FC = () => {
                     </div>
                 </div>
             )}
-
-
-
         </div>
     );
 };
+
 
 export default ProfileEditButtons;

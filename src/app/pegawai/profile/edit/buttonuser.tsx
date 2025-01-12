@@ -14,14 +14,14 @@ const UserButton: React.FC = () => {
             {/* Buttons */}
             <div className="flex justify-end mb-4 pr-4 space-x-2">
                 {/* Edit Button */}
-                <button className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700">
+                <button className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700">
                     <FaPencilAlt className="mr-2" />
                     Edit
                 </button>
 
                 {/* Submit Button */}
                 <button
-                    className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700"
+                    className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700"
                     onClick={handleSubmit}
                 >
                     <FaPaperPlane className="mr-2" />
@@ -29,7 +29,7 @@ const UserButton: React.FC = () => {
                 </button>
 
                 {/* Download Button */}
-                <button className="flex items-center bg-teal-700 text-white py-2 px-4 rounded hover:bg-blue-700">
+                <button className="flex items-center bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-blue-700">
                     <FaDownload className="mr-2" />
                     Download Data Pegawai
                 </button>

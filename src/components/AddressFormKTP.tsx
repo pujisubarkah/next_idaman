@@ -87,14 +87,14 @@ const AddressFormKTP: React.FC<AddressFormProps> = ({ pegawai, handleChange, set
             {pegawai && (
                 <>
                     <div className="mb-4 flex justify-start ml-60">
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Provinsi:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Provinsi:</label>
                         <Select
                             options={dataprovktp}
                             value={dataprovktp.find((option) => option.value === pegawai.id_provinsi_ktp) || null}
                             onChange={(e) => handleSelectChange("id_provinsi_ktp", e?.value || null)}
                             className="w-2/6 mr-2"
                         />
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RT:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>RT:</label>
                         <input
                             id="peg_alamat_rt"
                             name="peg_alamat_rt"
@@ -105,14 +105,14 @@ const AddressFormKTP: React.FC<AddressFormProps> = ({ pegawai, handleChange, set
                         />
                     </div>
                     <div className="mb-4 flex justify-start ml-60">
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kab/Kota:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kab/Kota:</label>
                         <Select
                             options={datakotaktp}
                             value={datakotaktp.find((option) => option.value === pegawai.id_kota_ktp) || null}
                             onChange={(e) => handleSelectChange("id_kota_ktp", e?.value || null)}
                             className="w-2/6 mr-2"
                         />
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RW:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>RW:</label>
                         <input
                             id="peg_alamat_rw"
                             name="peg_alamat_rw"
@@ -123,7 +123,7 @@ const AddressFormKTP: React.FC<AddressFormProps> = ({ pegawai, handleChange, set
                         />
                     </div>
                     <div className="mb-4 flex justify-start ml-60">
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kecamatan:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kecamatan:</label>
                         <Select
                             options={datakecktp}
                             value={datakecktp.find((option) => option.value === pegawai.id_kec_ktp) || null}
@@ -132,14 +132,14 @@ const AddressFormKTP: React.FC<AddressFormProps> = ({ pegawai, handleChange, set
                         />
                     </div>
                     <div className="mb-4 flex justify-start ml-60">
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kelurahan:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kelurahan:</label>
                         <Select
                             options={dakelktp}
                             value={dakelktp.find((option) => option.value === pegawai.id_kel_ktp) || null}
                             onChange={(e) => handleSelectChange("id_kel_ktp", e?.value || null)}
                             className="w-2/6 mr-2"
                         />
-                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kode Pos:</label>
+                        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kode Pos:</label>
                         <input
                             id="peg_kodepos"
                             name="peg_kodepos"

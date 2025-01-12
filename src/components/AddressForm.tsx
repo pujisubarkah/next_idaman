@@ -88,14 +88,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
         <>
           {/* Provinsi and RT in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Provinsi:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Provinsi:</label>
             <Select
               options={dataprov}
               value={dataprov.find((option) => option.value === pegawai.id_provinsi) || null}
               onChange={(e) => handleSelectChange("id_provinsi", e?.value || null)}
               className="w-2/6 mr-2"
             />
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RT:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>RT:</label>
             <input
               id="peg_alamat_rt"
               name="peg_alamat_rt"
@@ -108,14 +108,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
 
           {/* Kab/Kota and RW in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kab/Kota:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kab/Kota:</label>
             <Select
               options={datakota}
               value={datakota.find((option) => option.value === pegawai.id_kota) || null}
               onChange={(e) => handleSelectChange("id_kota", e?.value || null)}
               className="w-2/6 mr-2"
             />
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">RW:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>RW:</label>
             <input
               id="peg_alamat_rw"
               name="peg_alamat_rw"
@@ -128,7 +128,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
 
           {/* Kecamatan in a single row */}
           <div className="mb-4 flex justify-start ml-60">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kecamatan:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kecamatan:</label>
             <Select
               options={datakec}
               value={datakec.find((option) => option.value === pegawai.id_kec) || null}
@@ -139,14 +139,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
 
           {/* Kelurahan and Kode Pos in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kelurahan:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kelurahan:</label>
             <Select
               options={dakel}
               value={dakel.find((option) => option.value === pegawai.id_kel) || null}
               onChange={(e) => handleSelectChange("id_kel", e?.value || null)}
               className="w-2/6 mr-2"
             />
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Kode Pos:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Kode Pos:</label>
             <input
               id="peg_kodepos"
               name="peg_kodepos"
@@ -159,7 +159,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
 
           {/* Telp and HP in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Telp:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Telp:</label>
             <input
               id="peg_telp"
               name="peg_telp"
@@ -168,7 +168,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
               onChange={handleChange}
               className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
             />
-            <label className="block text-gray-700 text-sm font-bold w-1/8 pr-8 bg-teal-100 p-2">HP:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/8 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>HP:</label>
             <input
               id="peg_telp_hp"
               name="peg_telp_hp"
@@ -181,7 +181,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
 
           {/* Email and Email Resmi in one row */}
           <div className="mb-4 flex justify-start ml-60">
-            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Email:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Email:</label>
             <input
               id="peg_email"
               name="peg_email"
@@ -190,7 +190,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
               onChange={handleChange}
               className="shadow border rounded w-1/4 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300 mr-2"
             />
-            <label className="block text-gray-700 text-sm font-bold w-1/8 pr-8 bg-teal-100 p-2">Email Resmi:</label>
+            <label className="block text-gray-700 text-sm font-bold w-1/8 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Email Resmi:</label>
             <input
               id="peg_email_resmi"
               name="peg_email_resmi"

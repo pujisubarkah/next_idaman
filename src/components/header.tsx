@@ -21,7 +21,7 @@ const Header = () => {
       }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-teal-700 opacity-60"></div>
+      <div className="absolute inset-0" style={{ backgroundColor: '#3781c7', opacity: 0.6 }}></div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-wrap items-center justify-between space-y-4 md:space-y-0">
