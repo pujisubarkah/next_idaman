@@ -6,6 +6,7 @@ interface UpdateGolonganModalProps {
   isOpen: boolean;  
   onClose: () => void;  
   onSubmit: (formData: any) => void; // Add onSubmit prop  
+  golonganData: { gol_id: string; nm_gol: string }[];  
 }  
   
 const UpdateGolonganModal: React.FC<UpdateGolonganModalProps> = ({  
