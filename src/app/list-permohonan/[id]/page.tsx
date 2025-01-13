@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import RootLayout from '../../pegawai/profile/edit/layout'; // Mengimpor layout dari home/layout.js
 import Table from "../../../components/list_permohonan"; // Mengimpor komponen Table
 
-const ListPermohonan = ({ params }: { params: { id: string } }) => {
-  const { id } = params; // Ambil `id` dari URL
+const ListPermohonan = ({ params }: { params: Promise<{ id: string }> }) => {
+  const [id, setId] = useState<string | null>(null); // State to hold the unwrapped id
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,26 +21,38 @@ const ListPermohonan = ({ params }: { params: { id: string } }) => {
   };
 
   // Tentukan status_name berdasarkan id
-  const statusName = statusMapping[id] || "Unknown Status";
+  const statusName = statusMapping[id || ""] || "Unknown Status";
 
   // Pagination state
   const itemsPerPage = 10; // Number of items per page
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    const fetchParams = async () => {
+      const resolvedParams = await params; // Unwrap the params Promise
+      setId(resolvedParams.id); // Set the id state
+    };
+
+    fetchParams();
+  }, [params]);
+
+  useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/permohonan?status_id=${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
+      if (id) {
+        setLoading(true);
+        setError(null); // Reset error state before fetching
+        try {
+          const response = await fetch(`/api/permohonan?status_id=${id}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const result = await response.json();
+          setData(result); // Simpan seluruh data dari API
+        } catch (err: any) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-        const result = await response.json();
-        setData(result); // Simpan seluruh data dari API
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -117,7 +129,7 @@ const Pagination = ({
       >
         Previous
       </button>
-      <span className="px-4 py-2 mx-1">
+      <span className="px-4 py -2 mx-1">
         Page {currentPage} of {totalPages}
       </span>
       <button
