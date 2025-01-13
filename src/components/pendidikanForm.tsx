@@ -30,7 +30,7 @@ const FormPendidikan = () => {
   return (
     <div className="w-full">
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Pendidikan Awal:</label>
+        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Pendidikan Awal:</label>
         <Select
           value={pendidikanOptions.find((option) => option.value === pendidikanData.pendidikanAwal)}
           onChange={(selectedOption) => handleSelectChange("pendidikanAwal", selectedOption)}
@@ -38,9 +38,9 @@ const FormPendidikan = () => {
           className="w-1/8 mr-80"
           classNamePrefix="select"
         />
-        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Tahun Pendidikan Awal:</label>
+        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Tahun Pendidikan Awal:</label>
         <input
-           type="text"
+          type="text"
           id="tahun-pendidikan-awal"
           name="tahunPendidikanAwal"
           value={pendidikanData.tahunPendidikanAwal}
@@ -57,14 +57,13 @@ const FormPendidikan = () => {
           options={pendidikanOptions}
           className="mt-1 w-1/4 ml-60 mr-20"
           classNamePrefix="select"
-          
         />
       </div>
         
       <span className="text-red-500 text-xs ml-60 mr-20">(Pendidikan waktu diangkat menjadi CPNS)</span>
       
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Pendidikan Akhir:</label>
+        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Pendidikan Akhir:</label>
         <Select
           value={pendidikanOptions.find((option) => option.value === pendidikanData.pendidikanAkhir)}
           onChange={(selectedOption) => handleSelectChange("pendidikanAkhir", selectedOption)}
@@ -72,7 +71,7 @@ const FormPendidikan = () => {
           className="w-1/8 mr-80"
           classNamePrefix="select"
         />
-        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 bg-teal-100 p-2">Tahun Pendidikan Akhir:</label>
+        <label className="block text-gray-700 text-sm font-bold w-1/6 pr-8 p-2" style={{ backgroundColor: "#87ceeb" }}>Tahun Pendidikan Akhir:</label>
         <input
           type="text"
           id="tahun-pendidikan-akhir"
@@ -89,7 +88,7 @@ const FormPendidikan = () => {
           value={pendidikanOptions.find((option) => option.value === pendidikanData.pendidikanAkhir)}
           onChange={(selectedOption) => handleSelectChange("pendidikanAkhir", selectedOption)}
           options={pendidikanOptions}
-           className="mt-1 w-1/4 ml-60 mr-20"
+          className="mt-1 w-1/4 ml-60 mr-20"
           classNamePrefix="select"
         />
       </div>

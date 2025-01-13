@@ -35,7 +35,7 @@ const JabatanForm: React.FC = () => {
     <div className="w-full">
       {/* TMT Jabatan */}
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Jenis Jabatan:</label>
+        <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Jenis Jabatan:</label>
         <input
           id="peg_cpns_tmt"
           name="peg_cpns_tmt"
@@ -48,7 +48,7 @@ const JabatanForm: React.FC = () => {
 
       {/* Nama Jabatan */}
       <div className="mb-4 flex items-center">
-        <label  className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">Nama Jabatan:</label>
+        <label  className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">Nama Jabatan:</label>
         <input
           name="namaJabatan"
           type="text"
@@ -58,7 +58,7 @@ const JabatanForm: React.FC = () => {
         />
         <button
           type="button"
-          className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-[#87ceeb] hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           onClick={() => setIsModalOpen(true)} // Open the modal
         >
           Update Jabatan

@@ -48,7 +48,7 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
     <>
       {/* Satuan Kerja */}
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
+        <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">
           Satuan Kerja:
         </label>
         <Select
@@ -72,7 +72,7 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
       {/* Unit Kerja */}
       {selectedSatuanKerja && (
         <div className="mb-4 flex items-center">
-          <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-teal-100 p-2">
+          <label className="block text-gray-700 text-sm font-bold w-1/6 border rounded-md bg-[#87ceeb] p-2">
             Unit Kerja:
           </label>
           <Select
@@ -93,7 +93,7 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
           <div className="ml-4 flex space-x-2">
             <button
               type="button"
-              className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-[#3781c7] hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               onClick={() => {
                 // Handle Update Unit Internal
               }}
@@ -101,7 +101,7 @@ const SatuanDanUnitKerja: React.FC<SatuanDanUnitKerjaProps> = ({
               Update Unit Internal </button>
             <button
               type="button"
-              className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-[#3781c7] hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               onClick={() => setIsModalOpen(true)} // Open the modal
             >
               Update Jabatan
