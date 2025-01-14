@@ -1,18 +1,18 @@
 import { supabase } from '../../../../lib/supabaseClient';
 
-const handleErrorResponse = (res, message, error) => {
+const handleErrorResponse = (res: any, message: string, error: any) => {
   return res.status(500).json({ message, error: error.message });
 };
 
-const handleSuccessResponse = (res, data, status = 200) => {
+const handleSuccessResponse = (res: any, data: any, status: number = 200) => {
   return res.status(status).json(data);
 };
 
-const validateRequiredFields = (fields) => {
-  return fields.every(field => field !== undefined && field !== null && field !== '');
+const validateRequiredFields = (fields: any[]) => {
+  return fields.every((field: any) => field !== undefined && field !== null && field !== '');
 };
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   const { method } = req;
   const { id } = req.query;
 
