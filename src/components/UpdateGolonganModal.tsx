@@ -6,7 +6,7 @@ interface UpdateGolonganModalProps {
   onClose: () => void;    
   onSubmit: (formData: any) => void;    
   golonganData: { gol_id: string; nm_gol: string }[];    
-  pegId: string; // pegId adalah NIP pegawai    
+  pegId?: string; // pegId adalah NIP pegawai    
 }    
     
 const UpdateGolonganModal: React.FC<UpdateGolonganModalProps> = ({    
