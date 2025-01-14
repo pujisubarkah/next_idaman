@@ -140,7 +140,7 @@ const UpdateJabatanModal: React.FC<UpdateJabatanModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-2/3">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl"> {/* Atur max-width untuk mengontrol ukuran modal */}
         <h2 className="text-lg font-bold mb-4">Update Jabatan</h2>
         <form
           onSubmit={(e) => {
@@ -187,33 +187,29 @@ const UpdateJabatanModal: React.FC<UpdateJabatanModalProps> = ({
               isDisabled={!formData.jenisJabatan}
             />
           </div>
-  
-          {/* No SK */}  
-          <div className="mb-4">  
-            <label className="block text-gray-700">No SK:</label>  
-            <input  
-              name="noSK"  
-              type="text"  
-              value={formData.noSK}  
-              onChange={handleChange}  
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"  
-            />  
-          </div>  
-  
-          {/* Tanggal SK */}  
-          <div className="mb-4">  
-            <label className="block text-gray-700">Tanggal SK:</label>  
-            <input  
-              name="tanggalSK"  
-              type="date"  
-              value={formData.tanggalSK}  
-              onChange={handleChange}  
-              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"  
-            />  
-          </div>  
-  
-          {/* Jabatan Penandatangan SK */}  
-          <div className="mb-4">  
+          <div className="mb-4">
+            <label className="block text-gray-700">No SK:</label>
+            <input
+              name="noSK"
+              type="text"
+              value={formData.noSK}
+              onChange={handleChange}
+              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Tanggal SK:</label>
+            <input
+              name="tanggalSK"
+              type="date"
+              value={formData.tanggalSK}
+              onChange={handleChange}
+              className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+ {/* Jabatan Penandatangan SK */}  
+ <div className="mb-4">  
             <label className="block text-gray-700">Jabatan Penandatangan SK:</label>  
             <input  
               name="jabatanPenandatangan"  
@@ -279,6 +275,6 @@ const UpdateJabatanModal: React.FC<UpdateJabatanModalProps> = ({
       </div>  
     </div>  
   );  
-};  
+};   
   
 export default UpdateJabatanModal;  
