@@ -115,6 +115,7 @@ const EditPegawai: React.FC = () => {
   
   const [error, setError] = useState<string | null>(null);  
   const [loading, setLoading] = useState<boolean>(true);  
+  const [isGolonganModalOpen, setIsGolonganModalOpen] = useState<boolean>(false); // State for modal visibility  
   
   useEffect(() => {  
     if (!pegid) {  
@@ -184,16 +185,20 @@ const EditPegawai: React.FC = () => {
     fetchData();  
   }, [pegid, router]);  
   
-  const filteredUnitKerja = unitKerjaData  
-    .filter((item) => item.satuan_kerja_id === selectedOptions.satuanKerja)  
-    .flatMap((item) => item.units);  
   
-  const mapOptions = (data: any[], key: string, label: string) => {  
-    return data.map(item => ({  
-      value: item[key],  
-      label: item[label],  
-    }));  
-  };  
+
+  const filteredUnitKerja = unitKerjaData  
+  .filter((item) => item.satuan_kerja_id === selectedOptions.satuanKerja)  
+  .flatMap((item) => item.units);  
+
+const mapOptions = (data: any[], key: string, label: string) => {  
+  return data.map(item => ({  
+    value: item[key],  
+    label: item[label],  
+  }));
+};  
+
+
   
   const agamaOptions = mapOptions(agamaData, 'id_agama', 'nm_agama');  
   const jenisAsnOptions = mapOptions(jenisAsnData, 'id', 'nama');  
@@ -234,6 +239,19 @@ const EditPegawai: React.FC = () => {
     } finally {  
       setLoading(false);  
     }  
+  };  
+
+  // Function to open the Golongan modal  
+  const openGolonganModal = () => {  
+    setIsGolonganModalOpen(true);  
+  };  
+  
+  // Function to handle submission from the Golongan modal  
+  const handleGolonganSubmit = (updatedData: any) => {  
+    console.log("Updated Golongan Data:", updatedData);  
+    // You can update the pegawai state with the new golongan data if needed  
+    setPegawai(prev => prev ? { ...prev, gol_id_awal: updatedData.gol_id } : null);  
+    setIsGolonganModalOpen(false); // Close the modal after submission  
   };  
   
   if (loading) {  

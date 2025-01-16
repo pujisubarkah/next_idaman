@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";  
 import axios from "axios";  
 import { FaUpload } from 'react-icons/fa';  
+import ProfileEditButtons from './button'; // Sesuaikan dengan path file ProfileEditButtons  
   
 // Function to format date  
 const formatTanggal = (tanggal) => {  
@@ -341,15 +342,12 @@ const Datapribadi = ({ nip }: { nip: string }) => {
   
 const PribadiComponent = ({ params }: { params: { nip?: string } }) => {  
   const nip = params?.nip || "";  
-  const [activeTab, setActiveTab] = useState<string>(typeof window !== "undefined" ? window.location.hash || "#data-pribadi" : "#data-pribadi");  
-  
-  const handleTabChange = (tab: string) => {  
-    setActiveTab(tab);  
-    window.location.hash = tab;  
-  };  
+  const [activeTab, setActiveTab] = useState<string>("#data-pribadi");  
   
   useEffect(() => {  
     if (typeof window !== "undefined") {  
+      setActiveTab(window.location.hash || "#data-pribadi");  
+  
       const handleHashChange = () => {  
         setActiveTab(window.location.hash || "#data-pribadi");  
       };  
@@ -361,12 +359,20 @@ const PribadiComponent = ({ params }: { params: { nip?: string } }) => {
     }  
   }, []);  
   
+  const handleTabChange = (tab: string) => {  
+    setActiveTab(tab);  
+    if (typeof window !== "undefined") {  
+      window.location.hash = tab;  
+    }  
+  };  
+  
   if (!nip) {  
     return <div>Error: NIP tidak ditemukan di URL.</div>;  
   }  
   
   return (  
     <div>  
+      <ProfileEditButtons nip={nip} />  
       <div className="tab-content">  
         {activeTab === "#data-pribadi" && <Datapribadi nip={nip} />}  
         {/* Add other tab content here */}  

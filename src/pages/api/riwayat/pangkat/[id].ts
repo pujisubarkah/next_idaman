@@ -1,20 +1,19 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Sesuaikan path  
+import { supabase } from '../../../../../lib/supabaseClient'; // Adjust the path as necessary  
   
 export default async function handler(req, res) {  
   // Handle GET request to fetch the latest record  
   if (req.method === 'GET') {  
     const { id: peg_id } = req.query;  
   
-    // Validasi peg_id  
+    // Validate peg_id  
     if (!peg_id) {  
       return res.status(400).json({ error: "'id' parameter is required" });  
     }  
   
     try {  
-      // Ambil data terakhir berdasarkan peg_id  
+      // Fetch the latest record based on peg_id  
       const { data: lastRecord, error: fetchError } = await supabase  
-        .schema('siap_skpd')  
-        .from('spg_riwayat_pangkat')  
+        .from('spg_riwayat_pangkat') // Removed schema method, use only from  
         .select('*')  
         .eq('peg_id', peg_id)  
         .order('riw_pangkat_sktgl', { ascending: false })  
@@ -30,7 +29,7 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: "No records found for the given peg_id" });  
       }  
   
-      // Kirimkan response dengan data terakhir  
+      // Send response with the latest record  
       return res.status(200).json({ data: lastRecord });  
     } catch (error) {  
       console.error("Error processing request:", error.message);  
@@ -41,18 +40,27 @@ export default async function handler(req, res) {
   // Handle PUT request to update the latest record  
   if (req.method === 'PUT') {  
     const { id: peg_id } = req.query;  
-    const { gol_id, riw_pangkat_thn, riw_pangkat_bln, riw_pangkat_sk, riw_pangkat_sktgl, riw_pangkat_pejabat, riw_pangkat_tmt, riw_pangkat_unit_kerja } = req.body; // Ambil data dari request body  
+    const {  
+      gol_id,  
+      riw_pangkat_id,  
+      riw_pangkat_thn,  
+      riw_pangkat_bln,  
+      riw_pangkat_sk,  
+      riw_pangkat_sktgl,  
+      riw_pangkat_pejabat,  
+      riw_pangkat_tmt,  
+      riw_pangkat_unit_kerja  
+    } = req.body; // Get data from request body  
   
-    // Validasi peg_id  
+    // Validate peg_id  
     if (!peg_id) {  
       return res.status(400).json({ error: "'id' parameter is required" });  
     }  
   
     try {  
-      // Ambil data terakhir berdasarkan peg_id  
+      // Fetch the latest record based on peg_id  
       const { data: lastRecord, error: fetchError } = await supabase  
-        .schema('siap_skpd')  
-        .from('spg_riwayat_pangkat')  
+        .from('spg_riwayat_pangkat') // Removed schema method, use only from  
         .select('*')  
         .eq('peg_id', peg_id)  
         .order('riw_pangkat_sktgl', { ascending: false })  
@@ -69,21 +77,22 @@ export default async function handler(req, res) {
       }  
   
       // Prepare update data  
-      const updateData = {   
-        riw_pangkat_thn,   
-        riw_pangkat_bln,   
-        riw_pangkat_sk,   
-        riw_pangkat_pejabat,   
-        riw_pangkat_tmt,    
-        riw_pangkat_unit_kerja   
+      const updateData = {  
+        gol_id,  
+        riw_pangkat_sktgl,  
+        riw_pangkat_thn,  
+        riw_pangkat_bln,  
+        riw_pangkat_sk,  
+        riw_pangkat_pejabat,  
+        riw_pangkat_tmt,  
+        riw_pangkat_unit_kerja  
       };  
   
-      // Update data terakhir  
+      // Update the latest record  
       const { data: updatedRecord, error: updateError } = await supabase  
-        .schema('siap_skpd')  
-        .from('spg_riwayat_pangkat')  
-        .update({ gol_id, riw_pangkat_sktgl, ...updateData })  
-        .eq('riw_pangkat_id', lastRecord.riw_pangkat_id) // Gunakan primary key atau identifier yang sesuai  
+        .from('spg_riwayat_pangkat') // Removed schema method, use only from  
+        .update(updateData)  
+        .eq('riw_pangkat_id', lastRecord.riw_pangkat_id) // Use primary key or identifier that is appropriate  
         .select('*')  
         .single();  
   
@@ -92,7 +101,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: updateError.message });  
       }  
   
-      // Kirimkan response  
+      // Send response  
       return res.status(200).json({ message: "Record updated successfully", data: updatedRecord });  
     } catch (error) {  
       console.error("Error processing request:", error.message);  
