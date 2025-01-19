@@ -79,12 +79,6 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
     } else if (field === "id_kec") {
       getKelurahan(value || "");
       setDakel([]);
-    } else if (field === "id_kel") {
-      // When kelurahan is selected, fetch the corresponding kodepos
-      const selectedKelurahan = dakel.find((kel) => kel.value === value);
-      if (selectedKelurahan) {
-        setPegawai((prev: any) => ({ ...prev, peg_kodepos: selectedKelurahan.kodepos }));
-      }
     }
   };
 
@@ -157,7 +151,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ pegawai, handleChange, setPeg
               id="peg_kodepos"
               name="peg_kodepos"
               type="text"
-              value={pegawai.kodepos || ""}
+              value={pegawai.peg_kodepos || ""}
               onChange={handleChange}
               className="shadow border rounded w-1/6 py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline border-gray-300"
             />

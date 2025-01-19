@@ -2,23 +2,18 @@ import { supabase } from '../../../../../lib/supabaseClient'; // Adjust path acc
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { kecamatan_id } = req.query; // Get the kecamatan_id from the query parameters
-
     try {
-      let query = supabase
+      // Fetch data from Supabase and order by kat_pend_id
+      const { data, error } = await supabase
         .schema('siap') // Ensure the schema is correct
-        .from('m_keldes') // Ensure the schema and table name are correct
-        .select('kecamatan_id, id, nama, kodepos');
+        .from('m_spg_kategori_pendidikan') // Corrected table name
+        .select('kat_pend_id, kat_nama')
+        .order('kat_pend_id', { ascending: true }); // Order by kat_pend_id in ascending order
 
-      // If kecamatan_id is provided, filter by it
-      if (kecamatan_id) {
-        query = query.eq('kecamatan_id', kecamatan_id);
+      if (error) {
+        console.error('Error fetching data:', error); // Log the error for debugging
+        throw error;
       }
-
-      // Fetch data from Supabase
-      const { data, error } = await query;
-
-      if (error) throw error;
 
       // Send the fetched data in the response
       return res.status(200).json(data); // Return fetched data

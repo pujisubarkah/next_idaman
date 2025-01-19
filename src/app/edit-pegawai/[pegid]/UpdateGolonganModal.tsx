@@ -13,7 +13,7 @@ const UpdateGolonganModal: React.FC<UpdateGolonganModalProps> = ({
   isOpen,  
   onClose,  
   onSubmit,  
-  golonganData,  
+  golonganData = [],  
   pegId,  
 }) => {  
   const [formData, setFormData] = useState({  

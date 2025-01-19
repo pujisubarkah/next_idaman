@@ -13,6 +13,7 @@ export default async function handler(req, res) {
     try {  
       // Fetch the latest record based on peg_id  
       const { data: lastRecord, error: fetchError } = await supabase  
+        .schema('siap_skpd')
         .from('spg_riwayat_pangkat') // Removed schema method, use only from  
         .select('*')  
         .eq('peg_id', peg_id)  
@@ -60,6 +61,7 @@ export default async function handler(req, res) {
     try {  
       // Fetch the latest record based on peg_id  
       const { data: lastRecord, error: fetchError } = await supabase  
+        .schema('siap_skpd')
         .from('spg_riwayat_pangkat') // Removed schema method, use only from  
         .select('*')  
         .eq('peg_id', peg_id)  
@@ -90,6 +92,7 @@ export default async function handler(req, res) {
   
       // Update the latest record  
       const { data: updatedRecord, error: updateError } = await supabase  
+        .schema('siap_skpd')
         .from('spg_riwayat_pangkat') // Removed schema method, use only from  
         .update(updateData)  
         .eq('riw_pangkat_id', lastRecord.riw_pangkat_id) // Use primary key or identifier that is appropriate  

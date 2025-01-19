@@ -2,21 +2,23 @@ import { supabase } from '../../../../../lib/supabaseClient'; // Adjust path acc
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { kecamatan_id } = req.query; // Get the kecamatan_id from the query parameters
-
     try {
-      let query = supabase
+      // Fetch data from Supabase with nested joins
+      const { data, error } = await supabase
         .schema('siap') // Ensure the schema is correct
-        .from('m_keldes') // Ensure the schema and table name are correct
-        .select('kecamatan_id, id, nama, kodepos');
-
-      // If kecamatan_id is provided, filter by it
-      if (kecamatan_id) {
-        query = query.eq('kecamatan_id', kecamatan_id);
-      }
-
-      // Fetch data from Supabase
-      const { data, error } = await query;
+        .from('m_spg_propinsi') // Start from the propinsi table
+        .select(`
+          propinsi_id,
+          propinsi_nm,
+          m_spg_kabupaten (
+            kabupaten_id, 
+            kabupaten_nm, 
+            m_spg_kecamatan (
+              kecamatan_id, 
+              kecamatan_nm
+            )
+          )
+        `);
 
       if (error) throw error;
 

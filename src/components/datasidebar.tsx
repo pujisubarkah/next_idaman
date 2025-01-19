@@ -89,6 +89,7 @@ export const sidebarData: SidebarItem[] = [
       { label: "Jurusan", to: "/data/jurusan", icon: FaCircle, roles: ["1"] },
       { label: "Monitoring Kelengkapan Data", to: "/data/mkd", icon: FaCircle, roles: ["1"] },
       { label: "Hukuman Disiplin", to: "/data/hukdis", icon: FaCircle, roles: ["1"] },
+      { label: "Penghargaan", to: "/data/penghargaan", icon: FaCircle, roles: ["1"] },
       { label: "Diklat Struktural Kategori", to: "/data/diklat_struk", icon: FaCircle, roles: ["1"] },
       { label: "Diklat Fungsional", to: "/data/diklat_jft", icon: FaCircle, roles: ["1"] },
       { label: "Diklat Teknis", to: "/data/diklat_teknis", icon: FaCircle, roles: ["1"] },
