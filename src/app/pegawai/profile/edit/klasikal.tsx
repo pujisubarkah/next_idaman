@@ -94,11 +94,25 @@ const RiwayatPelatihanKlasikal = () => {
     setModalOpen(false);  
   };  
   
+  const validateFormData = (data: DataPelatihanKlasikal) => {  
+    if (!data.jenis || !data.nama || !data.tanggalMulai || !data.tanggalSelesai || !data.nomorsurat || !data.instansi || !data.jumlahJam) {  
+      alert("Mohon lengkapi semua field.");  
+      return false;  
+    }  
+    return true;  
+  };  
+    
   const handleSubmitForm = async () => {  
     try {  
+      if (!validateFormData(formData)) return;  
+    
       if (formData.no === 0) {  
         const newData = { ...formData, isNew: true };  
-        await axios.post("/api/riwayat/pelatihan_klasikal", newData);  
+        await axios.post("/api/riwayat/pelatihan_klasikal", JSON.stringify(newData), {  
+          headers: {  
+            'Content-Type': 'application/json'  
+          }  
+        });  
       } else {  
         const editId = formData.no; // Assuming 'no' is the ID for editing  
         await axios.put(`/api/riwayat/pelatihan_klasikal/${formData.no}`, formData);  
@@ -110,6 +124,7 @@ const RiwayatPelatihanKlasikal = () => {
       alert("Gagal menyimpan data. Silakan coba lagi.");  
     }  
   };  
+  
   
   useEffect(() => {  
     const path = window.location.pathname;  
