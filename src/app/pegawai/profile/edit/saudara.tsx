@@ -15,6 +15,8 @@ const DataSaudaraLainnya = () => {
     jenisKelamin: string;  
     tempatLahir: string;  
     tanggalLahir: Date;
+    isASN: boolean;
+    isASNSatuInstansi: boolean;
     pendidikan: string;  
     pekerjaan: string; 
   }  
@@ -33,6 +35,8 @@ const DataSaudaraLainnya = () => {
     jenisKelamin: "",  
     tempatLahir: "", 
     tanggalLahir: new Date(),
+    isASN: false,
+    isASNSatuInstansi: false,
     pendidikan: "",  
     pekerjaan: "",
   });  
@@ -79,6 +83,8 @@ const DataSaudaraLainnya = () => {
         jenisKelamin: item.riw_kelamin === "L" ? "Laki-laki" : "Perempuan",  
         tempatLahir: item.riw_tempat_lahir,  
         tanggalLahir: formatTanggal(item.riw_tgl_lahir),
+        isASN: item.is_asn,
+        isASNSatuInstansi: item.is_asn_satu_instansi,
         pendidikan: item.riw_pendidikan,  
         pekerjaan: item.riw_pekerjaan,
       }));  
@@ -109,6 +115,8 @@ const DataSaudaraLainnya = () => {
         riw_kelamin: formData.jenisKelamin === "L" ? "Laki-laki" : "Perempuan",  
         riw_tempat_lahir: formData.tempatLahir, 
         riw_tgl_lahir: formatTanggal(formData.tanggalLahir.toString()),
+        is_asn: formData.nip !== null && formData.nip !== "" ? true : false,
+        is_asn_satu_instansi: formData.isASNSatuInstansi,
         riw_pendidikan: formData.pendidikan,  
         riw_pekerjaan: formData.pekerjaan,
       };  
@@ -138,6 +146,8 @@ const DataSaudaraLainnya = () => {
       jenisKelamin: saudara.jenisKelamin  === "L" ? "Laki-laki" : "Perempuan",
       tempatLahir: saudara.tempatLahir, 
       tanggalLahir: new Date(saudara.tanggalLahir),
+      isASN: saudara.isASN,
+      isASNSatuInstansi: saudara.isASNSatuInstansi,
       pendidikan: saudara.pendidikan,
       pekerjaan: saudara.pekerjaan,
     });  
@@ -166,6 +176,8 @@ const DataSaudaraLainnya = () => {
       jenisKelamin: "",  
       tempatLahir: "",
       tanggalLahir: new Date(),
+      isASN: false,
+      isASNSatuInstansi: false,
       pendidikan: "",  
       pekerjaan: "",}); // Reset form for adding  
   };  
@@ -369,22 +381,22 @@ const DataSaudaraLainnya = () => {
               <div className="mb-4 flex items-center">  
                 <label className="block text-sm font-semibold w-1/3">Bekerja di LAN?</label>  
                 <div className="w-2/3 flex items-center">  
-                  <label className="mr-4">  
+                    <label className="mr-4">  
                     <input  
                       type="radio"  
-                      name="bekerjadiLAN"  
-                      value="Ya"  
-                      checked={formData.jenisKelamin === "Ya"}  
+                      name="isASNSatuInstansi"  
+                      value="true"
+                      checked={formData.isASNSatuInstansi === true}  
                       onChange={handleChange}  
                     />  
                     Ya (ASN/Non ASN)
-                  </label>  
+                    </label>  
                   <label>  
                     <input  
                       type="radio"  
-                      name="bekerjadiLAN"  
-                      value="Tidak"  
-                      checked={formData.jenisKelamin === "Tidak"}  
+                      name="isASNSatuInstansi"  
+                      value="false"  
+                      checked={formData.isASNSatuInstansi === false}  
                       onChange={handleChange}  
                     />  
                     Tidak  
