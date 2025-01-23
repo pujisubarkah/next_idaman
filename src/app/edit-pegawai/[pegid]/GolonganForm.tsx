@@ -1,4 +1,5 @@
 
+
 import React, { useState } from "react";
 import Select from "react-select"; // Import react-select
 import UpdateModalGolongan from "./UpdateGolonganModal"; // Import the modal component
@@ -127,12 +128,18 @@ const GolonganForm: React.FC<GolonganFormProps> = ({
                     </div>
                 </div>
             </div>
-            <UpdateModalGolongan  
-    isOpen={isModalOpen}  
-    onClose={closeModal}  
-    pegawai={pegawai}  
-    setPegawai={setPegawai} // Ensure this prop is passed correctly  
-  
+            <UpdateModalGolongan
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSubmit={(updatedGolongan) => {
+                    setPegawai((prev) => ({
+                        ...prev,
+                        gol_id_akhir: updatedGolongan.gol_id,
+                    }));
+                    closeModal();
+                }}
+                golonganData={golonganData}
+    
 />  
 
            
