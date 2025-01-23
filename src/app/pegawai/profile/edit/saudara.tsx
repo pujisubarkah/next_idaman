@@ -581,9 +581,9 @@ const DataSaudaraLainnya = () => {
                   <label className="mr-4">  
                     <input  
                       type="radio"  
-                      name="bekerjadiLAN"  
-                      value="Ya"  
-                      checked={formData.jenisKelamin === "Ya"}  
+                      name="isASNSatuInstansi"  
+                      value="true"  
+                      checked={formData.isASNSatuInstansi === true}  
                       onChange={handleChange}  
                     />  
                     Ya (ASN/Non ASN)
@@ -591,9 +591,9 @@ const DataSaudaraLainnya = () => {
                   <label>  
                     <input  
                       type="radio"  
-                      name="bekerjadiLAN"  
+                      name="isASNSatuInstansi"  
                       value="Tidak"  
-                      checked={formData.jenisKelamin === "Tidak"}  
+                      checked={formData.isASNSatuInstansi === false}  
                       onChange={handleChange}  
                     />  
                     Tidak  
