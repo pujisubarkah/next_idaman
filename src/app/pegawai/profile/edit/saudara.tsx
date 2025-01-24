@@ -14,7 +14,7 @@ const DataSaudaraLainnya = () => {
     hubungan: string;  
     jenisKelamin: string;  
     tempatLahir: string;  
-    tanggalLahir: Date;
+    tanggalLahir: string;
     isASN: boolean;
     isASNSatuInstansi: boolean;
     pendidikan: string;  
@@ -34,7 +34,7 @@ const DataSaudaraLainnya = () => {
     hubungan: "",  
     jenisKelamin: "",  
     tempatLahir: "", 
-    tanggalLahir: new Date(),
+    tanggalLahir: "",
     isASN: false,
     isASNSatuInstansi: false,
     pendidikan: "",  
@@ -114,7 +114,7 @@ const DataSaudaraLainnya = () => {
         riw_ket: formData.hubungan,  
         riw_kelamin: formData.jenisKelamin === "L" ? "Laki-laki" : "Perempuan",  
         riw_tempat_lahir: formData.tempatLahir, 
-        riw_tgl_lahir: formatTanggal(formData.tanggalLahir.toString()),
+        riw_tgl_lahir: formData.tanggalLahir,
         is_asn: formData.nip !== null && formData.nip !== "" ? true : false,
         is_asn_satu_instansi: formData.isASNSatuInstansi,
         riw_pendidikan: formData.pendidikan,  
@@ -146,7 +146,7 @@ const DataSaudaraLainnya = () => {
       hubungan: saudara.hubungan,
       jenisKelamin: saudara.jenisKelamin  === "L" ? "Laki-laki" : "Perempuan",
       tempatLahir: saudara.tempatLahir, 
-      tanggalLahir: new Date(saudara.tanggalLahir),
+      tanggalLahir: saudara.tanggalLahir,
       isASN: saudara.isASN,
       isASNSatuInstansi: saudara.isASNSatuInstansi,
       pendidikan: saudara.pendidikan,
@@ -176,7 +176,7 @@ const DataSaudaraLainnya = () => {
       hubungan: "",  
       jenisKelamin: "",  
       tempatLahir: "",
-      tanggalLahir: new Date(),
+      tanggalLahir: "",
       isASN: false,
       isASNSatuInstansi: false,
       pendidikan: "",  
@@ -373,7 +373,7 @@ const DataSaudaraLainnya = () => {
                   type="date"  
                   id="tanggalLahir"  
                   name="tanggalLahir"  
-                  value={formData.tanggalLahir.toISOString().split('T')[0]}  
+                  value={formData.tanggalLahir}   
                   onChange={handleChange}  
                   className="w-2/3 px-4 py-2 border rounded"  
                   required  
@@ -570,7 +570,7 @@ const DataSaudaraLainnya = () => {
                   type="date"  
                   id="tanggalLahir"  
                   name="tanggalLahir"  
-                  value={formData.tanggalLahir.toISOString().split('T')[0]}  
+                  value={formData.tanggalLahir}  
                   onChange={handleChange}  
                   className="w-2/3 px-4 py-2 border rounded"  
                   required  
