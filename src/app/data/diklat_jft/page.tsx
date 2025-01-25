@@ -32,9 +32,17 @@ export default function ListUnitPage() {
     fetchStatuses();  
   }, []);  
   
+  const handleSearch = () => {  
+    const searchResults = statuses.filter(  
+      (item) =>  
+        item.satuan_kerja_nama.toLowerCase().includes(searchTerm.toLowerCase())  
+    );  
+    setFilteredStatuses(searchResults);  
+  };  
+  
   useEffect(() => {  
     handleSearch();  
-  }, [searchTerm]);  
+  }, [searchTerm, handleSearch]);  
   
   const fetchStatuses = async () => {  
     setLoading(true);  
@@ -48,14 +56,6 @@ export default function ListUnitPage() {
     } finally {  
       setLoading(false);  
     }  
-  };  
-  
-  const handleSearch = () => {  
-    const searchResults = statuses.filter(  
-      (item) =>  
-        item.satuan_kerja_nama.toLowerCase().includes(searchTerm.toLowerCase())  
-    );  
-    setFilteredStatuses(searchResults);  
   };  
   
   // Open and close modal for Add  
@@ -119,7 +119,7 @@ const handleEdit = (id: number) => {
     }  
   };  
   
-  const handleShowPegawai = (pegawai) => {  
+  const handleShowPegawai = (pegawai: any) => {  
     setModalData(pegawai);  
     setIsPegawaiModalOpen(true);  
   };  

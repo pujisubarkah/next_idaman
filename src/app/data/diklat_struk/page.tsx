@@ -24,7 +24,7 @@ export default function ListUnitPage() {
   const [kategoriParent, setKategoriParent] = useState("");  
   const [status, setStatus] = useState(1); // 1 for active, 0 for inactive  
   const [editId, setEditId] = useState<number | null>(null);  
-  const [error, setError] = useState<string | null>(null);  
+  const [error, setError] = useState<string | null>(null);
   
   const fetchCategories = async () => {  
     setLoading(true);  
@@ -64,10 +64,10 @@ export default function ListUnitPage() {
     setCurrentPage(page);  
   };  
   
-  const handleEntriesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {  
-    setEntriesPerPage(Number(event.target.value));  
-    setCurrentPage(1); // Reset to first page when entries per page changes  
-  };  
+  const handleShowPegawai = (pegawai: any[]) => {
+    setModalData(pegawai);
+    setIsPegawaiModalOpen(true);
+  };
   
   const toggleModal = () => {  
     setIsModalOpen(!isModalOpen);  
@@ -80,25 +80,8 @@ export default function ListUnitPage() {
     }  
   };  
   
-  const handleCreateFormSubmit = async (e: React.FormEvent) => {  
-    e.preventDefault();  
-    try {  
-      const response = await axios.post("/api/data/diklat_struktural", {  
-        kategori_nama: kategoriNama,  
-        kategori_parent: kategoriParent,  
-        status: status,  
-      });  
-      console.log("Kategori created:", response.data);  
-      toggleModal();  
-      fetchCategories();  
-    } catch (error) {  
-      console.error("Error creating kategori:", error.response?.data || error.message);  
-      setError("Failed to create kategori.");  
-    }  
-  };  
-  
-  const handleEdit = (id: number) => {  
-    const kategori = categories.find((cat) => cat.kategori_id === id);  
+  const handleEdit = (id: number) => {
+    const kategori = categories.find((item) => item.kategori_id === id);
     if (kategori) {  
       setEditId(kategori.kategori_id);  
       setKategoriNama(kategori.kategori_nama);  
@@ -108,15 +91,24 @@ export default function ListUnitPage() {
     } else {  
       console.error("Kategori not found for ID:", id);  
     }  
-  };  
-  
+  };
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`/api/data/diklat_struktural/${id}`);
+      fetchCategories();
+    } catch (error) {
+      console.error("Error deleting kategori:", error.response?.data || error.message);
+      setError("Failed to delete kategori.");
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {  
     e.preventDefault();  
     if (editId === null) {  
       console.error("Edit ID is missing");  
       return;  
     }  
-    try {  
+    setLoading(true);
+    try {
       const response = await axios.put(`/api/data/diklat_struktural/${editId}`, {  
         kategori_nama: kategoriNama,  
         kategori_parent: kategoriParent,  
@@ -128,27 +120,14 @@ export default function ListUnitPage() {
     } catch (error) {  
       console.error("Error updating kategori:", error.response?.data || error.message);  
       setError("Failed to update kategori.");  
-    }  
-  };  
-  
-  const handleShowPegawai = (pegawai_in_kategori: any[]) => {  
-    setModalData(pegawai_in_kategori);  
-    setIsPegawaiModalOpen(true);  
-  };  
-  
-  const handleDelete = async (id: number) => {  
-    try {  
-      await axios.delete(`/api/data/diklat_struktural/${id}`);  
-      fetchCategories();  
-    } catch (error) {  
-      console.error("Error deleting kategori:", error.response?.data || error.message);  
-      setError("Failed to delete kategori.");  
-    }  
-  };  
-  
-  return (  
-    <RootLayout>  
-      <div>  
+    } finally {
+      setLoading(false);
+    }
+  };
+      return (
+        <RootLayout>
+          <div>  
+          </div>
         <h3 className="text-lg font-bold font-poppins">DAFTAR MASTER DIKLAT JABATAN STRUKTURAL</h3>  
   
         {/* Search and Add Button */}  
@@ -311,7 +290,7 @@ export default function ListUnitPage() {
             </button>  
           </div>  
         </div>  
-      </div>  
-    </RootLayout>  
-  );  
+    </RootLayout>
+  );
+}
 }  
