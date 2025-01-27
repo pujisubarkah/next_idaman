@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";  
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";  
 import axios from "axios";  
+import Modal from "./strukturalModal";  
   
 const RiwayatPelatihanStruktural = () => {  
   // Definisi tipe data untuk state  
@@ -23,6 +24,9 @@ const RiwayatPelatihanStruktural = () => {
   
   const [data, setData] = useState<PelatihanStruktural[]>([]);  
   const [nip, setNip] = useState<string | null>(null);  
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);  
+  const [selectedData, setSelectedData] = useState<PelatihanStruktural | null>(null);  
   
   // Fungsi untuk memformat tanggal  
   const formatTanggal = (tanggal: string): string => {  
@@ -91,13 +95,68 @@ const RiwayatPelatihanStruktural = () => {
     if (nipFromUrl) {  
       fetchRiwayatPelatihan(nipFromUrl);  
     }  
-  }, []); // Empty dependency array to fetch data only once  
+  }, []);  
   
   useEffect(() => {  
     if (nip) {  
       fetchRiwayatPelatihan(nip);  
     }  
-  }, [nip]); // Dependency on 'nip' to fetch data when it changes  
+  }, [nip]);  
+  
+  const handleAdd = (newData: PelatihanStruktural) => {  
+    axios  
+      .post("/api/riwayat/diklat", {  
+        ...newData,  
+        peg_id: nip,  
+        diklat_jenis: 1,  
+      })  
+      .then(() => {  
+        fetchRiwayatPelatihan(nip!);  
+        setIsModalOpen(false);  
+      })  
+      .catch((error) => {  
+        console.error("Error adding data:", error);  
+      });  
+  };  
+  
+  const handleEdit = (updatedData: PelatihanStruktural) => {  
+    axios  
+      .put(`/api/riwayat/diklat/${updatedData.no}`, {  
+        ...updatedData,  
+        peg_id: nip,  
+        diklat_jenis: 1,  
+      })  
+      .then(() => {  
+        fetchRiwayatPelatihan(nip!);  
+        setIsModalOpen(false);  
+      })  
+      .catch((error) => {  
+        console.error("Error editing data:", error);  
+      });  
+  };  
+  
+  const handleDelete = () => {  
+    if (selectedData) {  
+      axios  
+        .delete(`/api/riwayat/diklat/${selectedData.no}`)  
+        .then(() => {  
+          fetchRiwayatPelatihan(nip!);  
+          setIsModalOpen(false);  
+        })  
+        .catch((error) => {  
+          console.error("Error deleting data:", error);  
+        });  
+    }  
+  };  
+  
+  const openModal = (  
+    type: "add" | "edit" | "delete",  
+    data: PelatihanStruktural | null = null  
+  ) => {  
+    setModalType(type);  
+    setSelectedData(data);  
+    setIsModalOpen(true);  
+  };  
   
   return (  
     <div id="pelatihan-struktural" className="p-8">  
@@ -106,7 +165,10 @@ const RiwayatPelatihanStruktural = () => {
       </h3>  
   
       <div className="flex justify-end mb-4">  
-        <button className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]">  
+        <button  
+          className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
+          onClick={() => openModal("add")}  
+        >  
           <FontAwesomeIcon icon={faPlus} /> Tambah  
         </button>  
       </div>  
@@ -114,40 +176,18 @@ const RiwayatPelatihanStruktural = () => {
       <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">  
         <thead className="bg-[#3781c7] text-white">  
           <tr className="text-sm uppercase">  
-            <th className="p-3 border border-[#f2bd1d]" rowSpan={2}>  
-              No  
-            </th>  
-            <th className="p-3 border border-[#f2bd1d]" colSpan={2}>  
-              Pelatihan Struktural  
-            </th>  
-            <th className="p-3 border border-[#f2bd1d]" colSpan={2}>  
-              Tanggal  
-            </th>  
-            <th className="p-3 border border-[#f2bd1d]" rowSpan={2}>  
-              Jumlah Jam  
-            </th>  
-            <th className="p-3 border border-[#f2bd1d]" colSpan={3}>  
-              STTP  
-            </th>  
-            <th className="p-3 border border-[#f2bd1d]" colSpan={2}>  
-              Instansi Penyelenggara  
-            </th>  
-            <th className="p-3 border border-[#f2bd1d]" rowSpan={2}>  
-              Pilihan  
-            </th>  
-          </tr>  
-          <tr>  
+            <th className="p-3 border border-[#f2bd1d]">No</th>  
             <th className="p-3 border border-[#f2bd1d]">Kategori</th>  
             <th className="p-3 border border-[#f2bd1d]">Nama</th>  
-            <th className="p-3 border border-[#f2bd1d]">Mulai</th>  
-            <th className="p-3 border border-[#f2bd1d]">Selesai</th>  
-            <th className="p-3 border border-[#f2bd1d]">Nomor</th>  
-            <th className="p-3 border border-[#f2bd1d]">Tanggal</th>  
-            <th className="p-3 border border-[#f2bd1d]">  
-              Jabatan Penandatangan  
-            </th>  
+            <th className="p-3 border border-[#f2bd1d]">Tanggal Mulai</th>  
+            <th className="p-3 border border-[#f2bd1d]">Tanggal Selesai</th>  
+            <th className="p-3 border border-[#f2bd1d]">Jumlah Jam</th>  
+            <th className="p-3 border border-[#f2bd1d]">No STTP</th>  
+            <th className="p-3 border border-[#f2bd1d]">Tanggal STTP</th>  
+            <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan STTP</th>  
             <th className="p-3 border border-[#f2bd1d]">Instansi</th>  
             <th className="p-3 border border-[#f2bd1d]">Lokasi</th>  
+            <th className="p-3 border border-[#f2bd1d]">Pilihan</th>  
           </tr>  
         </thead>  
   
@@ -169,17 +209,11 @@ const RiwayatPelatihanStruktural = () => {
                   {item.kategori} ({item.kategoriParent})  
                 </td>  
                 <td className="p-3 border border-[#f2bd1d]">{item.nama}</td>  
-                <td className="p-3 border border-[#f2bd1d]">  
-                  {item.tanggalMulai}  
-                </td>  
-                <td className="p-3 border border-[#f2bd1d]">  
-                  {item.tanggalSelesai}  
-                </td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.tanggalMulai}</td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.tanggalSelesai}</td>  
                 <td className="p-3 border border-[#f2bd1d]">{item.jumlahJam}</td>  
                 <td className="p-3 border border-[#f2bd1d]">{item.nomorSTTP}</td>  
-                <td className="p-3 border border-[#f2bd1d]">  
-                  {item.tanggalSTTP}  
-                </td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.tanggalSTTP}</td>  
                 <td className="p-3 border border-[#f2bd1d]">  
                   {item.jabatanPenandatangan}  
                 </td>  
@@ -190,12 +224,14 @@ const RiwayatPelatihanStruktural = () => {
                     <button  
                       className="text-green-500 hover:text-green-700"  
                       aria-label="Edit"  
+                      onClick={() => openModal("edit", item)}  
                     >  
                       <FontAwesomeIcon icon={faEdit} /> Edit  
                     </button>  
                     <button  
                       className="text-red-500 hover:text-red-700"  
                       aria-label="Delete"  
+                      onClick={() => openModal("delete", item)}  
                     >  
                       <FontAwesomeIcon icon={faTrash} /> Delete  
                     </button>  
@@ -206,9 +242,11 @@ const RiwayatPelatihanStruktural = () => {
           )}  
         </tbody>  
       </table>  
-    </div>  
-  );  
-};  
+  
+     
+    </div>
+  );
+};
   
 export default RiwayatPelatihanStruktural;  
 

@@ -1,9 +1,9 @@
-"use client";  
-  
+'use client';  
 import React, { useEffect, useState } from "react";  
 import axios from "axios";  
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";  
 import { faEdit, faTrash, faPlus, faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";  
+import Modal from "./pendidikanModal"; // Import PendidikanModal  
   
 interface Pendidikan {  
   no: number;  
@@ -17,7 +17,13 @@ interface Pendidikan {
 }  
   
 interface TingkatPendidikan {  
+  tingpend_id: number;  
   nm_tingpend: string;  
+}  
+  
+interface Jurusan {  
+  jurusan_id: number;  
+  jurusan_nm: string;  
 }  
   
 const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {  
@@ -27,6 +33,7 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
   const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);  
   const [selectedData, setSelectedData] = useState<Pendidikan | null>(null);  
   const [tingkatPendidikanOptions, setTingkatPendidikanOptions] = useState<TingkatPendidikan[]>([]);  
+  const [jurusanOptions, setJurusanOptions] = useState<Jurusan[]>([]);  
   
   const formatTanggal = (tanggal: string): string => {  
     const bulanIndo = [  
@@ -42,44 +49,36 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
     return `${hari} - ${bulan} - ${tahun}`;  
   };  
   
-  useEffect(() => {  
-    const path = window.location.pathname;  
-    const segments = path.split("/");  
-    const nipFromUrl = segments[segments.length - 1];  
-    if (nipFromUrl) {  
-      fetchRiwayatPendidikan(nipFromUrl);  
-    }  
-  }, []);  
-  
   const fetchRiwayatPendidikan = async (nip: string) => {  
     try {  
       setLoading(true);  
       const response = await axios.get(`/api/riwayat/pendidikan?peg_id=${nip}`);  
       const sortedData = response.data;  
   
-      const mappedData = sortedData.map((item: any, index: number) => ({  
-        no: index + 1,  
-        tingpend: item.nm_tingpend,  
-        jurusan: item.nama_jurusan,   
-        riw_pendidikan_sttb_ijazah: item.riw_pendidikan_sttb_ijazah,  
-        riw_pendidikan_tanggal: formatTanggal(item.riw_pendidikan_tgl),  
-        riw_pendidikan_pejabat: item.riw_pendidikan_pejabat,  
-        riw_pendidikan_nm: item.riw_pendidikan_nm || item.nama_univ,  
-        riw_pendidikan_lokasi: item.riw_pendidikan_lokasi,  
-      }));  
+        const mappedData = sortedData.map((item: any, index: number) => ({  
+          no: index + 1,  
+          tingpend: item.nm_tingpend,  
+          jurusan: item.jurusan_nm,  
+          riw_pendidikan_sttb_ijazah: item.riw_pendidikan_sttb_ijazah,  
+          riw_pendidikan_tanggal: formatTanggal(item.riw_pendidikan_tgl),  
+          riw_pendidikan_pejabat: item.riw_pendidikan_pejabat,  
+          riw_pendidikan_nm: item.riw_pendidikan_nm || item.nama_univ,  
+          riw_pendidikan_lokasi: item.riw_pendidikan_lokasi,  
+        }));  
   
-      setDataPendidikan(mappedData);  
-    } catch (error) {  
-      console.error("Error fetching data:", error);  
-    } finally {  
-      setLoading(false);  
-    }  
-  };  
+        setDataPendidikan(mappedData);  
+      } catch (error) {  
+        console.error("Error fetching data:", error);  
+      } finally {  
+        setLoading(false);  
+          setLoading(false);  
+        }  
+      };  
   
-  useEffect(() => {  
+    useEffect(() => {  
     const fetchTingkatPendidikan = async () => {  
       try {  
-        const response = await axios.get('/api/master_data/pendidikan');  
+        const response = await axios.get('/api/master_data/tingkat_pendidikan');  
         const data = response.data;  
         setTingkatPendidikanOptions(data);  
       } catch (error) {  
@@ -87,8 +86,20 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
       }  
     };  
   
+    const fetchJurusan = async () => {  
+      try {  
+        const response = await axios.get('/api/master_data/jurusan');  
+        const data = response.data;  
+        setJurusanOptions(data);  
+      } catch (error) {  
+        console.error('Error fetching data:', error);  
+      }  
+    };  
+  
+    fetchRiwayatPendidikan(nip);  
     fetchTingkatPendidikan();  
-  }, []);  
+    fetchJurusan();  
+  }, [nip]);  
   
   const openModal = (type: "add" | "edit" | "delete", data: Pendidikan | null = null) => {  
     setModalType(type);  
@@ -102,11 +113,7 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
     setSelectedData(null);  
   };  
   
-  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {  
-    e.preventDefault();  
-    const formData = new FormData(e.currentTarget);  
-    const newData = Object.fromEntries(formData.entries());  
-  
+  const handleAdd = async (newData: Pendidikan) => {  
     try {  
       await axios.post("/api/riwayat/pendidikan", newData);  
       fetchRiwayatPendidikan(nip);  
@@ -116,11 +123,7 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
     }  
   };  
   
-  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {  
-    e.preventDefault();  
-    const formData = new FormData(e.currentTarget);  
-    const updatedData = Object.fromEntries(formData.entries());  
-  
+  const handleEdit = async (updatedData: Pendidikan) => {  
     try {  
       await axios.put(`/api/riwayat/pendidikan?id=${selectedData?.no}`, updatedData);  
       fetchRiwayatPendidikan(nip);  
@@ -237,123 +240,17 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
       </table>  
   
       {isModalOpen && (  
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">  
-          <div className="bg-white p-6 rounded shadow-lg w-1/2">  
-            <h3 className="text-lg font-semibold mb-4">  
-              {modalType === "add"  
-                ? "Tambah Data"  
-                : modalType === "edit"  
-                ? "Edit Data"  
-                : "Hapus Data"}  
-            </h3>  
-            {modalType === "delete" ? (  
-              <div>  
-                <p>Apakah Anda yakin ingin menghapus data ini?</p>  
-                <div className="mt-4 flex justify-end space-x-4">  
-                  <button  
-                    className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
-                    onClick={closeModal}  
-                  >  
-                    Batal  
-                  </button>  
-                  <button  
-                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"  
-                    onClick={handleDelete}  
-                  >  
-                    Hapus  
-                  </button>  
-                </div>  
-              </div>  
-            ) : (  
-              <form onSubmit={modalType === 'add' ? handleAdd : handleEdit}>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Tingkat Pendidikan</label>  
-                  <select  
-                    name="tingpend"  
-                    className="border p-2 w-full text-black bg-white"  
-                    required  
-                  >  
-                    <option value="">Pilih Tingkat Pendidikan</option>  
-                    {tingkatPendidikanOptions.map((option, index) => (  
-                      <option key={index} value={option.nm_tingpend}>  
-                        {option.nm_tingpend}  
-                      </option>  
-                    ))}  
-                  </select>  
-                </div>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Nama Sekolah</label>  
-                  <input  
-                    type="text"  
-                    name="jurusan"  
-                    className="border p-2 w-full"  
-                    defaultValue={selectedData?.jurusan || ''}  
-                  />  
-                </div>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Lokasi Sekolah</label>  
-                  <input  
-                    type="text"  
-                    name="riw_pendidikan_lokasi"  
-                    className="border p-2 w-full"  
-                    defaultValue={selectedData?.riw_pendidikan_lokasi || ''}  
-                  />  
-                </div>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Jurusan</label>  
-                  <input  
-                    type="text"  
-                    name="jurusan"  
-                    className="border p-2 w-full"  
-                    defaultValue={selectedData?.jurusan || ''}  
-                  />  
-                </div>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Nomor Ijazah/STTB</label>  
-                  <input  
-                    type="text"  
-                    name="riw_pendidikan_sttb_ijazah"  
-                    className="border p-2 w-full"  
-                    defaultValue={selectedData?.riw_pendidikan_sttb_ijazah || ''}  
-                  />  
-                </div>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Tanggal Ijazah/STTB</label>  
-                  <input  
-                    type="date"  
-                    name="riw_pendidikan_tanggal"  
-                    className="border p-2 w-full"  
-                    defaultValue={selectedData?.riw_pendidikan_tanggal || ''}  
-                  />  
-                </div>  
-                <div className="mb-4">  
-                  <label className="block font-medium">Nama Kepala Sekolah/Rektor</label>  
-                  <input  
-                    type="text"  
-                    name="riw_pendidikan_pejabat"  
-                    className="border p-2 w-full"  
-                    defaultValue={selectedData?.riw_pendidikan_pejabat || ''}  
-                  />  
-                </div>  
-                <div className="flex justify-end space-x-4">  
-                  <button  
-                    type="button"  
-                    className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
-                    onClick={closeModal}  
-                  >  
-                    Batal  
-                  </button>  
-                  <button  
-                    type="submit"  
-                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
-                  >  
-                    Simpan  
-                  </button>  
-                </div>  
-              </form>  
-            )}  
-          </div>  
-        </div>  
+        <Modal  
+          isOpen={isModalOpen}  
+          onClose={closeModal}  
+          modalType={modalType}  
+          selectedData={selectedData}  
+          tingkatPendidikanOptions={tingkatPendidikanOptions}  
+          jurusanOptions={jurusanOptions}  
+          handleAdd={handleAdd}  
+          handleEdit={handleEdit}  
+          handleDelete={handleDelete}  
+        />  
       )}  
     </div>  
   );  

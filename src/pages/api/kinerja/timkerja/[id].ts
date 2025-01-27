@@ -28,30 +28,7 @@ export default async function handler(req, res) {
             return res.status(200).json(data);
         }
 
-        // Handle POST request
-        if (req.method === 'POST') {
-            const { peg_id, timkerja_nama, timkerja_nomor, tanggal_timkerja, timkerja_penandatangan, timkerja_peran } = req.body;
-
-            if (!timkerja_nama || !timkerja_nomor || !tanggal_timkerja || !timkerja_penandatangan || !timkerja_peran) {
-                return res.status(400).json({
-                    error: "Request body must include 'timkerja_nama', 'timkerja_nomor', 'tanggal_timkerja', 'timkerja_penandatangan', and 'timkerja_peran'.",
-                });
-            }
-
-            if (!peg_id) {
-                return res.status(400).json({ error: "'peg_id' is required in the request body" });
-            }
-
-            const { data, error } = await supabase
-                .schema('siap_skpd')
-                .from('spg_riwayat_timkerja')
-                .insert({ peg_id, timkerja_nama, timkerja_nomor, tanggal_timkerja, timkerja_penandatangan, timkerja_peran });
-
-            if (error) throw error;
-
-            return res.status(201).json({ message: "Data successfully created", data });
-        }
-
+    
         // Handle PUT request
         if (req.method === 'PUT') {
             if (!id) {
