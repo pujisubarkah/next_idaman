@@ -3,48 +3,51 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";  
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";  
 import axios from "axios";  
-import Modal from "./strukturalModal";  
+import Modal from "./strukturalModal";
+
+
+
+  
+// Interface moved outside the component  
+interface PelatihanStruktural {  
+  no: number;  
+  kategori: string;  
+  kategoriParent: string;  
+  nama: string;  
+  tanggalMulai: string;  
+  tanggalSelesai: string;  
+  jumlahJam: string;  
+  nomorSTTP: string;  
+  tanggalSTTP: string;  
+  jabatanPenandatangan: string;  
+  instansi: string;  
+  lokasi: string;  
+}  
+  
+const bulanIndo = [  
+  "Januari",  
+  "Februari",  
+  "Maret",  
+  "April",  
+  "Mei",  
+  "Juni",  
+  "Juli",  
+  "Agustus",  
+  "September",  
+  "Oktober",  
+  "November",  
+  "Desember",  
+];  
   
 const RiwayatPelatihanStruktural = () => {  
-  // Definisi tipe data untuk state  
-  interface PelatihanStruktural {  
-    no: number;  
-    kategori: string;  
-    kategoriParent: string;  
-    nama: string;  
-    tanggalMulai: string;  
-    tanggalSelesai: string;  
-    jumlahJam: string;  
-    nomorSTTP: string;  
-    tanggalSTTP: string;  
-    jabatanPenandatangan: string;  
-    instansi: string;  
-    lokasi: string;  
-  }  
-  
   const [data, setData] = useState<PelatihanStruktural[]>([]);  
   const [nip, setNip] = useState<string | null>(null);  
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);  
   const [selectedData, setSelectedData] = useState<PelatihanStruktural | null>(null);  
+  const [error, setError] = useState<string | null>(null); // State untuk menyimpan pesan error  
   
-  // Fungsi untuk memformat tanggal  
   const formatTanggal = (tanggal: string): string => {  
-    const bulanIndo = [  
-      "Januari",  
-      "Februari",  
-      "Maret",  
-      "April",  
-      "Mei",  
-      "Juni",  
-      "Juli",  
-      "Agustus",  
-      "September",  
-      "Oktober",  
-      "November",  
-      "Desember",  
-    ];  
-  
     const date = new Date(tanggal);  
     const hari = date.getDate();  
     const bulan = bulanIndo[date.getMonth()];  
@@ -55,34 +58,29 @@ const RiwayatPelatihanStruktural = () => {
   
   const fetchRiwayatPelatihan = async (nip: string) => {  
     try {  
-      const response = await axios.get(  
-        `/api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`  
-      );  
-      const sortedData = response.data.sort(  
-        (a: any, b: any) =>  
-          new Date(a.diklat_mulai).getTime() - new Date(b.diklat_mulai).getTime()  
-      );  
+      const response = await axios.get(`/api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`);  
+      const sortedData = response.data.sort((a: any, b: any) => new Date(a.diklat_mulai).getTime() - new Date(b.diklat_mulai).getTime());  
   
-      const mappedData: PelatihanStruktural[] = sortedData.map(  
-        (item: any, index: number) => ({  
-          no: index + 1,  
-          kategori: item.diklat_jenis.diklat_jenis_nama,  
-          kategoriParent: item.kategori.kategori_parent_nama || "Tidak Ada",  
-          nama: item.kategori.kategori_nama,  
-          tanggalMulai: formatTanggal(item.diklat_mulai),  
-          tanggalSelesai: formatTanggal(item.diklat_selesai),  
-          jumlahJam: item.diklat_jumlah_jam,  
-          nomorSTTP: item.diklat_sttp_no,  
-          tanggalSTTP: formatTanggal(item.diklat_sttp_tgl),  
-          jabatanPenandatangan: item.diklat_sttp_pej,  
-          instansi: item.diklat_penyelenggara,  
-          lokasi: item.diklat_tempat,  
-        })  
-      );  
+      const mappedData: PelatihanStruktural[] = sortedData.map((item: any, index: number) => ({  
+        no: index + 1,  
+        kategori: item.diklat_jenis.diklat_jenis_nama,  
+        kategoriParent: item.kategori.kategori_parent_nama || "Tidak Ada",  
+        nama: item.kategori.kategori_nama,  
+        tanggalMulai: formatTanggal(item.diklat_mulai),  
+        tanggalSelesai: formatTanggal(item.diklat_selesai),  
+        jumlahJam: item.diklat_jumlah_jam,  
+        nomorSTTP: item.diklat_sttp_no,  
+        tanggalSTTP: formatTanggal(item.diklat_sttp_tgl),  
+        jabatanPenandatangan: item.diklat_sttp_pej,  
+        instansi: item.diklat_penyelenggara,  
+        lokasi: item.diklat_tempat,  
+      }));  
   
       setData(mappedData);  
+      setError(null); // Reset error jika berhasil  
     } catch (error) {  
       console.error("Error fetching data:", error);  
+      setError("Gagal mengambil data. Silakan coba lagi."); // Set pesan error  
     }  
   };  
   
@@ -97,62 +95,50 @@ const RiwayatPelatihanStruktural = () => {
     }  
   }, []);  
   
-  useEffect(() => {  
-    if (nip) {  
-      fetchRiwayatPelatihan(nip);  
-    }  
-  }, [nip]);  
-  
-  const handleAdd = (newData: PelatihanStruktural) => {  
-    axios  
-      .post("/api/riwayat/diklat", {  
+  const handleAdd = async (newData: PelatihanStruktural) => {  
+    try {  
+      await axios.post("/api/riwayat/diklat", {  
         ...newData,  
         peg_id: nip,  
         diklat_jenis: 1,  
-      })  
-      .then(() => {  
-        fetchRiwayatPelatihan(nip!);  
-        setIsModalOpen(false);  
-      })  
-      .catch((error) => {  
-        console.error("Error adding data:", error);  
       });  
-  };  
-  
-  const handleEdit = (updatedData: PelatihanStruktural) => {  
-    axios  
-      .put(`/api/riwayat/diklat/${updatedData.no}`, {  
-        ...updatedData,  
-        peg_id: nip,  
-        diklat_jenis: 1,  
-      })  
-      .then(() => {  
-        fetchRiwayatPelatihan(nip!);  
-        setIsModalOpen(false);  
-      })  
-      .catch((error) => {  
-        console.error("Error editing data:", error);  
-      });  
-  };  
-  
-  const handleDelete = () => {  
-    if (selectedData) {  
-      axios  
-        .delete(`/api/riwayat/diklat/${selectedData.no}`)  
-        .then(() => {  
-          fetchRiwayatPelatihan(nip!);  
-          setIsModalOpen(false);  
-        })  
-        .catch((error) => {  
-          console.error("Error deleting data:", error);  
-        });  
+      fetchRiwayatPelatihan(nip!);  
+      setIsModalOpen(false);  
+    } catch (error) {  
+      console.error("Error adding data:", error);  
+      setError("Gagal menambahkan data.");  
     }  
   };  
   
-  const openModal = (  
-    type: "add" | "edit" | "delete",  
-    data: PelatihanStruktural | null = null  
-  ) => {  
+  const handleEdit = async (updatedData: PelatihanStruktural) => {  
+    try {  
+      await axios.put(`/api/riwayat/diklat/${updatedData.no}`, {  
+        ...updatedData,  
+        peg_id: nip,  
+        diklat_jenis: 1,  
+      });  
+      fetchRiwayatPelatihan(nip!);  
+      setIsModalOpen(false);  
+    } catch (error) {  
+      console.error("Error editing data:", error);  
+      setError("Gagal mengedit data.");  
+    }  
+  };  
+  
+  const handleDelete = async () => {  
+    if (selectedData) {  
+      try {  
+        await axios.delete(`/api/riwayat/diklat/${selectedData.no}`);  
+        fetchRiwayatPelatihan(nip!);  
+        setIsModalOpen(false);  
+      } catch (error) {  
+        console.error("Error deleting data:", error);  
+        setError("Gagal menghapus data.");  
+      }  
+    }  
+  };  
+  
+  const openModal = (type: "add" | "edit" | "delete", data: PelatihanStruktural | null = null) => {  
     setModalType(type);  
     setSelectedData(data);  
     setIsModalOpen(true);  
@@ -163,6 +149,8 @@ const RiwayatPelatihanStruktural = () => {
       <h3 className="text-center text-xl font-semibold mb-8 text-[#3781c7]">  
         Riwayat Pelatihan Struktural  
       </h3>  
+  
+      {error && <div className="text-red-500 text-center mb-4">{error}</div>} {/* Menampilkan pesan error */}  
   
       <div className="flex justify-end mb-4">  
         <button  
@@ -242,11 +230,19 @@ const RiwayatPelatihanStruktural = () => {
           )}  
         </tbody>  
       </table>  
-  
-     
-    </div>
-  );
-};
+      {isModalOpen && (  
+        <Modal  
+          isOpen={isModalOpen}  
+          type={modalType}  
+          selectedData={selectedData}  
+          onClose={() => setIsModalOpen(false)}  
+          onAdd={handleAdd}  
+          onEdit={handleEdit}  
+          onDelete={handleDelete}  
+        />  
+      )}  
+    </div>  
+  );  
+};  
   
 export default RiwayatPelatihanStruktural;  
-

@@ -1,23 +1,23 @@
 "use client";  
-  
+
 import React, { useState } from 'react';  
 import RootLayout from '../../pegawai/profile/edit/layout';  
 import axios from 'axios';  
-  
+
 const SearchPage: React.FC = () => {  
     const [query, setQuery] = useState('');    
     const [data, setData] = useState<any>(null);   
     const [error, setError] = useState<string | null>(null);   
     const [loading, setLoading] = useState(false);   
-  
+
     const handleSearch = async () => {  
         setLoading(true);    
         setError(null);       
         setData(null);        
-  
+
         try {  
             let url = `/api/pegawai/pencarian?`;  
-  
+
             if (query) {  
                 if (isNaN(Number(query))) {  
                     url += `peg_nama=${query}`;  
@@ -25,25 +25,26 @@ const SearchPage: React.FC = () => {
                     url += `peg_id=${query}`;  
                 }  
             }  
-  
+
             const response = await fetch(url);  
             if (!response.ok) {  
                 throw new Error('Failed to fetch data');  
             }  
             const result = await response.json();  
-  
+
             setData(result);  
-  
+
         } catch (err: any) {  
             setError(err.message);   
         } finally {  
             setLoading(false);   
         }  
     };  
-  
+
     return (  
         <RootLayout>  
-            <div className="flex justify-start items-start h-screen p-5">  
+            <div className="flex flex-col justify-start items-start h-screen p-5">  
+                {/* Form Pencarian */}  
                 <div className="border-2 border-[#3781c7] p-5 rounded-lg text-center w-full max-w-md mb-5">  
                     <h1 className="text-xl font-bold font-poppins mb-5">Halaman Pencarian</h1>  
                     <div className="flex gap-2 mb-5">  
@@ -61,12 +62,13 @@ const SearchPage: React.FC = () => {
                             Search  
                         </button>  
                     </div>  
-  
+
                     {loading && <p>Loading...</p>}  
                     {error && <p className="text-red-500">{error}</p>}  
                     {data && data.length === 0 && <p>No data found</p>}  
                 </div>  
-  
+
+                {/* Tabel Hasil Pencarian */}  
                 {data && data.length > 0 && (  
                     <div className="w-full">  
                         <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">  
@@ -116,5 +118,5 @@ const SearchPage: React.FC = () => {
         </RootLayout>  
     );  
 };  
-  
+
 export default SearchPage;  

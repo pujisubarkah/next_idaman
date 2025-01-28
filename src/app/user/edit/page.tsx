@@ -40,19 +40,34 @@ const ChangePassword: React.FC = () => {
 
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         if (newPassword !== confirmPassword) {
             setMessage("Password baru dan konfirmasi tidak cocok.");
             return;
         }
-
+    
         try {
-            const response = await axios.post("/api/ganti", {
-                username: "username_anda",
+            // Retrieve user data from localStorage
+            const userData = localStorage.getItem("user"); // Replace "userData" with the actual key if different
+            let username = "";
+    
+            if (userData) {
+                const parsedData = JSON.parse(userData); // Parse the JSON string
+                username = parsedData.username; // Get the username
+            } else {
+                setMessage("User data tidak ditemukan di localStorage.");
+                return;
+            }
+    
+            console.log("Sending request with username:", username); // Debugging line
+    
+            // Proceed to change the password
+            const response = await axios.post("/api/users/ganti", {
+                username,
                 oldPassword,
                 newPassword,
             });
-
+    
             if (response.status === 200) {
                 setMessage("Password berhasil diubah!");
             } else {
@@ -62,6 +77,8 @@ const ChangePassword: React.FC = () => {
             setMessage(err.response?.data?.message || "Terjadi kesalahan.");
         }
     };
+    
+    
 
     return (
         <RootLayout>
@@ -116,7 +133,7 @@ const ChangePassword: React.FC = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full p-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+                        className="w-full p-2 bg-[#3781c7] text-white rounded hover:bg-[#2a5a8c]"
                     >
                         Ubah Password
                     </button>

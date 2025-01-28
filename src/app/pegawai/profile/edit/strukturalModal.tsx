@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";  
-import Select from "react-select";  
   
+interface PelatihanStruktural {
+  no: number;
+  nama_diklat: string;
+  tanggal_mulai: string;
+  tanggal_selesai: string;
+  jumlah_jam: number;
+  no_sttp: string;
+  tanggal_sttp: string;
+  jabatan_penandatangan_sttp: string;
+  penyelenggara_diklat: string;
+  tempat_diklat: string;
+}
+
 interface Diklat {  
   no: number;  
   nama_diklat: string;  
@@ -15,14 +27,19 @@ interface Diklat {
 }  
   
 interface DiklatModalProps {  
-  isOpen: boolean;  
+  isOpen: boolean;
+  type: "add" | "edit" | "delete" | null;
+  modalType: "add" | "edit" | "delete" | null;
+  selectedData: PelatihanStruktural | null;  
   onClose: () => void;  
-  modalType: "add" | "edit" | "delete" | null;  
-  selectedData: Diklat | null;  
-  handleAdd: (newData: Diklat) => void;  
-  handleEdit: (updatedData: Diklat) => void;  
-  handleDelete: () => void;  
+  onAdd: (newData: PelatihanStruktural) => void;  
+  onEdit: (updatedData: PelatihanStruktural) => void;  
+  onDelete: () => void;  
+  handleAdd: (newData: PelatihanStruktural) => void;
+  handleEdit: (updatedData: PelatihanStruktural) => void;
+  handleDelete: () => void;
 }  
+  
   
 const DiklatModal: React.FC<DiklatModalProps> = ({  
   isOpen,  
