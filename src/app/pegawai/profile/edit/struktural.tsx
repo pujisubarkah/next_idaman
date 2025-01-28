@@ -5,10 +5,6 @@ import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";  
 import Modal from "./strukturalModal";
 
-
-
-  
-// Interface moved outside the component  
 interface PelatihanStruktural {  
   no: number;  
   kategori: string;  
@@ -45,10 +41,14 @@ const RiwayatPelatihanStruktural = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);  
   const [selectedData, setSelectedData] = useState<PelatihanStruktural | null>(null);  
-  const [error, setError] = useState<string | null>(null); // State untuk menyimpan pesan error  
-  
+  const [error, setError] = useState<string | null>(null);  
+  const [loading, setLoading] = useState<boolean>(false); // State untuk loading
+
   const formatTanggal = (tanggal: string): string => {  
     const date = new Date(tanggal);  
+    if (isNaN(date.getTime())) {
+      return "Invalid Date";
+    }
     const hari = date.getDate();  
     const bulan = bulanIndo[date.getMonth()];  
     const tahun = date.getFullYear();  
@@ -57,6 +57,7 @@ const RiwayatPelatihanStruktural = () => {
   };  
   
   const fetchRiwayatPelatihan = async (nip: string) => {  
+    setLoading(true); // Set loading true saat fetch data
     try {  
       const response = await axios.get(`/api/riwayat/diklat?diklat_jenis=1&peg_id=${nip}`);  
       const sortedData = response.data.sort((a: any, b: any) => new Date(a.diklat_mulai).getTime() - new Date(b.diklat_mulai).getTime());  
@@ -77,11 +78,13 @@ const RiwayatPelatihanStruktural = () => {
       }));  
   
       setData(mappedData);  
-      setError(null); // Reset error jika berhasil  
+      setError(null);  
     } catch (error) {  
       console.error("Error fetching data:", error);  
-      setError("Gagal mengambil data. Silakan coba lagi."); // Set pesan error  
-    }  
+      setError("Gagal mengambil data. Silakan coba lagi.");  
+    } finally {
+      setLoading(false); // Set loading false setelah fetch selesai
+    }
   };  
   
   useEffect(() => {  
@@ -143,6 +146,11 @@ const RiwayatPelatihanStruktural = () => {
     setSelectedData(data);  
     setIsModalOpen(true);  
   };  
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedData(null);
+  };
   
   return (  
     <div id="pelatihan-struktural" className="p-8">  
@@ -150,7 +158,7 @@ const RiwayatPelatihanStruktural = () => {
         Riwayat Pelatihan Struktural  
       </h3>  
   
-      {error && <div className="text-red-500 text-center mb-4">{error}</div>} {/* Menampilkan pesan error */}  
+      {error && <div className="text-red-500 text-center mb-4">{error}</div>}  
   
       <div className="flex justify-end mb-4">  
         <button  
@@ -160,86 +168,91 @@ const RiwayatPelatihanStruktural = () => {
           <FontAwesomeIcon icon={faPlus} /> Tambah  
         </button>  
       </div>  
-  
-      <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">  
-        <thead className="bg-[#3781c7] text-white">  
-          <tr className="text-sm uppercase">  
-            <th className="p-3 border border-[#f2bd1d]">No</th>  
-            <th className="p-3 border border-[#f2bd1d]">Kategori</th>  
-            <th className="p-3 border border-[#f2bd1d]">Nama</th>  
-            <th className="p-3 border border-[#f2bd1d]">Tanggal Mulai</th>  
-            <th className="p-3 border border-[#f2bd1d]">Tanggal Selesai</th>  
-            <th className="p-3 border border-[#f2bd1d]">Jumlah Jam</th>  
-            <th className="p-3 border border-[#f2bd1d]">No STTP</th>  
-            <th className="p-3 border border-[#f2bd1d]">Tanggal STTP</th>  
-            <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan STTP</th>  
-            <th className="p-3 border border-[#f2bd1d]">Instansi</th>  
-            <th className="p-3 border border-[#f2bd1d]">Lokasi</th>  
-            <th className="p-3 border border-[#f2bd1d]">Pilihan</th>  
-          </tr>  
-        </thead>  
-  
-        <tbody>  
-          {data.length === 0 ? (  
-            <tr>  
-              <td colSpan={12} className="text-center p-4">  
-                Tidak ada data.  
-              </td>  
+
+      {loading ? (
+        <div className="text-center">Memuat data...</div>
+      ) : (
+        <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">  
+          <thead className="bg-[#3781c7] text-white">  
+            <tr className="text-sm uppercase">  
+              <th className="p-3 border border-[#f2bd1d]">No</th>  
+              <th className="p-3 border border-[#f2bd1d]">Kategori</th>  
+              <th className="p-3 border border-[#f2bd1d]">Nama</th>  
+              <th className="p-3 border border-[#f2bd1d]">Tanggal Mulai</th>  
+              <th className="p-3 border border-[#f2bd1d]">Tanggal Selesai</th>  
+              <th className="p-3 border border-[#f2bd1d]">Jumlah Jam</th>  
+              <th className="p-3 border border-[#f2bd1d]">No STTP</th>  
+              <th className="p-3 border border-[#f2bd1d]">Tanggal STTP</th>  
+              <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan STTP</th>  
+              <th className="p-3 border border-[#f2bd1d]">Instansi</th>  
+              <th className="p-3 border border-[#f2bd1d]">Lokasi</th>  
+              <th className="p-3 border border-[#f2bd1d]">Pilihan</th>  
             </tr>  
-          ) : (  
-            data.map((item, index) => (  
-              <tr  
-                key={index}  
-                className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}  
-              >  
-                <td className="p-3 border border-[#f2bd1d]">{item.no}</td>  
-                <td className="p-3 border border-[#f2bd1d]">  
-                  {item.kategori} ({item.kategoriParent})  
-                </td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.nama}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.tanggalMulai}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.tanggalSelesai}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.jumlahJam}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.nomorSTTP}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.tanggalSTTP}</td>  
-                <td className="p-3 border border-[#f2bd1d]">  
-                  {item.jabatanPenandatangan}  
-                </td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.instansi}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.lokasi}</td>  
-                <td className="p-3 border border-[#f2bd1d]">  
-                  <div className="flex space-x-4">  
-                    <button  
-                      className="text-green-500 hover:text-green-700"  
-                      aria-label="Edit"  
-                      onClick={() => openModal("edit", item)}  
-                    >  
-                      <FontAwesomeIcon icon={faEdit} /> Edit  
-                    </button>  
-                    <button  
-                      className="text-red-500 hover:text-red-700"  
-                      aria-label="Delete"  
-                      onClick={() => openModal("delete", item)}  
-                    >  
-                      <FontAwesomeIcon icon={faTrash} /> Delete  
-                    </button>  
-                  </div>  
+          </thead>  
+  
+          <tbody>  
+            {data.length === 0 ? (  
+              <tr>  
+                <td colSpan={12} className="text-center p-4">  
+                  Tidak ada data.  
                 </td>  
               </tr>  
-            ))  
-          )}  
-        </tbody>  
-      </table>  
-      {isModalOpen && (  
-        <Modal  
-          isOpen={isModalOpen}  
-          type={modalType}  
-          selectedData={selectedData}  
-          onClose={() => setIsModalOpen(false)}  
-          onAdd={handleAdd}  
-          onEdit={handleEdit}  
-          onDelete={handleDelete}  
-        />  
+            ) : (  
+              data.map((item, index) => (  
+                <tr  
+                  key={index}  
+                  className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}  
+                >  
+                  <td className="p-3 border border-[#f2bd1d]">{item.no}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">  
+                    {item.kategori} ({item.kategoriParent})  
+                  </td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.nama}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.tanggalMulai}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.tanggalSelesai}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.jumlahJam}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.nomorSTTP}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.tanggalSTTP}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">  
+                    {item.jabatanPenandatangan}  
+                  </td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.instansi}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.lokasi}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">  
+                    <div className="flex space-x-4">  
+                      <button  
+                        className="text-green-500 hover:text-green-700"  
+                        aria-label="Edit"  
+                        onClick={() => openModal("edit", item)}  
+                      >  
+                        <FontAwesomeIcon icon={faEdit} /> Edit  
+                      </button>  
+                      <button  
+                        className="text-red-500 hover:text-red-700"  
+                        aria-label="Delete"  
+                        onClick={() => openModal("delete", item)}  
+                      >  
+                        <FontAwesomeIcon icon={faTrash} /> Delete  
+                      </button>  
+                    </div>  
+                  </td>  
+                </tr>  
+              ))  
+            )}  
+          </tbody>  
+        </table>  
+      )}  
+      {isModalOpen && (
+        <Modal
+          type={modalType}
+          data={selectedData}
+          onClose={closeModal}
+          onDelete={handleDelete}
+          onSubmit={() => {
+            fetchRiwayatPelatihan(nip!);
+            closeModal();
+          }}
+        />
       )}  
     </div>  
   );  
