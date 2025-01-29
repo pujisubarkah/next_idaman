@@ -3,22 +3,25 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";  
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";  
 import axios from "axios";  
-import Modal from "./strukturalModal";
+import Modal from "./strukturalModal"; // Ensure this path is correct
 
-interface PelatihanStruktural {  
-  no: number;  
-  kategori: string;  
-  kategoriParent: string;  
-  nama: string;  
-  tanggalMulai: string;  
-  tanggalSelesai: string;  
-  jumlahJam: string;  
-  nomorSTTP: string;  
-  tanggalSTTP: string;  
-  jabatanPenandatangan: string;  
-  instansi: string;  
-  lokasi: string;  
-}  
+interface PelatihanStruktural {
+  no: number;
+  kategori: string;
+  kategoriParent: string;
+  nama: string;
+  tanggalMulai: string;
+  tanggalSelesai: string;
+  jumlahJam: string;
+  no_sttp: string;
+  tanggalSTTP: string;
+  jabatanPenandatangan: string;
+  instansi: string;
+  lokasi: string;
+  tempat_diklat: string;
+  penyelenggara_diklat: string;
+  nama_diklat: string;
+}
   
 const bulanIndo = [  
   "Januari",  
@@ -70,7 +73,7 @@ const RiwayatPelatihanStruktural = () => {
         tanggalMulai: formatTanggal(item.diklat_mulai),  
         tanggalSelesai: formatTanggal(item.diklat_selesai),  
         jumlahJam: item.diklat_jumlah_jam,  
-        nomorSTTP: item.diklat_sttp_no,  
+        no_sttp: item.diklat_sttp_no,  
         tanggalSTTP: formatTanggal(item.diklat_sttp_tgl),  
         jabatanPenandatangan: item.diklat_sttp_pej,  
         instansi: item.diklat_penyelenggara,  
@@ -78,13 +81,12 @@ const RiwayatPelatihanStruktural = () => {
       }));  
   
       setData(mappedData);  
-      setError(null);  
-    } catch (error) {  
+      setError(null); } catch (error) {  
       console.error("Error fetching data:", error);  
       setError("Gagal mengambil data. Silakan coba lagi.");  
-    } finally {
-      setLoading(false); // Set loading false setelah fetch selesai
-    }
+    } finally {  
+      setLoading(false); // Set loading false setelah fetch selesai  
+    }  
   };  
   
   useEffect(() => {  
@@ -98,7 +100,7 @@ const RiwayatPelatihanStruktural = () => {
     }  
   }, []);  
   
-  const handleAdd = async (newData: PelatihanStruktural) => {  
+  const handleAdd = async (newData: PelatihanStruktural): Promise<void> => {  
     try {  
       await axios.post("/api/riwayat/diklat", {  
         ...newData,  
@@ -106,7 +108,7 @@ const RiwayatPelatihanStruktural = () => {
         diklat_jenis: 1,  
       });  
       fetchRiwayatPelatihan(nip!);  
-      setIsModalOpen(false);  
+      closeModal();  
     } catch (error) {  
       console.error("Error adding data:", error);  
       setError("Gagal menambahkan data.");  
@@ -121,7 +123,7 @@ const RiwayatPelatihanStruktural = () => {
         diklat_jenis: 1,  
       });  
       fetchRiwayatPelatihan(nip!);  
-      setIsModalOpen(false);  
+      closeModal();  
     } catch (error) {  
       console.error("Error editing data:", error);  
       setError("Gagal mengedit data.");  
@@ -133,7 +135,7 @@ const RiwayatPelatihanStruktural = () => {
       try {  
         await axios.delete(`/api/riwayat/diklat/${selectedData.no}`);  
         fetchRiwayatPelatihan(nip!);  
-        setIsModalOpen(false);  
+        closeModal();  
       } catch (error) {  
         console.error("Error deleting data:", error);  
         setError("Gagal menghapus data.");  
@@ -146,11 +148,11 @@ const RiwayatPelatihanStruktural = () => {
     setSelectedData(data);  
     setIsModalOpen(true);  
   };  
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedData(null);
-  };
+  
+  const closeModal = async (): Promise<void> => {  
+    setIsModalOpen(false);  
+    setSelectedData(null);  
+  };  
   
   return (  
     <div id="pelatihan-struktural" className="p-8">  
@@ -168,10 +170,10 @@ const RiwayatPelatihanStruktural = () => {
           <FontAwesomeIcon icon={faPlus} /> Tambah  
         </button>  
       </div>  
-
-      {loading ? (
-        <div className="text-center">Memuat data...</div>
-      ) : (
+  
+      {loading ? (  
+        <div className="text-center">Memuat data...</div>  
+      ) : (  
         <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">  
           <thead className="bg-[#3781c7] text-white">  
             <tr className="text-sm uppercase">  
@@ -182,8 +184,7 @@ const RiwayatPelatihanStruktural = () => {
               <th className="p-3 border border-[#f2bd1d]">Tanggal Selesai</th>  
               <th className="p-3 border border-[#f2bd1d]">Jumlah Jam</th>  
               <th className="p-3 border border-[#f2bd1d]">No STTP</th>  
-              <th className="p-3 border border-[#f2bd1d]">Tanggal STTP</th>  
-              <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan STTP</th>  
+              <th className="p-3 border border-[#f2bd1d]">Tanggal STTP</th> <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan STTP</th>  
               <th className="p-3 border border-[#f2bd1d]">Instansi</th>  
               <th className="p-3 border border-[#f2bd1d]">Lokasi</th>  
               <th className="p-3 border border-[#f2bd1d]">Pilihan</th>  
@@ -211,7 +212,7 @@ const RiwayatPelatihanStruktural = () => {
                   <td className="p-3 border border-[#f2bd1d]">{item.tanggalMulai}</td>  
                   <td className="p-3 border border-[#f2bd1d]">{item.tanggalSelesai}</td>  
                   <td className="p-3 border border-[#f2bd1d]">{item.jumlahJam}</td>  
-                  <td className="p-3 border border-[#f2bd1d]">{item.nomorSTTP}</td>  
+                  <td className="p-3 border border-[#f2bd1d]">{item.no_sttp}</td>  
                   <td className="p-3 border border-[#f2bd1d]">{item.tanggalSTTP}</td>  
                   <td className="p-3 border border-[#f2bd1d]">  
                     {item.jabatanPenandatangan}  
@@ -242,17 +243,17 @@ const RiwayatPelatihanStruktural = () => {
           </tbody>  
         </table>  
       )}  
-      {isModalOpen && (
-        <Modal
-          type={modalType}
-          data={selectedData}
+      {isModalOpen && (  
+        <Modal  
+          isOpen={isModalOpen}
+          modalType={modalType}
+          selectedData={selectedData}
           onClose={closeModal}
-          onDelete={handleDelete}
-          onSubmit={() => {
-            fetchRiwayatPelatihan(nip!);
-            closeModal();
-          }}
-        />
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={handleDelete} type={null} data={null} onSubmit={function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          } }        />  
       )}  
     </div>  
   );  

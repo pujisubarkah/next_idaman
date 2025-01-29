@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";  
 import Select from "react-select";
 
-  
 interface Pendidikan {  
   no: number;  
   tingpend: string;  
@@ -22,6 +21,12 @@ interface Jurusan {
   jurusan_id: number;  
   jurusan_nm: string;  
 }  
+
+interface Universitas {
+  univ_id: number;
+  univ_nmpti: string;
+  univ_kota: string;
+}
   
 interface PendidikanModalProps {  
   isOpen: boolean;  
@@ -30,6 +35,7 @@ interface PendidikanModalProps {
   selectedData: Pendidikan | null;  
   tingkatPendidikanOptions: TingkatPendidikan[];  
   jurusanOptions: Jurusan[];  
+  universitasOptions: Universitas[];
   handleAdd: (newData: Pendidikan) => void;  
   handleEdit: (updatedData: Pendidikan) => void;  
   handleDelete: () => void;  
@@ -41,7 +47,8 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
   modalType,  
   selectedData,  
   tingkatPendidikanOptions,  
-  jurusanOptions,  
+  jurusanOptions, 
+  universitasOptions, 
   handleAdd,  
   handleEdit,  
   handleDelete,  
@@ -56,13 +63,20 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
     riw_pendidikan_nm: "",  
     riw_pendidikan_lokasi: "",  
   });  
-  
+
+  const [selectedUniversity, setSelectedUniversity] = useState<{ univ_nmpti: string; univ_kota: string } | null>(null);
+
   useEffect(() => {  
     if (selectedData) {  
       setFormData(selectedData);  
+      // Set selected university based on selectedData if available
+      const university = universitasOptions.find(univ => univ.univ_nmpti === selectedData.riw_pendidikan_nm);
+      if (university) {
+        setSelectedUniversity({ univ_nmpti: university.univ_nmpti, univ_kota: university.univ_kota });
+      }
     }  
-  }, [selectedData]);  
-  
+  }, [selectedData, universitasOptions]);  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {  
     const { name, value } = e.target;  
     setFormData({  
@@ -73,15 +87,24 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
 
   const handleSelectChange = (
     selectedOption: { value: string; label: string } | null,
-    fieldName: "tingpend" | "jurusan"
+    fieldName: "tingpend" | "jurusan" | "univ_nmpti"
   ) => {
+    if (fieldName === "univ_nmpti" && selectedOption) {
+      const university = universitasOptions.find(univ => univ.univ_nmpti === selectedOption.value);
+      if (university) {
+        setSelectedUniversity({ univ_nmpti: university.univ_nmpti, univ_kota: university.univ_kota });
+        setFormData({
+          ...formData,
+          riw_pendidikan_lokasi: university.univ_kota, // Automatically set the location
+        });
+      }
+    }
     setFormData({
       ...formData,
       [fieldName]: selectedOption ? selectedOption.value : "",
     });
   };
 
-  
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {  
     e.preventDefault();  
     if (modalType === "add") {  
@@ -91,6 +114,16 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
     }  
   };  
   
+  const isHigherThanSLTA = () => {
+    const higherLevels = ["D1", "D2", "D3", 'D4', "S1", "S2", "S3"];
+    return higherLevels.includes(formData.tingpend);
+  };
+
+  const isBasicEducation = () => {
+    const basicLevels = ["SD", "SLTP", "SLTA"];
+    return basicLevels.includes(formData.tingpend);
+  };
+
   return (  
     isOpen && (  
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">  
@@ -144,41 +177,65 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
                   isClearable
                 />
               </div>
-              <div className="mb-4">
-                <label className="block font-medium">Jurusan</label>
-                <Select
-                  name="jurusan"
-                  options={jurusanOptions.map((option) => ({
-                    value: option.jurusan_nm,
-                    label: option.jurusan_nm,
-                  }))}
-                  value={
-                    formData.jurusan
-                      ? {
-                          value: formData.jurusan,
-                          label: formData.jurusan,
-                        }
-                      : null
-                  }
-                  onChange={(selectedOption) =>
-                    handleSelectChange(selectedOption, "jurusan")
-                  }
-                  isClearable
-                />
-              </div>
+
               <div className="mb-4">  
-                <label className="block font-medium">Nama Sekolah</label>  
-                <input  
-                  type="text"  
-                  name="riw_pendidikan_nm"  
-                  className="border p-2 w-full"  
-                  value={formData.riw_pendidikan_nm}  
-                  onChange={handleChange}  
-                  required  
-                />  
+                <label className="block font-medium">
+                  {isHigherThanSLTA() ? "Nama Perguruan Tinggi" : "Nama Sekolah"}
+                </label>  
+                {isHigherThanSLTA() ? (
+                  <Select
+                    name="univ_nmpti"
+                    options={universitasOptions.map((option) => ({
+                      value: option.univ_nmpti,
+                      label: option.univ_nmpti,
+                    }))}
+                    value={selectedUniversity ? { value: selectedUniversity.univ_nmpti, label: selectedUniversity.univ_nmpti } : null}
+                    onChange={(selectedOption) =>
+                      handleSelectChange(selectedOption, "univ_nmpti")
+                    }
+                    isClearable
+                  />
+                ) : (
+                  <input  
+                    type="text"  
+                    name="riw_pendidikan_nm"  
+                    className="border p-2 w-full"  
+                    value={formData.riw_pendidikan_nm}  
+                    onChange={handleChange}  
+                    required  
+                  />  
+                )}
               </div>  
+             
+              {!isBasicEducation() && ( // Only show Jurusan if not basic education
+                <div className="mb-4">
+                  <label className="block font-medium">Jurusan</label>
+                  <Select
+                    name="jurusan"
+                    options={jurusanOptions.map((option) => ({
+                      value: option.jurusan_nm,
+                      label: option.jurusan_nm,
+                    }))}
+                    value={
+                      formData.jurusan
+                        ? {
+                            value: formData.jurusan,
+                            label: formData.jurusan,
+                          }
+                        : null
+                    }
+                    onChange={(selectedOption) =>
+                      handleSelectChange(selectedOption, "jurusan")
+                    }
+                    isClearable
+                  />
+                </div>
+              )}
+
               <div className="mb-4">  
-                <label className="block font-medium">Lokasi Sekolah</label>  
+                <label className="block font-medium">
+                  Lokasi Perguruan Tinggi
+                </label>  
                 <input  
                   type="text"  
                   name="riw_pendidikan_lokasi"  
@@ -244,4 +301,4 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
   );  
 };  
   
-export default PendidikanModal;  
+export default PendidikanModal;

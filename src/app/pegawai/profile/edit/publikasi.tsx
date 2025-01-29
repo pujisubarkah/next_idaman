@@ -28,7 +28,7 @@ const Riwayatpublikasi = () => {
     Linkpublikasi: "",
   });
 
-  const fetchRiwayatCuti = async (nip: string) => {
+  const fetchRiwayatPublikasi = async (nip: string) => {
     try {
       const response = await axios.get(`/api/kinerja/publikasi?peg_id=${nip}`);
       const mappedData = response.data.map((item: any, index: number) => ({
@@ -56,7 +56,7 @@ const Riwayatpublikasi = () => {
 
   useEffect(() => {
     if (nip) {
-      fetchRiwayatCuti(nip);
+      fetchRiwayatPublikasi(nip);
     }
   }, [nip]);
 
@@ -85,7 +85,7 @@ const Riwayatpublikasi = () => {
       } else {
         await axios.post(`/api/kinerja/publikasi`, payload);
       }
-      fetchRiwayatCuti(nip!);
+      fetchRiwayatPublikasi(nip!);
       closeModal();
     } catch (error) {
       console.error("Error saving data:", error.response?.data || error.message);
@@ -102,7 +102,7 @@ const Riwayatpublikasi = () => {
     if (confirmDelete) {
       try {
         await axios.delete(`/api/kinerja/publikasi/${publikasi_id}`); // Use the correct endpoint
-        fetchRiwayatCuti(nip!);
+        fetchRiwayatPublikasi(nip!);
       } catch (error) {
         console.error("Error deleting publication:", error);
       }

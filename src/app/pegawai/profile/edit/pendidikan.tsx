@@ -26,6 +26,12 @@ interface Jurusan {
   jurusan_id: number;  
   jurusan_nm: string;  
 }  
+
+interface Universitas {  
+  univ_id: number;  
+  univ_nmpti: string;
+  univ_kota: string;  
+}
   
 const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {  
   const [dataPendidikan, setDataPendidikan] = useState<Pendidikan[]>([]);  
@@ -34,7 +40,8 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
   const [modalType, setModalType] = useState<"add" | "edit" | "delete" | null>(null);  
   const [selectedData, setSelectedData] = useState<Pendidikan | null>(null);  
   const [tingkatPendidikanOptions, setTingkatPendidikanOptions] = useState<TingkatPendidikan[]>([]);  
-  const [jurusanOptions, setJurusanOptions] = useState<Jurusan[]>([]);  
+  const [jurusanOptions, setJurusanOptions] = useState<Jurusan[]>([]); 
+  const [universitasOptions, setUniversitasOptions] = useState<Universitas[]>([]); 
   
   const formatTanggal = (tanggal: string): string => {  
     const bulanIndo = [  
@@ -96,10 +103,21 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
         console.error('Error fetching data:', error);  
       }  
     };  
-  
+
+   const fetchUniversitas = async () => {  
+      try {  
+        const response = await axios.get('/api/master_data/universitas');  
+        const data = response.data;  
+        setUniversitasOptions(data);  
+      } catch (error) {  
+        console.error('Error fetching data:', error);  
+      }  
+    };  
+    
     fetchRiwayatPendidikan(nip);  
     fetchTingkatPendidikan();  
     fetchJurusan();  
+    fetchUniversitas();
   }, [nip]);  
   
   const openModal = (type: "add" | "edit" | "delete", data: Pendidikan | null = null) => {  
@@ -248,6 +266,7 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
           selectedData={selectedData}  
           tingkatPendidikanOptions={tingkatPendidikanOptions}  
           jurusanOptions={jurusanOptions}  
+          universitasOptions={universitasOptions}
           handleAdd={handleAdd}  
           handleEdit={handleEdit}  
           handleDelete={handleDelete}  
