@@ -24,7 +24,7 @@ const Riwayatpublikasi = () => {
     judul: "",
     penerbit: "",
     Tahunterbit: "",
-    Levelpenerbit: "Nasional",
+    Levelpenerbit: "",
     Linkpublikasi: "",
   });
 
@@ -222,8 +222,8 @@ const Riwayatpublikasi = () => {
                     <input
                       type="radio"
                       name="Levelpenerbit"
-                      value="Nasional"
-                      checked={formData.Levelpenerbit === "Nasional"}
+                      value="nasional"
+                      checked={formData.Levelpenerbit === "nasional"}
                       onChange={handleChange}
                     />
                     Nasional
@@ -232,8 +232,8 @@ const Riwayatpublikasi = () => {
                     <input
                       type="radio"
                       name="Levelpenerbit"
-                      value="Internasional"
-                      checked={formData.Levelpenerbit === "Internasional"}
+                      value="internasional"
+                      checked={formData.Levelpenerbit === "internasional"}
                       onChange={handleChange}
                     />
                     Internasional
