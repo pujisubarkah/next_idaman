@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";  
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";  
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";  
-  
+import Select from "react-select"; // Import React Select
+import Modal from "react-modal"; // Import Modal
+
 const RiwayatPelatihanNonKlasikal = () => {  
   interface DataPelatihanNonKlasikal {  
     no: number;  
@@ -18,7 +20,9 @@ const RiwayatPelatihanNonKlasikal = () => {
   
   const [data, setData] = useState<DataPelatihanNonKlasikal[]>([]);  
   const [nip, setNip] = useState<string | null>(null);  
-  
+  const [modalIsOpen, setModalIsOpen] = useState(false);  
+  const [formData, setFormData] = useState<DataPelatihanNonKlasikal | null>(null); // State for form data
+
   // Fungsi untuk memformat tanggal  
   const formatTanggal = (tanggal: string) => {  
     const bulanIndo = [  
@@ -79,7 +83,80 @@ const RiwayatPelatihanNonKlasikal = () => {
       fetchRiwayatPelatihanNonKlasikal(nip);  
     }  
   }, [nip]);  
-  
+
+  // Fungsi untuk membuka modal
+  const openModal = () => {
+    setFormData({
+      no: 0,
+      jenis: "",
+      nama: "",
+      tanggalMulai: "",
+      tanggalSelesai: "",
+      nomorsurat: "",
+      instansi: "",
+      jumlahJam: "",
+    });
+    setModalIsOpen(true);
+  };
+
+  // Fungsi untuk menutup modal
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setFormData(null); // Reset form data
+  };
+
+  // Fungsi untuk menangani perubahan input
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (formData) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  // Fungsi untuk menangani perubahan dropdown
+  const handleSelectChange = (selectedOption: any) => {
+    if (formData) {
+      setFormData({
+        ...formData,
+        jenis: selectedOption.value,
+      });
+    }
+  };
+
+  // Fungsi untuk menangani submit form
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (formData) {
+        const response = await axios.post("/api/riwayat/pelatihan_non_klasikal", formData);
+        if (response.status === 200) {
+          closeModal();
+          fetchRiwayatPelatihanNonKlasikal(nip!); // Refresh data
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
+
+  // Options for React Select
+  const jenisPelatihanOptions = [
+    { value: "Coaching", label: "Coaching" },
+    { value: "Mentoring", label: "Mentoring" },
+    { value: "E-Learning", label: "E-Learning" },
+    { value: "Pelatihan Jarak Jauh", label: "Pelatihan Jarak Jauh" },
+    { value: "Detasering/Secondment", label: "Detasering/Secondment" },
+    { value: "Pembelajaran Alam Terbuka (outbound)", label: "Pembelajaran Alam Terbuka (outbound)" },
+    { value: "Patok Banding (benchmarking)", label: "Patok Banding (benchmarking)" },
+    { value: "Pertukaran PNS dengan pegawai Swasta/BUMN/BUMD", label: "Pertukaran PNS dengan pegawai Swasta/BUMN/BUMD" },
+    { value: "Belajar Mandiri", label: "Belajar Mandiri" },
+    { value: "Komunitas Belajar", label: "Komunitas Belajar" },
+    { value: "Magang/Praktek Kerja", label: "Magang/Praktek Kerja" },
+  ];
+
   return (  
     <div id="pelatihan-non-klasikal" className="p-8">  
       <h3 className="text-center text-xl font-semibold mb-8 text-[#3781c7]">  
@@ -87,7 +164,10 @@ const RiwayatPelatihanNonKlasikal = () => {
       </h3>  
   
       <div className="flex justify-end mb-4">  
-        <button className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]">  
+        <button  
+          className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
+          onClick={openModal} // Open modal for adding new entry
+        >  
           <FontAwesomeIcon icon={faPlus} className="inline-block mr-2" /> Tambah  
         </button>  
       </div>  
@@ -149,8 +229,129 @@ const RiwayatPelatihanNonKlasikal = () => {
           )}  
         </tbody>  
       </table>  
+
+      {/* Modal for Add/Edit */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Tambah Pelatihan Non Klasikal"
+        className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
+        overlayClassName="modal-overlay"
+        style={{
+          content: {
+            width: "80%",
+            maxWidth: "600px",
+            maxHeight: "70vh",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "8px",
+            backgroundColor: "#fff",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+            overflowY: "auto",
+          },
+        }}
+      >
+        <div className="bg-white rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4">Tambah Pelatihan Non Klasikal</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Jenis Pelatihan</label>
+                <Select
+                  options={jenisPelatihanOptions}
+                  onChange={handleSelectChange}
+                  className="flex-1"
+                  placeholder="Pilih Jenis Pelatihan"
+                  value={formData ? jenisPelatihanOptions.find(option => option.value === formData.jenis) : null}
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Nama Pelatihan</label>
+                <input
+                  type="text"
+                  name="nama"
+                  value={formData?.nama || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Tanggal Mulai</label>
+                <input
+                  type="date"
+                  name="tanggalMulai"
+                  value={formData?.tanggalMulai || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Tanggal Selesai</label>
+                <input
+                  type="date"
+                  name="tanggalSelesai"
+                  value={formData?.tanggalSelesai || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Nomor Sertifikat/Surat Tugas</label>
+                <input
+                  type="text"
+                  name="nomorsurat"
+                  value={formData?.nomorsurat || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Instansi Penyelenggara</label>
+                <input
+                  type="text"
+                  name="instansi"
+                  value={formData?.instansi || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">Jumlah Jam</label>
+                <input
+                  type="number"
+                  name="jumlahJam"
+                  value={formData?.jumlahJam || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                type="button"
+                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2"
+                onClick={closeModal}
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>  
   );  
 };  
   
-export default RiwayatPelatihanNonKlasikal;  
+export default RiwayatPelatihanNonKlasikal;
