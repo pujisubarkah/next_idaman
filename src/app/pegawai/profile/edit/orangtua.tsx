@@ -119,7 +119,7 @@ const DataOrtu = () => {
         is_asn_satu_instansi: formData.isASNSatuInstansi,
         riw_pendidikan: formData.pendidikan,  
         riw_pekerjaan: formData.pekerjaan,
-        riw_status: 2,
+        riw_status: 3,
       };  
   
       console.log("Request Body:", payload);  
