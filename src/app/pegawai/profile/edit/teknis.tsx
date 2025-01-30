@@ -14,9 +14,13 @@ const RiwayatPelatihanTeknis = () => {
     tanggalMulai: string;  
     tanggalSelesai: string;  
     jumlahJam: number;  
-    jabatanPenandatangan: string;  
-    instansi: string;  
-    lokasi: string;  
+    noSttp: string;  
+    tanggalSttp: string;  
+    jabatanPenandatanganSttp: string;  
+    penyelenggaraDiklat: string;  
+    tempatDiklat: string;  
+    fileDiklatTeknis: File | null;  
+    fileRencanaTindakLanjut: File | null;  
   }  
 
   const [data, setData] = useState<PelatihanTeknis[]>([]);  
@@ -68,9 +72,13 @@ const RiwayatPelatihanTeknis = () => {
           tanggalMulai: formatTanggal(item.diklat_mulai),  
           tanggalSelesai: formatTanggal(item.diklat_selesai),  
           jumlahJam: item.diklat_jumlah_jam,  
-          jabatanPenandatangan: item.diklat_sttp_pej || "Tidak Ada",  
-          instansi: item.diklat_penyelenggara,  
-          lokasi: item.diklat_tempat,  
+          noSttp: item.diklat_sttp_no || "",  
+          tanggalSttp: item.diklat_sttp_tgl || "",  
+          jabatanPenandatanganSttp: item.diklat_sttp_pej || "",  
+          penyelenggaraDiklat: item.diklat_penyelenggara,  
+          tempatDiklat: item.diklat_tempat,  
+          fileDiklatTeknis: null,  
+          fileRencanaTindakLanjut: null,  
         })  
       );  
 
@@ -104,7 +112,7 @@ const RiwayatPelatihanTeknis = () => {
   };
 
   // Fungsi untuk menangani perubahan input
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (formData) {
       setFormData({
@@ -114,17 +122,55 @@ const RiwayatPelatihanTeknis = () => {
     }
   };
 
+  // Fungsi untuk menangani perubahan file
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, files } = e.target;
+    if (formData && files && files.length > 0) {
+      setFormData({
+        ...formData,
+        [name]: files[0],
+      });
+    }
+  };
+
   // Fungsi untuk menangani submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (formData) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("no", formData.no.toString());
+        formDataToSend.append("kategori", formData.kategori);
+        formDataToSend.append("nama", formData.nama);
+        formDataToSend.append("tanggalMulai", formData.tanggalMulai);
+        formDataToSend.append("tanggalSelesai", formData.tanggalSelesai);
+        formDataToSend.append("jumlahJam", formData.jumlahJam.toString());
+        formDataToSend.append("noSttp", formData.noSttp);
+        formDataToSend.append("tanggalSttp", formData.tanggalSttp);
+        formDataToSend.append("jabatanPenandatanganSttp", formData.jabatanPenandatanganSttp);
+        formDataToSend.append("penyelenggaraDiklat", formData.penyelenggaraDiklat);
+        formDataToSend.append("tempatDiklat", formData.tempatDiklat);
+        if (formData.fileDiklatTeknis) {
+          formDataToSend.append("fileDiklatTeknis", formData.fileDiklatTeknis);
+        }
+        if (formData.fileRencanaTindakLanjut) {
+          formDataToSend.append("fileRencanaTindakLanjut", formData.fileRencanaTindakLanjut);
+        }
+
         if (formData.no) {
           // Edit existing entry
-          await axios.put(`/api/riwayat/diklat/${formData.no}`, formData);
+          await axios.put(`/api/riwayat/diklat/${formData.no}`, formDataToSend, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
         } else {
           // Add new entry
-          await axios.post("/api/riwayat/diklat", formData);
+          await axios.post("/api/riwayat/diklat", formDataToSend, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
         }
         closeModal();
         fetchRiwayatPelatihan(nip!); // Refresh data
@@ -158,8 +204,10 @@ const RiwayatPelatihanTeknis = () => {
             <th className="p-3 border border-[#f2bd1d]">Tanggal Mulai</th>  
             <th className="p-3 border border-[#f2bd1d]">Tanggal Selesai</th>  
             <th className="p-3 border border-[#f2bd1d]">Jumlah Jam</th>  
-            <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan</th>  
-            <th className="p-3 border border-[#f2bd1d]">Instansi Penyelenggara</th>  
+            <th className="p-3 border border-[#f2bd1d]">No. STTP</th>  
+            <th className="p-3 border border-[#f2bd1d]">Tanggal STTP</th>  
+            <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan STTP</th>  
+            <th className="p-3 border border-[#f2bd1d]">Penyelenggara Diklat</th>  
             <th className="p-3 border border-[#f2bd1d]">Lokasi</th>  
             <th className="p-3 border border-[#f2bd1d]">Pilihan</th>  
           </tr>  
@@ -167,7 +215,7 @@ const RiwayatPelatihanTeknis = () => {
         <tbody>  
           {data.length === 0 ? (  
             <tr>  
-              <td colSpan={10} className="text-center p-4">  
+              <td colSpan={12} className="text-center p-4">  
                 Tidak ada data.  
               </td>  
             </tr>  
@@ -180,9 +228,11 @@ const RiwayatPelatihanTeknis = () => {
                 <td className="p-3 border border-[#f2bd1d]">{item.tanggalMulai}</td>  
                 <td className="p-3 border border-[#f2bd1d]">{item.tanggalSelesai}</td>  
                 <td className="p-3 border border-[#f2bd1d]">{item.jumlahJam}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.jabatanPenandatangan}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.instansi}</td>  
-                <td className="p-3 border border-[#f2bd1d]">{item.lokasi}</td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.noSttp}</td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.tanggalSttp}</td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.jabatanPenandatanganSttp}</td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.penyelenggaraDiklat}</td>  
+                <td className="p-3 border border-[#f2bd1d]">{item.tempatDiklat}</td>  
                 <td className="p-3 border border-[#f2bd1d]">  
                   <div className="flex space-x-4">  
                     <button 
@@ -205,72 +255,94 @@ const RiwayatPelatihanTeknis = () => {
 
       {/* Modal for Add/Edit */}
       <Modal
-  isOpen={modalIsOpen}
-  onRequestClose={closeModal}
-  contentLabel="Tambah/Edit Pelatihan Teknis"
-  className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
-  overlayClassName="modal-overlay"
-  style={{
-    content: {
-      width: "90%",
-      maxWidth: "800px",
-      maxHeight: "90vh",
-      margin: "auto",
-      padding: "20px",
-      borderRadius: "8px",
-      backgroundColor: "#fff",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      overflowY: "auto",
-    },
-  }}
->
-  <div className="bg-white rounded-lg p-6">
-    <h2 className="text-xl font-semibold mb-4">{formData ? "Edit" : "Tambah"} Pelatihan Teknis</h2>
-    <form onSubmit={handleSubmit}>
-      <div className="flex flex-col space-y-4">
-        {[
-          { label: "Kategori", name: "kategori", type: "text" },
-          { label: "Nama Pelatihan Teknis", name: "nama", type: "text" },
-          { label: "Tanggal Mulai", name: "tanggalMulai", type: "date" },
-          { label: "Tanggal Selesai", name: "tanggalSelesai", type: "date" },
-          { label: "Jumlah Jam", name: "jumlahJam", type: "number" },
-          { label: "Jabatan Penandatangan", name: "jabatanPenandatangan", type: "text" },
-          { label: "Instansi Penyelenggara", name: "instansi", type: "text" },
-          { label: "Lokasi", name: "lokasi", type: "text" },
-        ].map(({ label, name, type }) => (
-          <div key={name} className="flex items-center space-x-4">
-            <label className="block text-sm font-medium w-1/3">{label}</label>
-            <input
-              type={type}
-              name={name}
-              value={formData?.[name] || ""}
-              onChange={handleInputChange}
-              className="flex-1 p-2 border border-gray-300 rounded"
-              required
-            />
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-end mt-4">
-        <button
-          type="button"
-          className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2"
-          onClick={closeModal}
-        >
-          Batal
-        </button>
-        <button
-          type="submit"
-          className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
-        >
-          Simpan
-        </button>
-      </div>
-    </form>
-  </div>
-</Modal>
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Tambah/Edit Pelatihan Teknis"
+        className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
+        overlayClassName="modal-overlay"
+        style={{
+          content: {
+            width: "90%",
+            maxWidth: "800px",
+            maxHeight: "90vh",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "8px",
+            backgroundColor: "#fff",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+            overflowY: "auto",
+          },
+        }}
+      >
+        <div className="bg-white rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4">{formData ? "Edit" : "Tambah"} Pelatihan Teknis</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col space-y-4">
+              {[
+                { label: "Nama Diklat", name: "nama", type: "text" },
+                { label: "Nama Diklat Lainnya", name: "namaDiklatLainnya", type: "text", placeholder: "Masukkan disini, jika nama diklat tidak ada dalam daftar" },
+                { label: "Tanggal Mulai", name: "tanggalMulai", type: "date" },
+                { label: "Tanggal Selesai", name: "tanggalSelesai", type: "date" },
+                { label: "Jumlah Jam", name: "jumlahJam", type: "number" },
+                { label: "No. STTP", name: "noSttp", type: "text" },
+                { label: "Tanggal STTP", name: "tanggalSttp", type: "date" },
+                { label: "Jabatan Penandatangan STTP", name: "jabatanPenandatanganSttp", type: "text" },
+                { label: "Penyelenggara Diklat", name: "penyelenggaraDiklat", type: "text" },
+                { label: "Tempat Diklat", name: "tempatDiklat", type: "text" },
+              ].map(({ label, name, type, placeholder }) => (
+                <div key={name} className="flex items-center space-x-4">
+                  <label className="block text-sm font-medium w-1/3">{label}</label>
+                  <input
+                    type={type}
+                    name={name}
+                    value={formData?.[name] || ""}
+                    onChange={handleInputChange}
+                    className="flex-1 p-2 border border-gray-300 rounded"
+                    placeholder={placeholder}
+                    required
+                  />
+                </div>
+              ))}
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">File Diklat Teknis</label>
+                <input
+                  type="file"
+                  name="fileDiklatTeknis"
+                  onChange={handleFileChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                />
+              </div>
+              <div className="flex items-center space-x-4">
+                <label className="block text-sm font-medium w-1/3">File Rencana Tindak Lanjut</label>
+                <input
+                  type="file"
+                  name="fileRencanaTindakLanjut"
+                  onChange={handleFileChange}
+                  className="flex-1 p-2 border border-gray-300 rounded"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                type="button"
+                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2"
+                onClick={closeModal}
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>  
   );  
 };  
   
-export default RiwayatPelatihanTeknis;  
+export default RiwayatPelatihanTeknis;
+
