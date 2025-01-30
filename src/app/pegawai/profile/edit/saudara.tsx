@@ -7,7 +7,7 @@ import axios from "axios";
 const DataSaudaraLainnya = () => {  
   interface DataSaudara {  
     no: number;  
-    id?: number;
+    riw_id?: number;
     nik: string;  
     nip: string;
     namaSaudara: string;  
@@ -27,7 +27,7 @@ const DataSaudaraLainnya = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState<DataSaudara>({  
     no: 0,
-    id: undefined,
+    riw_id: 0,
     nik: "",  
     nip: "",
     namaSaudara: "",  
@@ -68,14 +68,14 @@ const DataSaudaraLainnya = () => {
   
   const fetchRiwayatSaudara = async (nip: string) => {  
     try {  
-      const response = await axios.get(`/api/riwayat?peg_id=${nip}&riw_status=2`);  
+      const response = await axios.get(`/api/riwayat/saudara?peg_id=${nip}`);  
       const sortedData = response.data.sort((a: any, b: any) =>  
         new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()  
       );  
   
       const mappedData = sortedData.map((item: any, index: number) => ({  
         no: index + 1, 
-        id: item.riw_id,  
+        riw_id: item.riw_id,  
         nik: item.nik,  
         nip: item.nip,
         namaSaudara: item.riw_nama,  
@@ -101,7 +101,7 @@ const DataSaudaraLainnya = () => {
       ...prevData,  
       [name]: value,  
     }));  
-  };  
+  };
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {  
     e.preventDefault();  
@@ -112,7 +112,7 @@ const DataSaudaraLainnya = () => {
         nip: formData.nip,
         riw_nama: formData.namaSaudara,  
         riw_ket: formData.hubungan,  
-        riw_kelamin: formData.jenisKelamin === "L" ? "Laki-laki" : "Perempuan",  
+        riw_kelamin: formData.jenisKelamin === "L" ? "L" : "P",  
         riw_tempat_lahir: formData.tempatLahir, 
         riw_tgl_lahir: formData.tanggalLahir,
         is_asn: formData.nip !== null && formData.nip !== "" ? true : false,
@@ -124,8 +124,8 @@ const DataSaudaraLainnya = () => {
   
       console.log("Request Body:", payload);  
   
-      if (formData.id) {  
-        await axios.put(`/api/riwayat/saudara/${formData.id}`, payload);  
+      if (formData.riw_id) {  
+        await axios.put(`/api/riwayat/saudara/${formData.riw_id}`, payload);  
       } else {  
         await axios.post(`/api/riwayat/saudara`, payload);  
       }  
@@ -139,12 +139,12 @@ const DataSaudaraLainnya = () => {
   const handleEdit = (saudara: DataSaudara) => {  
     setFormData({  
       no: saudara.no,
-      id: saudara.id,
+      riw_id: saudara.riw_id,
       nik: saudara.nik,
       nip: saudara.nip,
       namaSaudara: saudara.namaSaudara,
       hubungan: saudara.hubungan,
-      jenisKelamin: saudara.jenisKelamin  === "L" ? "Laki-laki" : "Perempuan",
+      jenisKelamin: saudara.jenisKelamin  === "L" ? "L" : "P",
       tempatLahir: saudara.tempatLahir, 
       tanggalLahir: new Date(saudara.tanggalLahir).toISOString().split("T")[0],
       isASN: saudara.isASN,
@@ -155,10 +155,10 @@ const DataSaudaraLainnya = () => {
     setIsEditModalOpen(true); // Open the edit modal  
   };  
   
-  const handleDelete = async (id: number) => {  
+  const handleDelete = async (riw_id: number) => {  
     if (confirm("Apakah anda yakin akan menghapus kontak ini?")) {  
       try {  
-        await axios.delete(`/api/riwayat/saudara/${id}`);  
+        await axios.delete(`/api/riwayat/saudara/${riw_id}`);  
         fetchRiwayatSaudara(nip!);  
       } catch (error) {  
         console.error("Error deleting contact:", error);  
@@ -169,7 +169,7 @@ const DataSaudaraLainnya = () => {
   const openAddModal = () => {  
     setIsAddModalOpen(true);  
     setFormData({ no: 0, 
-      id: undefined, 
+      riw_id: 0, 
       nik: "",  
       nip: "",
       namaSaudara: "",  
@@ -250,7 +250,7 @@ const DataSaudaraLainnya = () => {
                     >  
                       <FaEdit /> Edit  
                     </button>  
-                    <button onClick={() => handleDelete(item.id!)}
+                    <button onClick={() => handleDelete(item.riw_id!)}
                       className="text-red-500 hover:text-red-700"  
                       aria-label="Delete"  
                     >  
@@ -289,8 +289,7 @@ const DataSaudaraLainnya = () => {
                   name="nip"  
                   value={formData.nip}  
                   onChange={handleChange}  
-                  className="w-2/3 px-4 py-2 border rounded"  
-                  required  
+                  className="w-2/3 px-4 py-2 border rounded"   
                 />  
               </div>  
               <div className="mb-4 flex items-center">  
@@ -337,8 +336,8 @@ const DataSaudaraLainnya = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Laki-laki"  
-                      checked={formData.jenisKelamin === "Laki-laki"}  
+                      value="L"  
+                      checked={formData.jenisKelamin === "L"}  
                       onChange={handleChange}  
                     />  
                     Laki-laki  
@@ -347,8 +346,8 @@ const DataSaudaraLainnya = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Perempuan"  
-                      checked={formData.jenisKelamin === "Perempuan"}  
+                      value="P"  
+                      checked={formData.jenisKelamin === "P"}  
                       onChange={handleChange}  
                     />  
                     Perempuan  
@@ -486,8 +485,7 @@ const DataSaudaraLainnya = () => {
                   name="nip"  
                   value={formData.nip}  
                   onChange={handleChange}  
-                  className="w-2/3 px-4 py-2 border rounded"  
-                  required  
+                  className="w-2/3 px-4 py-2 border rounded"   
                 />  
               </div>  
               <div className="mb-4 flex items-center">  
@@ -534,8 +532,8 @@ const DataSaudaraLainnya = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Laki-laki"  
-                      checked={formData.jenisKelamin === "Laki-laki"}  
+                      value="L"  
+                      checked={formData.jenisKelamin === "L"}  
                       onChange={handleChange}  
                     />  
                     Laki-laki  
@@ -544,8 +542,8 @@ const DataSaudaraLainnya = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Perempuan"  
-                      checked={formData.jenisKelamin === "Perempuan"}  
+                      value="P"  
+                      checked={formData.jenisKelamin === "P"}  
                       onChange={handleChange}  
                     />  
                     Perempuan  
