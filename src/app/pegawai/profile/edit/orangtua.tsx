@@ -68,7 +68,7 @@ const DataOrtu = () => {
   
   const fetchRiwayatOrtu = async (nip: string) => {  
     try {  
-      const response = await axios.get(`/api/riwayat?peg_id=${nip}&riw_status=3`);  
+      const response = await axios.get(`/api/riwayat/orangtua?peg_id=${nip}`);  
       const sortedData = response.data.sort((a: any, b: any) =>  
         new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()  
       );  
@@ -112,7 +112,7 @@ const DataOrtu = () => {
         nip: formData.nip,
         riw_nama: formData.namaOrtu,  
         riw_ket: formData.hubungan,  
-        riw_kelamin: formData.jenisKelamin === "L" ? "Laki-laki" : "Perempuan",  
+        riw_kelamin: formData.jenisKelamin === "L" ? "L" : "P",  
         riw_tempat_lahir: formData.tempatLahir, 
         riw_tgl_lahir: formData.tanggalLahir,
         is_asn: formData.nip !== null && formData.nip !== "" ? true : false,
@@ -125,9 +125,9 @@ const DataOrtu = () => {
       console.log("Request Body:", payload);  
   
       if (formData.id) {  
-        await axios.put(`/api/riwayat/ortu/${formData.id}`, payload);  
+        await axios.put(`/api/riwayat/orangtua/${formData.id}`, payload);  
       } else {  
-        await axios.post(`/api/riwayat/ortu`, payload);  
+        await axios.post(`/api/riwayat/orangtua`, payload);  
       }
       fetchRiwayatOrtu(nip!);  
       closeModals();  
@@ -144,7 +144,7 @@ const DataOrtu = () => {
       nip: ortu.nip,
       namaOrtu: ortu.namaOrtu,
       hubungan: ortu.hubungan,
-      jenisKelamin: ortu.jenisKelamin  === "L" ? "Laki-laki" : "Perempuan",
+      jenisKelamin: ortu.jenisKelamin  === "L" ? "L" : "P",
       tempatLahir: ortu.tempatLahir, 
       tanggalLahir: new Date(ortu.tanggalLahir).toISOString().split("T")[0],
       isASN: ortu.isASN,
@@ -158,7 +158,7 @@ const DataOrtu = () => {
   const handleDelete = async (id: number) => {  
     if (confirm("Apakah anda yakin akan menghapus kontak ini?")) {  
       try {  
-        await axios.delete(`/api/riwayat/ortu/${id}`);  
+        await axios.delete(`/api/riwayat/orangtua/${id}`);  
         fetchRiwayatOrtu(nip!);  
       } catch (error) {  
         console.error("Error deleting contact:", error);  
@@ -279,7 +279,6 @@ const DataOrtu = () => {
                   value={formData.nip}  
                   onChange={handleChange}  
                   className="w-2/3 px-4 py-2 border rounded"  
-                  required  
                 />  
               </div>  
               <div className="mb-4 flex items-center">  
@@ -316,8 +315,8 @@ const DataOrtu = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Laki-laki"  
-                      checked={formData.jenisKelamin === "Laki-laki"}  
+                      value="L"  
+                      checked={formData.jenisKelamin === "L"}  
                       onChange={handleChange}  
                     />  
                     Laki-laki  
@@ -326,8 +325,8 @@ const DataOrtu = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Perempuan"  
-                      checked={formData.jenisKelamin === "Perempuan"}  
+                      value="P"  
+                      checked={formData.jenisKelamin === "P"}  
                       onChange={handleChange}  
                     />  
                     Perempuan  
@@ -465,8 +464,7 @@ const DataOrtu = () => {
                   name="nip"  
                   value={formData.nip}  
                   onChange={handleChange}  
-                  className="w-2/3 px-4 py-2 border rounded"  
-                  required  
+                  className="w-2/3 px-4 py-2 border rounded"   
                 />  
               </div>  
               <div className="mb-4 flex items-center">  
@@ -503,8 +501,8 @@ const DataOrtu = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Laki-laki"  
-                      checked={formData.jenisKelamin === "Laki-laki"}  
+                      value="L"  
+                      checked={formData.jenisKelamin === "L"}  
                       onChange={handleChange}  
                     />  
                     Laki-laki  
@@ -513,8 +511,8 @@ const DataOrtu = () => {
                     <input  
                       type="radio"  
                       name="jenisKelamin"  
-                      value="Perempuan"  
-                      checked={formData.jenisKelamin === "Perempuan"}  
+                      value="P"  
+                      checked={formData.jenisKelamin === "P"}  
                       onChange={handleChange}  
                     />  
                     Perempuan  
