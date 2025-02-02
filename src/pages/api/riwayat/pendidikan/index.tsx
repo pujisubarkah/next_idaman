@@ -2,7 +2,56 @@ import { supabase } from '../../../../../lib/supabaseClient'; // Adjust the impo
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        // Your existing POST handler code...
+        try {
+            // Extract data from the request body
+            const { peg_id, tingpend_id, jurusan_id, univ_id, tahun_lulus, ipk, no_ijazah, tingkat_pendidikan, jurusan, universitas } = req.body;
+
+            // Validate required fields
+            if (!peg_id || !tingpend_id || !jurusan_id || !univ_id || !tahun_lulus) {
+                return res.status(400).json({ error: "Missing required fields" });
+            }
+
+            // Validate master data
+            if (!tingkat_pendidikan || !tingkat_pendidikan.tingpend_id || !tingkat_pendidikan.nm_tingpend) {
+                return res.status(400).json({ error: "Invalid tingkat pendidikan data" });
+            }
+            if (!jurusan || !jurusan.jurusan_id || !jurusan.jurusan_nm) {
+                return res.status(400).json({ error: "Invalid jurusan data" });
+            }
+            if (!universitas || !universitas.univ_id || !universitas.univ_nmpti) {
+                return res.status(400).json({ error: "Invalid universitas data" });
+            }
+
+            // Insert or update data in the spg_riwayat_pendidikan table
+            const { data: riwayatPendidikan, error: riwayatError } = await supabase
+                .schema('siap_skpd')
+                .from('spg_riwayat_pendidikan')
+                .upsert([
+                    {
+                        peg_id,
+                        tingpend_id,
+                        jurusan_id,
+                        univ_id,
+                        tahun_lulus,
+                        ipk,
+                        no_ijazah,
+                    },
+                ])
+                .select('*');
+
+            // Handle error from Supabase
+            if (riwayatError) {
+                console.error("Error inserting/updating riwayat pendidikan in Supabase:", riwayatError.message);
+                return res.status(500).json({ error: riwayatError.message });
+            }
+
+            // Send the inserted/updated data back to the client
+            return res.status(201).json({ message: "Data inserted/updated successfully", data: riwayatPendidikan });
+        } catch (error) {
+            // Handle any unexpected errors
+            console.error("Error in POST handler:", error.message);
+            return res.status(500).json({ error: error.message });
+        }
     }
 
     // Handle GET request
