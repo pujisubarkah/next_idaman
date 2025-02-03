@@ -47,7 +47,7 @@ export default async function handler(req, res) {
       if (error) throw error;
 
       // Send the inserted data in the response
-      return res.status(201).json({ message: 'University added successfully', data });
+      return res.status(201).json({ message: 'data University added successfully', data });
     } catch (error) {
       // Return an error response if the insertion fails
       return res.status(500).json({ message: 'Error adding university', error: error.message });

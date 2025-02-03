@@ -113,7 +113,7 @@ const JFTpage = () => {
                 </tr>
               </thead>
               <tbody>
-                {statuses.map(({ jf_nama, jf_skill, total_pegawai, pegawai }, index) => (
+                {statuses.map(({ jf_id, jf_nama, jf_skill, total_pegawai, pegawai }, index) => (
                   <tr key={index} className={index % 2 === 0 ? "bg-[#87ceeb]" : "bg-white"}>
                     <td className="px-4 py-2 border border-[#f2bd1d]">{jf_nama}</td>
                     <td className="px-4 py-2 border border-[#f2bd1d]">{jf_skill}</td>
@@ -125,7 +125,7 @@ const JFTpage = () => {
                     </td>
                     <td className="px-4 py-2 border border-[#f2bd1d]">
                       <div className="flex gap-x-2">
-                        <Link href={`/data/JFT/edit/${jf_nama}`}>
+                        <Link href={`/data/JFT/edit/${jf_id}`}>
                           <button className="bg-[#3781c7] text-white px-2 py-1 rounded hover:bg-[#2a5a8c] flex items-center">
                             <FontAwesomeIcon icon={faEdit} className="mr-2" />
                             Edit
