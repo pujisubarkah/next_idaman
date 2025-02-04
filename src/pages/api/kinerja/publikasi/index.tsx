@@ -1,4 +1,6 @@
-import { supabase } from '../../../../../lib/supabaseClient';
+// pages/api/kinerja/publikasi.js
+
+import { supabase } from '../../../../../lib/supabaseClient'; // Sesuaikan path import
 
 export default async function handler(req, res) {
     const { peg_id } = req.query;
@@ -74,3 +76,4 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: error.message });
     }
 }
+
