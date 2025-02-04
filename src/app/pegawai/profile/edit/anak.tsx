@@ -77,7 +77,10 @@ const RiwayatAnak = () => {
         tanggalLahir: formatTanggal(item.riw_tgl_lahir),
         isASN: item.is_asn,  
         isASNSatuInstansi: item.is_asn_satu_instansi,
-        statusPerkawinan: item.riw_status_perkawinan === 1 ? "Menikah" : "Belum menikah",  
+        statusPerkawinan: item.riw_status_perkawinan === 1 ? "Menikah" : 
+              item.riw_status_perkawinan === 2 ? "Belum menikah" : 
+              item.riw_status_perkawinan === 3 ? "Cerai hidup" : 
+              item.riw_status_perkawinan === 4 ? "Cerai mati" : null,  
         memperolehTunjangan: item.riw_status_tunj,  
         pendidikan: item.riw_pendidikan,  
         pekerjaan: item.riw_pekerjaan,
