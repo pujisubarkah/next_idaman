@@ -395,15 +395,16 @@ const DataOrtu = () => {
                   <option value="">Pilih Pendidikan</option>  
                   <option value="Tidak tahu">Tidak tahu</option> 
                   <option value="Tidak/belum bersekolah">Tidak/Belum Bersekolah</option>  
-                  <option value="SD/MI/Sederajat">SD/MI/Sederajat</option>  
-                  <option value="SMP/MTs/Sederajat">SMP/MTs/Sederajat</option>  
-                  <option value="SMA/SMK/MA/MAK/Sederajat">SMA/SMK/MA/MAK/Sederajat</option>  
-                  <option value="Diploma I">Diploma I</option>  
-                  <option value="Diploma II">Diploma II</option>  
-                  <option value="Diploma III">Diploma III</option>  
-                  <option value="S1/D-IV">S1/D-IV</option>  
+                  <option value="SD">SD/MI/Sederajat</option>  
+                  <option value="SLTP">SMP/MTs/Sederajat</option>  
+                  <option value="SLTA">SMA/SMK/MA/MAK/Sederajat</option>  
+                  <option value="D1">Diploma I</option>  
+                  <option value="D2">Diploma II</option>  
+                  <option value="D3">Diploma III</option> 
+                  <option value="D4">Diploma IV</option> 
+                  <option value="S1">S1</option>  
                   <option value="S2">S2</option>  
-                  <option value="S3">S3</option> 
+                  <option value="S3">S3</option>
                 </select>  
                 </div>  
               <div className="mb-4 flex items-center">  
@@ -581,15 +582,16 @@ const DataOrtu = () => {
                   <option value="">Pilih Pendidikan</option>  
                   <option value="Tidak tahu">Tidak tahu</option> 
                   <option value="Tidak/belum bersekolah">Tidak/Belum Bersekolah</option>  
-                  <option value="SD/MI/Sederajat">SD/MI/Sederajat</option>  
-                  <option value="SMP/MTs/Sederajat">SMP/MTs/Sederajat</option>  
-                  <option value="SMA/SMK/MA/MAK/Sederajat">SMA/SMK/MA/MAK/Sederajat</option>  
-                  <option value="Diploma I">Diploma I</option>  
-                  <option value="Diploma II">Diploma II</option>  
-                  <option value="Diploma III">Diploma III</option>  
-                  <option value="S1/D-IV">S1/D-IV</option>  
+                  <option value="SD">SD/MI/Sederajat</option>  
+                  <option value="SLTP">SMP/MTs/Sederajat</option>  
+                  <option value="SLTA">SMA/SMK/MA/MAK/Sederajat</option>  
+                  <option value="D1">Diploma I</option>  
+                  <option value="D2">Diploma II</option>  
+                  <option value="D3">Diploma III</option> 
+                  <option value="D4">Diploma IV</option> 
+                  <option value="S1">S1</option>  
                   <option value="S2">S2</option>  
-                  <option value="S3">S3</option> 
+                  <option value="S3">S3</option>
                 </select>  
                 </div>  
               <div className="mb-4 flex items-center">  
