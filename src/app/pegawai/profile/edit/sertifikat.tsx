@@ -72,7 +72,7 @@ const RiwayatSertifikat = () => {
 
   // Fungsi untuk membuka modal
   const openModal = (item: DataSertifikat | null) => {
-    setFormData(item);
+    setFormData(item); // Set form data to the item being edited or null for new entry
     setModalIsOpen(true);
   };
 
@@ -297,19 +297,19 @@ const RiwayatSertifikat = () => {
                 />
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end">
               <button
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
                 type="button"
-                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2"
                 onClick={closeModal}
               >
                 Batal
               </button>
               <button
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
                 type="submit"
-                className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
               >
-                Simpan
+                {formData?.no ? 'Update' : 'Tambah'}
               </button>
             </div>
           </form>

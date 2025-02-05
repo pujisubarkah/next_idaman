@@ -85,17 +85,21 @@ const RiwayatPelatihanNonKlasikal = () => {
   }, [nip]);  
 
   // Fungsi untuk membuka modal
-  const openModal = () => {
-    setFormData({
-      no: 0,
-      jenis: "",
-      nama: "",
-      tanggalMulai: "",
-      tanggalSelesai: "",
-      nomorsurat: "",
-      instansi: "",
-      jumlahJam: "",
-    });
+  const openModal = (item: DataPelatihanNonKlasikal | null = null) => {
+    if (item) {
+      setFormData(item);
+    } else {
+      setFormData({
+        no: 0,
+        jenis: "",
+        nama: "",
+        tanggalMulai: "",
+        tanggalSelesai: "",
+        nomorsurat: "",
+        instansi: "",
+        jumlahJam: "",
+      });
+    }
     setModalIsOpen(true);
   };
 
@@ -131,7 +135,17 @@ const RiwayatPelatihanNonKlasikal = () => {
     e.preventDefault();
     try {
       if (formData) {
-        const response = await axios.post("/api/riwayat/pelatihan_non_klasikal", formData);
+        const url = formData.no === 0 
+          ? "/api/riwayat/pelatihan_non_klasikal" 
+          : `/api/riwayat/pelatihan_non_klasikal/${formData.no}`; // Assuming you have an endpoint for updating by ID
+
+        const method = formData.no === 0 ? 'POST' : 'PUT';
+        const response = await axios({
+          method,
+          url,
+          data: formData,
+        });
+
         if (response.status === 200) {
           closeModal();
           fetchRiwayatPelatihanNonKlasikal(nip!); // Refresh data
@@ -166,7 +180,7 @@ const RiwayatPelatihanNonKlasikal = () => {
       <div className="flex justify-end mb-4">  
         <button  
           className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
-          onClick={openModal} // Open modal for adding new entry
+          onClick={() => openModal()} // Open modal for adding new entry
         >  
           <FontAwesomeIcon icon={faPlus} className="inline-block mr-2" /> Tambah  
         </button>  
@@ -213,6 +227,7 @@ const RiwayatPelatihanNonKlasikal = () => {
                     <button  
                       className="text-green-500 hover:text-green-700"  
                       aria-label="Edit"  
+                      onClick={() => openModal(item)} // Pass the item to edit
                     >  
                       <FontAwesomeIcon icon={faEdit} /> Edit  
                     </button>  
@@ -234,7 +249,7 @@ const RiwayatPelatihanNonKlasikal = () => {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        contentLabel="Tambah Pelatihan Non Klasikal"
+        contentLabel="Tambah/Edit Pelatihan Non Klasikal"
         className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
         overlayClassName="modal-overlay"
         style={{
@@ -252,7 +267,9 @@ const RiwayatPelatihanNonKlasikal = () => {
         }}
       >
         <div className="bg-white rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Tambah Pelatihan Non Klasikal</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {formData?.no === 0 ? 'Tambah Pelatihan Non Klasikal' : 'Edit Pelatihan Non Klasikal'}
+          </h2>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-4">
@@ -332,19 +349,19 @@ const RiwayatPelatihanNonKlasikal = () => {
                 />
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end">
               <button
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
                 type="button"
-                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 mr-2"
                 onClick={closeModal}
               >
                 Batal
               </button>
               <button
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
                 type="submit"
-                className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
               >
-                Simpan
+                {formData?.no === 0 ? 'Tambah' : 'Update'}
               </button>
             </div>
           </form>

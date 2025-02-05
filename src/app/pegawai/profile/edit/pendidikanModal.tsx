@@ -278,21 +278,21 @@ const PendidikanModal: React.FC<PendidikanModalProps> = ({
                   required  
                 />  
               </div>  
-              <div className="flex justify-end space-x-4">  
-                <button  
-                  type="button"  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
-                  onClick={onClose}  
-                >  
-                  Batal  
-                </button>  
-                <button  
-                  type="submit"  
-                  className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
-                >  
-                  Simpan  
-                </button>  
-              </div>  
+              <div className="flex justify-end">
+                <button
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
+                  type="button"
+                  onClick={onClose}
+                >
+                  Batal
+                </button>
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                  type="submit"
+                >
+                  Simpan
+                </button>
+              </div>
             </form>  
           )}  
         </div>  

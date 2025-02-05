@@ -21,7 +21,9 @@ const PelatihanKlasikalModal: React.FC<PelatihanKlasikalModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h4 className="text-lg font-semibold mb-4">{formData.no === 0 ? "Tambah Pelatihan Klasikal" : "Edit Pelatihan Klasikal"}</h4>
+        <h4 className="text-lg font-semibold mb-4">
+          {formData.no === 0 ? 'Tambah Pelatihan Klasikal' : 'Edit Pelatihan Klasikal'}
+        </h4>
 
         {/* Form fields */}
         <div>
@@ -89,21 +91,21 @@ const PelatihanKlasikalModal: React.FC<PelatihanKlasikalModalProps> = ({
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end space-x-2">
-  <button
-    className="bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-800"
-    onClick={handleSubmitForm}
-  >
-    {formData.no === 0 ? "Tambah" : "Update"}
-  </button>
-  <button
-    className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800"
-    onClick={handleCloseModal}
-  >
-    Batal
-  </button>
-</div>
-
+        <div className="flex justify-end">
+          <button
+            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
+            type="button"
+            onClick={handleCloseModal}
+          >
+            Batal
+          </button>
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+            onClick={handleSubmitForm}
+          >
+            {formData.no === 0 ? 'Tambah' : 'Update'}
+          </button>
+        </div>
       </div>
     </div>
   );
