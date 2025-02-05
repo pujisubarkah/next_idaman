@@ -184,9 +184,9 @@ const RiwayatAnak = () => {
       nik: anak.nik,
       nip: anak.nip,
       namaAnak: anak.namaAnak,
-      jenisKelamin: anak.jenisKelamin  === "L" ? "L" : "P",
+      jenisKelamin: anak.jenisKelamin === "L" ? "L" : "P",
       tempatLahir: anak.tempatLahir, 
-      tanggalLahir: isNaN(Date.parse(item.tanggalLahir)) ? "" : new Date(item.tanggalLahir).toISOString().split("T")[0],  
+      tanggalLahir: isNaN(Date.parse(anak.tanggalLahir)) ? "" : new Date(anak.tanggalLahir).toISOString().split("T")[0],  
       isASN: anak.isASN,
       isASNSatuInstansi: anak.isASNSatuInstansi,
       memperolehTunjangan: anak.memperolehTunjangan,
@@ -196,7 +196,7 @@ const RiwayatAnak = () => {
       aktaAnak: null
     });  
     setIsEditModalOpen(true); // Open the edit modal  
-  }; 
+  };
   
   const handleDelete = async (riw_id: number) => {  
     if (confirm("Apakah anda yakin akan menghapus data ini?")) {  
