@@ -186,7 +186,7 @@ const RiwayatAnak = () => {
       namaAnak: anak.namaAnak,
       jenisKelamin: anak.jenisKelamin  === "L" ? "L" : "P",
       tempatLahir: anak.tempatLahir, 
-      tanggalLahir: new Date(anak.tanggalLahir).toISOString().split("T")[0],
+      tanggalLahir: isNaN(Date.parse(item.tanggalLahir)) ? "" : new Date(item.tanggalLahir).toISOString().split("T")[0],  
       isASN: anak.isASN,
       isASNSatuInstansi: anak.isASNSatuInstansi,
       memperolehTunjangan: anak.memperolehTunjangan,
