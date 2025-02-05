@@ -71,7 +71,7 @@ const RiwayatPasangan = () => {
   
   const fetchRiwayatPasangan = async (nip: string) => {  
     try {  
-      const response = await axios.get(`/api/riwayat/pasangan?peg_id=${nip}&riw_status=4`);  
+      const response = await axios.get(`/api/riwayat/pasangan?peg_id=${nip}`);  
       const sortedData = response.data.sort((a: any, b: any) =>  
         new Date(a.riw_tgl_lahir).getTime() - new Date(b.riw_tgl_lahir).getTime()  
       );  
@@ -79,7 +79,8 @@ const RiwayatPasangan = () => {
       const mappedData = sortedData.map((item: any, index: number) => ({  
         no: index + 1,  
         riw_id: item.riw_id,
-        nik: item.nik,  
+        nik: item.nik,
+        nip: item.nip,  
         namaPasangan: item.riw_nama,  
         jenisKelamin: item.riw_kelamin === "L" ? "Laki-laki" : "Perempuan",  
         tempatLahir: item.riw_tempat_lahir,
@@ -180,8 +181,8 @@ const RiwayatPasangan = () => {
       namaPasangan: item.namaPasangan,  
       jenisKelamin: item.jenisKelamin === "L" ? "L" : "P",  
       tempatLahir: item.tempatLahir,  
-      tanggalLahir: new Date(item.tanggalLahir).toISOString().split("T")[0],  
-      tanggalNikah: new Date(item.tanggalNikah).toISOString().split("T")[0],  
+      tanggalLahir: isNaN(Date.parse(item.tanggalLahir)) ? "" : new Date(item.tanggalLahir).toISOString().split("T")[0],  
+      tanggalNikah: isNaN(Date.parse(item.tanggalNikah)) ? "" : new Date(item.tanggalNikah).toISOString().split("T")[0],  
       isASN: item.isASN,
       isASNSatuInstansi: item.isASNSatuInstansi,
       memperolehTunjangan: item.memperolehTunjangan,  
