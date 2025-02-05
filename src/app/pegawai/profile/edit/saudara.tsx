@@ -146,7 +146,7 @@ const DataSaudaraLainnya = () => {
       hubungan: saudara.hubungan,
       jenisKelamin: saudara.jenisKelamin  === "L" ? "L" : "P",
       tempatLahir: saudara.tempatLahir, 
-      tanggalLahir: new Date(saudara.tanggalLahir).toISOString().split("T")[0],
+      tanggalLahir: isNaN(Date.parse(item.tanggalLahir)) ? "" : new Date(item.tanggalLahir).toISOString().split("T")[0],  
       isASN: saudara.isASN,
       isASNSatuInstansi: saudara.isASNSatuInstansi,
       pendidikan: saudara.pendidikan,
