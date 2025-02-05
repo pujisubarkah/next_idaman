@@ -144,16 +144,16 @@ const DataSaudaraLainnya = () => {
       nip: saudara.nip,
       namaSaudara: saudara.namaSaudara,
       hubungan: saudara.hubungan,
-      jenisKelamin: saudara.jenisKelamin  === "L" ? "L" : "P",
+      jenisKelamin: saudara.jenisKelamin === "L" ? "L" : "P",
       tempatLahir: saudara.tempatLahir, 
-      tanggalLahir: isNaN(Date.parse(item.tanggalLahir)) ? "" : new Date(item.tanggalLahir).toISOString().split("T")[0],  
+      tanggalLahir: isNaN(Date.parse(saudara.tanggalLahir)) ? "" : new Date(saudara.tanggalLahir).toISOString().split("T")[0],  
       isASN: saudara.isASN,
       isASNSatuInstansi: saudara.isASNSatuInstansi,
       pendidikan: saudara.pendidikan,
       pekerjaan: saudara.pekerjaan,
     });  
     setIsEditModalOpen(true); // Open the edit modal  
-  };  
+  };
   
   const handleDelete = async (riw_id: number) => {  
     if (confirm("Apakah anda yakin akan menghapus kontak ini?")) {  
