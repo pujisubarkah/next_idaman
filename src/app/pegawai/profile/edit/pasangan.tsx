@@ -479,7 +479,7 @@ const RiwayatPasangan = () => {
                 <button  
                   type="button"  
                   onClick={closeModals}  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
+                 className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
                 >  
                   Batal  
                 </button>  
@@ -705,7 +705,7 @@ const RiwayatPasangan = () => {
                 <button  
                   type="button"  
                   onClick={closeModals}  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2" 
                 >  
                   Batal  
                 </button>  

@@ -489,7 +489,7 @@ const RiwayatAnak = () => {
                 <button  
                   type="button"  
                   onClick={closeModals}  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
+                 className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
                 >  
                   Batal  
                 </button>  
@@ -497,7 +497,7 @@ const RiwayatAnak = () => {
                   type="submit"  
                   className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
                 >  
-                  Simpan  
+                  Simpan 
                 </button>  
               </div>  
             </form>  
@@ -712,7 +712,7 @@ const RiwayatAnak = () => {
                 <button  
                   type="button"  
                   onClick={closeModals}  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
                 >  
                   Batal  
                 </button>  
