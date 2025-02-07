@@ -70,7 +70,6 @@ export default async function handler(req, res) {
                 message: "Data successfully deleted"
             });
         }
-
         // Handle unsupported methods
         res.setHeader('Allow', ['PUT', 'DELETE']);
         return res.status(405).json({ error: `Method ${req.method} not allowed` });
