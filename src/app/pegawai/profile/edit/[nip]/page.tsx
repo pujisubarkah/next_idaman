@@ -19,6 +19,7 @@ import Cuti from "../cuti";
 import Publikasi from "../publikasi";
 import Timkerja from "../timkerja";
 import Prestasi from "../prestasi";
+import Assessmen from "../assessmen";
 import Kepangkatan from "../pangkat";
 import Pendidikan from "../pendidikan";
 import Penghargaan from "../penghargaan";
@@ -163,8 +164,11 @@ const Page = () => {
         <section id="prestasi">
         <Prestasi />
         </section>
-
-
+        )}
+        {activeTab === "#assessmen" && (
+          <section id="assessmen">
+            <Assessmen />
+          </section>
         )}
         {activeTab === "#pasangan" && (
           <section id="pasangan">

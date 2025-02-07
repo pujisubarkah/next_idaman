@@ -180,21 +180,18 @@ const Riwayattimkerja = () => {
                         </h4>
                         <form onSubmit={handleAddOrUpdate}>
                             <div className="space-y-4">
-                                {["namakegiatan", "nomorsk", "tahun", "penandatangan"].map((field) => (
-                                    <div className="flex flex-col space-y-2" key={field}>
-                                        <label className="text-sm font-semibold">
-                                            {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                                        </label>
-                                        <input
-                                            className="block w-full p-2 border"
-                                            placeholder={field.replace(/([A-Z])/g, ' $1')}
-                                            value={formData[field as keyof DataTimKerja] || ""}
-                                            onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                                        />
-                                    </div>
-                                ))}
+                                {/* Updated order of fields */}
                                 <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Peran</label>
+                                    <label className="text-sm font-semibold">Nama Kegiatan</label>
+                                    <input
+                                        className="block w-full p-2 border"
+                                        placeholder="Nama Kegiatan"
+                                        value={formData.namakegiatan}
+                                        onChange={(e) => setFormData({ ...formData, namakegiatan: e.target.value })}
+                                    />
+                                </div>
+                                <div className="flex flex-col space-y-2">
+                                    <label className="text-sm font-semibold">Keterlibatan Tim Kerja</label>
                                     <Select
                                         options={peranOptions}
                                         value={peranOptions.find(option => option.value === formData.peran)}
@@ -204,11 +201,30 @@ const Riwayattimkerja = () => {
                                     />
                                 </div>
                                 <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Tingkat</label>
+                                    <label className="text-sm font-semibold">Nomor SK</label>
+                                    <input
+                                        className="block w-full p-2 border"
+                                        placeholder="Nomor SK"
+                                        value={formData.nomorsk}
+                                        onChange={(e) => setFormData({ ...formData, nomorsk: e.target.value })}
+                                    />
+                                </div>
+                                <div className="flex flex-col space-y-2">
+                                    <label className="text-sm font-semibold">Tahun</label>
+                                    <input
+                                        type="number"
+                                        className="block w-full p-2 border"
+                                        placeholder="Tahun"
+                                        value={formData.tahun}
+                                        onChange={(e) => setFormData({ ...formData, tahun: Number(e.target.value) })}
+                                    />
+                                </div>
+                                <div className="flex flex-col space-y-2">
+                                    <label className="text-sm font-semibold">Keterlibatan pada Tingkat</label>
                                     <div className="flex space-x-4">
-                                        {["Nasional", "Instansional", "Internasional"].map((level) => (
+                                        {["Instansi", "Nasional", "Internasional"].map((level) => (
                                             <label key={level} className="flex items-center">
-                                                <input
+                                                < input
                                                     type="radio"
                                                     name="tingkat"
                                                     value={level}
@@ -221,6 +237,15 @@ const Riwayattimkerja = () => {
                                         ))}
                                     </div>
                                 </div>
+                                <div className="flex flex-col space-y-2">
+                                    <label className="text-sm font-semibold">Penandatangan</label>
+                                    <input
+                                        className="block w-full p-2 border"
+                                        placeholder="Penandatangan"
+                                        value={formData.penandatangan}
+                                        onChange={(e) => setFormData({ ...formData, penandatangan: e.target.value })}
+                                    />
+                                </div>
                                 <div className="flex justify-end space-x-4 mt-4">
                                     <button
                                         className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
@@ -230,7 +255,7 @@ const Riwayattimkerja = () => {
                                         {loading ? "Loading..." : "Simpan"}
                                     </button>
                                     <button
-                                        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"
+                                         className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
                                         onClick={resetForm}
                                         disabled={loading}
                                     >
@@ -288,7 +313,7 @@ const Riwayattimkerja = () => {
                                             <FontAwesomeIcon icon={faTrash} /> Delete
                                         </button>
                                     </div>
-                                </td>
+ </td>
                             </tr>
                         ))
                     )}
