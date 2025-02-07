@@ -35,7 +35,6 @@ if (req.method === 'POST') {
         peg_id,
         nama_penghargaan,
         tahun,
-        peran,
         tingkat,
         instansi_pemberi
     } = req.body;
