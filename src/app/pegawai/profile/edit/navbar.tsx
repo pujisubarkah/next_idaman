@@ -41,16 +41,20 @@ const Navbar = () => {
         { label: "Riwayat Kepangkatan", link: "#kepangkatan" },
         { label: "Riwayat KGB", link: "#kgb" },
         { label: "Riwayat Cuti", link: "#cuti" },
+        { label: "Kedudukan Hukum", link: "#kedudukan" },
+        { label: "Riwayat Kesehatan", link: "#kesehatan" },
+        { label: "Riwayat Hukuman", link: "#hukuman" },
       ],
     },
     {
       label: "Kinerja dan Prestasi",
       subMenu: [
-        { label: "Sasaran Kerja", link: "#" },
-        { label: "Penghargaan", link: "#penghargaan" },
-        { label: "Publikasi", link: "#publikasi" },
-        { label: "Tim Kerja", link: "#timkerja" },
-        { label: "Prestasi", link: "#prestasi" },
+       
+        { label: "Riwayat Penghargaan", link: "#penghargaan" },
+        { label: "Riwayat Publikasi", link: "#publikasi" },
+        { label: "Riwayat Keterlibatan Tim Kerja", link: "#timkerja" },
+        { label: "Riwayat Prestasi", link: "#prestasi" },
+        { label: "Riwayat Assessmen", link: "#assessmen" },
       ],
     },
     {
