@@ -254,21 +254,21 @@ const KontakDarurat = () => {
                   required  
                 />  
               </div>  
-              <div className="flex justify-between">  
-                <button  
-                  type="button"  
-                  onClick={closeModals}  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
-                >  
-                  Batal  
-                </button>  
-                <button  
-                  type="submit"  
-                  className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
-                >  
-                  Simpan  
-                </button>  
-              </div>  
+              <div className="flex justify-end">
+                <button
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
+                  type="button"
+                  onClick={closeModals}
+                >
+                  Batal
+                </button>
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                  type="submit"
+                >
+                  Simpan
+                </button>
+              </div>
             </form>  
           </div>  
         </div>  
@@ -342,22 +342,22 @@ const KontakDarurat = () => {
                   required  
                 />  
               </div>  
-              <div className="flex justify-between">  
-                <button  
-                  type="button"  
-                  onClick={closeModals}  
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"  
-                >  
-                  Batal  
-                </button>  
-                <button  
-                  type="submit"  
-                  className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"  
-                >  
-                  Update  
-                </button>  
-              </div>  
-            </form>  
+              <div className="flex justify-end">
+                <button
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
+                  type="button"
+                  onClick={closeModals}
+                >
+                  Batal
+                </button>
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                  type="submit"
+                >
+                  Update
+                </button>
+              </div>
+            </form>
           </div>  
         </div>  
       )}  
