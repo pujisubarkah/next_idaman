@@ -12,6 +12,7 @@ interface RiwayatData {
   instansipemberi: string;
 }
 
+
 interface PrestasiKelompokProps {
   nip: string | null;
 }
