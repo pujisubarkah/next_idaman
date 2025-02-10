@@ -1,324 +1,317 @@
 'use client';
+
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import Select from "react-select";
 
 const Riwayattimkerja = () => {
-    interface DataTimKerja {
-        timkerja_id?: string; // Use string if IDs are strings
-        no: number;
-        namakegiatan: string;
-        peran: string;
-        nomorsk: string;
-        tahun: number;
-        tingkat: string;
-        penandatangan: string;
-        peg_id?: string;
+    interface TimKerja {
+        timkerja_id: string;
+        timkerja_nama: string;
+        timkerja_nomor: string;
+        tanggal_timkerja: string;
+        timkerja_penandatangan: string;
+        timkerja_peran: string;
+        tahun: string;
+        timkerja_tingkat: string;
     }
 
-    const [data, setData] = useState<DataTimKerja[]>([]);
-    const [nip, setNip] = useState<string | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formData, setFormData] = useState<DataTimKerja>({
-        timkerja_id: undefined,
-        no: 0,
-        namakegiatan: "",
-        peran: "",
-        nomorsk: "",
-        tahun: 0,
-        tingkat: "Nasional",
-        penandatangan: "",
+    const [dataTimKerja, setDataTimKerja] = useState<TimKerja[]>([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentTimKerja, setCurrentTimKerja] = useState<TimKerja>({
+        timkerja_id: "",
+        timkerja_nama: "",
+        timkerja_nomor: "",
+        tanggal_timkerja: "",
+        timkerja_penandatangan: "",
+        timkerja_peran: "",
+        tahun: "",
+        timkerja_tingkat: ""
     });
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [pegId, setPegId] = useState<string | null>(null); // State to hold peg_id
 
-    // Options for the peran dropdown
-    const peranOptions = [
-        { value: "Ketua", label: "Ketua" },
-        { value: "Wakil Ketua", label: "Wakil Ketua" },
-        { value: "Sekretaris", label: "Sekretaris" },
-        { value: "Bendahara", label: "Bendahara" },
-        { value: "Anggota", label: "Anggota" },
-    ];
-
-    // Fetch the work history data
-    const fetchRiwayattimkerja = async (nip: string) => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`/api/kinerja/timkerja?peg_id=${nip}`);
-            const mappedData = response.data.map((item: any, index: number) => ({
-                timkerja_id: item.timkerja_id,
-                no: index + 1,
-                namakegiatan: item.timkerja_nama,
-                peran: item.timkerja_peran,
-                nomorsk: item.timkerja_nomor,
-                tahun: item.tahun,
-                tingkat: item.timkerja_tingkat,
-                penandatangan: item.timkerja_penandatangan,
-            }));
-            setData(mappedData);
-            setError(null);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setError("Failed to fetch data");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Extract NIP from the URL
     useEffect(() => {
+        // Assuming you get peg_id from somewhere, e.g., props or context
         const path = window.location.pathname;
         const segments = path.split("/");
         const nipFromUrl = segments[segments.length - 1];
-        setNip(nipFromUrl);
+        setPegId(nipFromUrl); // Set peg_id from URL
+
+        if (nipFromUrl) {
+            fetchData(nipFromUrl); // Fetch data with peg_id
+        }
     }, []);
 
-    // Fetch data whenever NIP changes
-    useEffect(() => {
-        if (nip) {
-            fetchRiwayattimkerja(nip);
-        }
-    }, [nip]);
-
-    // Handle editing data
-    const handleEdit = (item: DataTimKerja) => {
-        setFormData(item);
-        setIsModalOpen(true);
-    };
-
-    // Handle deleting data
-    const handleDelete = async (id?: string) => {
-        if (!id) {
-            console.error("No ID provided for deletion");
-            return; // Exit if no ID is provided
-        }
-
-        setLoading(true);
+    const fetchData = async (pegId: string) => {
         try {
-            await axios.delete(`/api/kinerja/timkerja/${id}`);
-            fetchRiwayattimkerja(nip!); // Refresh the list after deleting
-            setError(null);
-        } catch (error) {
-            console.error("Error deleting data:", error);
-            setError("Failed to delete data");
-        } finally {
-            setLoading(false);
+            const response = await axios.get(`/api/kinerja/timkerja?peg_id=${pegId}`);
+            setDataTimKerja(response.data);
+        } catch (err) {
+            console.error("Error fetching data:", err);
+            setError("Failed to fetch data");
         }
     };
 
-    // Handle adding or updating data
-    const handleAddOrUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleOpenModal = (timKerja: TimKerja | null = null) => {
+        if (timKerja) {
+            setIsEditing(true);
+            setCurrentTimKerja(timKerja);
+        } else {
+            setIsEditing(false);
+            setCurrentTimKerja({
+                timkerja_id: "",
+                timkerja_nama: "",
+                timkerja_nomor: "",
+                tanggal_timkerja: "",
+                timkerja_penandatangan: "",
+                timkerja_peran: "",
+                tahun: "",
+                timkerja_tingkat: ""
+            });
+        }
+        setModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        setError("");
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setCurrentTimKerja({
+            ...currentTimKerja,
+            [name]: value
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
+        setError("");
+    
+        // Validasi sederhana
+        if (!currentTimKerja.timkerja_nama || !currentTimKerja.timkerja_nomor || !currentTimKerja.tanggal_timkerja || !currentTimKerja.timkerja_penandatangan || !currentTimKerja.timkerja_peran || !currentTimKerja.tahun || !currentTimKerja.timkerja_tingkat) {
+            setError("All fields are required");
+            setLoading(false);
+            return;
+        }
+    
         try {
-            const newForm = { ...formData, peg_id: nip }; // Ensure peg_id is set
-            newForm.tahun = Number(newForm.tahun); // Ensure tahun is a number
-
-            if (formData.timkerja_id) {
-                // Update existing record
-                await axios.put(`/api/kinerja/timkerja/${formData.timkerja_id}`, newForm);
+            if (isEditing) {
+                // Update data
+                await axios.put(`/api/kinerja/timkerja/${currentTimKerja.timkerja_id}`, {
+                    id: currentTimKerja.timkerja_id, // Include the ID in the body
+                    timkerja_nama: currentTimKerja.timkerja_nama,
+                    timkerja_nomor: currentTimKerja.timkerja_nomor,
+                    tanggal_timkerja: currentTimKerja.tanggal_timkerja,
+                    timkerja_penandatangan: currentTimKerja.timkerja_penandatangan,
+                    timkerja_peran: currentTimKerja.timkerja_peran,
+                    tahun: currentTimKerja.tahun,
+                    timkerja_tingkat: currentTimKerja.timkerja_tingkat
+                });
             } else {
-                // Add new record
-                await axios.post("/api/kinerja/timkerja", newForm);
+                // Tambah data baru
+                await axios.post('/api/kinerja/timkerja', { ...currentTimKerja, peg_id: pegId });
             }
-
-            // Reset form and close modal
-            resetForm();
-            fetchRiwayattimkerja(nip!); // Refresh the list after adding or updating
-            setError(null);
-        } catch (error) {
-            console.error("Error adding or updating data:", error);
+            fetchData(pegId!); // Fetch data again after submit
+            handleCloseModal();
+        } catch (err) {
+            console.error("Error submitting data:", err);
+            if (err.response) {
+                setError(err.response.data.message || "Failed to submit data");
+            } else {
+                setError("Failed to submit data");
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    // Reset form data
-    const resetForm = () => {
-        setFormData({
-            timkerja_id: undefined,
-            no: 0,
-            namakegiatan: "",
-            peran: "",
-            nomorsk: "",
-            tahun: 0,
-            tingkat: "Nasional",
-            penandatangan: "",
-        });
-        setIsModalOpen(false);
+    const handleDelete = async (timkerja_id: string) => {
+        if (!window.confirm("Apakah anda yakin data ini akan dihapus?")) return;
+    
+        try {
+            console.log("Deleting ID:", timkerja_id); // Log the ID being deleted
+            await axios.delete(`/api/kinerja/timkerja/${timkerja_id}`);
+            fetchData(pegId!); // Fetch data again after delete
+        } catch (err) {
+            console.error("Error deleting data:", err);
+            setError("Failed to delete data");
+        }
     };
 
     return (
-        <div id="timkerja" className="p-8">
-            <h3 className="text-center text-xl font-semibold mb-8 text-[#3781c7]">
-                Riwayat Tim Kerja
-            </h3>
-
-            {error && <div className="text-red-500 mb-4">{error}</div>}
+        <div className="p-8">
+            <h3 className="text-center text-xl font-semibold mb-8 text-[#3781c7]">Riwayat Tim Kerja</h3>
 
             <div className="flex justify-end mb-4">
-                <button
-                    className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
-                    onClick={() => {
-                        resetForm(); // Reset form for new entry
-                        setIsModalOpen(true);
-                    }}
-                    disabled={loading}
-                >
+                <button onClick={() => handleOpenModal()} className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]">
                     <FontAwesomeIcon icon={faPlus} /> Tambah
                 </button>
             </div>
 
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white w-3/4 md:w-1/2 p-6 rounded shadow-lg">
-                        <h4 className="text-lg font-semibold mb-4">
-                            {formData.timkerja_id ? "Edit Data" : "Tambah Data"}
-                        </h4>
-                        <form onSubmit={handleAddOrUpdate}>
-                            <div className="space-y-4">
-                                {/* Updated order of fields */}
-                                <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Nama Kegiatan</label>
-                                    <input
-                                        className="block w-full p-2 border"
-                                        placeholder="Nama Kegiatan"
-                                        value={formData.namakegiatan}
-                                        onChange={(e) => setFormData({ ...formData, namakegiatan: e.target.value })}
-                                    />
-                                </div>
-                                <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Keterlibatan Tim Kerja</label>
-                                    <Select
-                                        options={peranOptions}
-                                        value={peranOptions.find(option => option.value === formData.peran)}
-                                        onChange={(selectedOption) => setFormData({ ...formData, peran: selectedOption?.value || "" })}
-                                        placeholder="Pilih Peran"
-                                        isClearable
-                                    />
-                                </div>
-                                <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Nomor SK</label>
-                                    <input
-                                        className="block w-full p-2 border"
-                                        placeholder="Nomor SK"
-                                        value={formData.nomorsk}
-                                        onChange={(e) => setFormData({ ...formData, nomorsk: e.target.value })}
-                                    />
-                                </div>
-                                <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Tahun</label>
-                                    <input
-                                        type="number"
-                                        className="block w-full p-2 border"
-                                        placeholder="Tahun"
-                                        value={formData.tahun}
-                                        onChange={(e) => setFormData({ ...formData, tahun: Number(e.target.value) })}
-                                    />
-                                </div>
-                                <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Keterlibatan pada Tingkat</label>
-                                    <div className="flex space-x-4">
-                                        {["Instansi", "Nasional", "Internasional"].map((level) => (
-                                            <label key={level} className="flex items-center">
-                                                < input
-                                                    type="radio"
-                                                    name="tingkat"
-                                                    value={level}
-                                                    checked={formData.tingkat === level}
-                                                    onChange={(e) => setFormData({ ...formData, tingkat: e.target.value })}
-                                                    className="mr-2"
-                                                />
-                                                {level}
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="flex flex-col space-y-2">
-                                    <label className="text-sm font-semibold">Penandatangan</label>
-                                    <input
-                                        className="block w-full p-2 border"
-                                        placeholder="Penandatangan"
-                                        value={formData.penandatangan}
-                                        onChange={(e) => setFormData({ ...formData, penandatangan: e.target.value })}
-                                    />
-                                </div>
-                                <div className="flex justify-end space-x-4 mt-4">
-                                    <button
-                                        className="bg-[#3781c7] text-white py-2 px-4 rounded hover:bg-[#2a5a8c]"
-                                        type="submit"
-                                        disabled={loading}
-                                    >
-                                        {loading ? "Loading..." : "Simpan"}
-                                    </button>
-                                    <button
-                                         className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 mr-2"
-                                        onClick={resetForm}
-                                        disabled={loading}
-                                    >
-                                        Batal
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            {error && <div className="text-red-500 mb-4">{error}</div>}
 
             <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">
                 <thead className="bg-[#3781c7] text-white">
                     <tr className="text-sm uppercase">
                         <th className="p-3 border border-[#f2bd1d]">No</th>
                         <th className="p-3 border border-[#f2bd1d]">Nama Kegiatan</th>
+                        <th className="p-3 border border-[#f2bd1d]">Nomor</th>
+                        <th className="p-3 border border-[#f2bd1d]">Tanggal</th>
+                        <th className="p-3 border border-[#f2bd1d]">Penandatangan</th>
                         <th className="p-3 border border-[#f2bd1d]">Peran</th>
-                        <th className="p-3 border border-[#f2bd1d]">Nomor SK</th>
                         <th className="p-3 border border-[#f2bd1d]">Tahun</th>
                         <th className="p-3 border border-[#f2bd1d]">Tingkat</th>
-                        <th className="p-3 border border-[#f2bd1d]">Penandatangan</th>
                         <th className="p-3 border border-[#f2bd1d]">Pilihan</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {loading ? (
+                    {dataTimKerja.length === 0 ? (
                         <tr>
-                            <td colSpan={8} className="text-center p-4">
-                                Loading...
-                            </td>
-                        </tr>
-                    ) : data.length === 0 ? (
-                        <tr>
-                            <td colSpan={8} className="text-center p-4">
-                                Tidak ada data.
-                            </td>
+                            <td colSpan={9} className="text-center p-4">Tidak ada data.</td>
                         </tr>
                     ) : (
-                        data.map((item, index) => (
-                            <tr key={item.timkerja_id} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
-                                <td className="p-3 border border-[#f2bd1d]">{item.no}</td>
-                                <td className="p-3 border border-[#f2bd1d]">{item.namakegiatan}</td>
-                                <td className="p-3 border border-[#f2bd1d]">{item.peran}</td>
-                                <td className="p-3 border border-[#f2bd1d]">{item.nomorsk}</td>
-                                <td className="p-3 border border-[#f2bd1d]">{item.tahun}</td>
-                                <td className="p-3 border border-[#f2bd1d]">{item.tingkat}</td>
-                                <td className="p-3 border border-[#f2bd1d]">{item.penandatangan}</td>
+                        dataTimKerja.map((timKerja, index) => (
+                            <tr key={timKerja.timkerja_id} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
+                                <td className="p-3 border border-[#f2bd1d]">{index + 1}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.timkerja_nama}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.timkerja_nomor}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.tanggal_timkerja}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.timkerja_penandatangan}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.timkerja_peran}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.tahun}</td>
+                                <td className="p-3 border border-[#f2bd1d]">{timKerja.timkerja_tingkat}</td>
                                 <td className="p-3 border border-[#f2bd1d]">
                                     <div className="flex space-x-4">
-                                        <button onClick={() => handleEdit(item)} className="text-green-500 hover:text-green-700" aria-label="Edit" disabled={loading}>
+                                        <button onClick={() => handleOpenModal(timKerja)} className="text-green-500 hover:text-green-700" aria-label="Edit">
                                             <FontAwesomeIcon icon={faEdit} /> Edit
                                         </button>
-                                        <button onClick={() => handleDelete(item.timkerja_id)} className="text-red-500 hover:text-red-700" aria-label="Delete" disabled={loading}>
+                                        <button onClick={() => handleDelete(timKerja.timkerja_id)} className="text-red-500 hover:text-red-700" aria-label="Delete">
                                             <FontAwesomeIcon icon={faTrash} /> Delete
                                         </button>
                                     </div>
- </td>
+                                </td>
                             </tr>
                         ))
                     )}
                 </tbody>
             </table>
+
+            {/* Modal for Adding/Editing Tim Kerja */}
+            {modalVisible && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
+                    <div className="bg-white p-8 rounded-lg w-1/3">
+                        <h3 className="text-xl font-semibold mb-4">{isEditing ? "Edit Tim Kerja" : "Tambah Tim Kerja"}</h3>
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="timkerja_nama" className="block text-sm font-semibold w-1/3">Nama Kegiatan</label>
+                                <input
+                                    type="text"
+                                    id="timkerja_nama"
+                                    name="timkerja_nama"
+                                    value={currentTimKerja.timkerja_nama}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="timkerja_nomor" className="block text-sm font-semibold w-1/3">Nomor</label>
+                                <input
+                                    type="text"
+                                    id="timkerja_nomor"
+                                    name="timkerja_nomor"
+                                    value={currentTimKerja.timkerja_nomor}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="tanggal_timkerja" className="block text-sm font-semibold w-1/3">Tanggal</label>
+                                <input
+                                    type="date"
+                                    id="tanggal_timkerja"
+                                    name="tanggal_timkerja"
+                                    value={currentTimKerja.tanggal_timkerja}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="timkerja_penandatangan" className="block text-sm font-semibold w-1/3">Penandatangan</label>
+                                <input
+                                    type="text"
+                                    id="timkerja_penandatangan"
+                                    name="timkerja_penandatangan"
+                                    value={currentTimKerja.timkerja_penandatangan}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="timkerja_peran" className="block text-sm font-semibold w-1/3">Peran</label>
+                                <input
+                                    type="text"
+                                    id="timkerja_peran"
+                                    name="timkerja_peran"
+                                    value={currentTimKerja.timkerja_peran}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="tahun" className="block text-sm font-semibold w-1/3">Tahun</label>
+                                <input
+                                    type="number"
+                                    id="tahun"
+                                    name="tahun"
+                                    value={currentTimKerja.tahun}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4 flex items-center">
+                                <label htmlFor="timkerja_tingkat" className="block text-sm font-semibold w-1/3">Tingkat</label>
+                                <input
+                                    type="text"
+                                    id="timkerja_tingkat"
+                                    name="timkerja_tingkat"
+                                    value={currentTimKerja.timkerja_tingkat}
+                                    onChange={handleChange}
+                                    className="w-2/3 px-4 py-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end">
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-4"
+                                    type="button"
+                                    onClick={handleCloseModal}
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    type="submit"
+                                >
+                                    {isEditing ? "Update" : "Simpan"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

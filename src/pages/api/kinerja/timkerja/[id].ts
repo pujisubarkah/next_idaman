@@ -4,9 +4,9 @@ export default async function handler(req, res) {
     const { id } = req.query; // Get the ID from the query parameters
 
     try {
-        // Handle PUT request
+        // Handle PUT request (Update)
         if (req.method === 'PUT') {
-            const { id, timkerja_nama, timkerja_nomor, tanggal_timkerja, timkerja_penandatangan, timkerja_peran, tahun, timkerja_tingkat } = req.body;
+            const { timkerja_nama, timkerja_nomor, tanggal_timkerja, timkerja_penandatangan, timkerja_peran, tahun, timkerja_tingkat } = req.body;
         
             // Validate input
             if (!id || !timkerja_nama || !timkerja_nomor || !tanggal_timkerja || !tahun || !timkerja_tingkat || !timkerja_penandatangan || !timkerja_peran) {
@@ -14,6 +14,8 @@ export default async function handler(req, res) {
                     error: "Missing required fields: 'id', 'timkerja_nama', 'timkerja_nomor', 'tanggal_timkerja', 'timkerja_penandatangan', 'timkerja_peran', 'tahun', 'timkerja_tingkat'"
                 });
             }
+
+            const updated_at = new Date().toISOString(); // Generate current timestamp
         
             // Update data in spg_riwayat_timkerja
             const { data: updateData, error: updateError } = await supabase
@@ -26,9 +28,10 @@ export default async function handler(req, res) {
                     timkerja_penandatangan,
                     timkerja_peran,
                     tahun,
-                    timkerja_tingkat
+                    timkerja_tingkat,
+                    updated_at
                 })
-                .eq('id', id); // Use 'id' to identify the record to update
+                .eq('timkerja_id', id); // Use 'timkerja_id' to identify the record to update
         
             // Handle error from Supabase
             if (updateError) {
@@ -43,14 +46,14 @@ export default async function handler(req, res) {
             });
         }
 
-        // Handle DELETE request
+        // Handle DELETE request (Hard Delete)
         if (req.method === 'DELETE') {
-            // Delete data from spg_riwayat_timkerja
-            const { error: deleteError } = await supabase
+            // Hard delete the record
+            const { data: deleteData, error: deleteError } = await supabase
                 .schema('siap_skpd')
                 .from('spg_riwayat_timkerja')
-                .delete()
-                .eq('timkerja_id', id); // Use the ID from the query
+                .delete() // Perform a hard delete
+                .eq('timkerja_id', id); // Use 'timkerja_id' to identify the record to delete
 
             // Handle error from Supabase
             if (deleteError) {
@@ -59,7 +62,10 @@ export default async function handler(req, res) {
             }
 
             // Return success message
-            return res.status(204).json({ message: "Data successfully deleted from spg_riwayat_timkerja" });
+            return res.status(200).json({
+                message: "Data successfully deleted from spg_riwayat_timkerja",
+                data: deleteData
+            });
         }
 
         // If HTTP method is not allowed
