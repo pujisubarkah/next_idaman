@@ -253,7 +253,7 @@ const PrestasiPribadi: React.FC<PrestasiPribadiProps> = ({ nip }) => {
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold">Tingkat</label>
                   <div className="flex space-x-4">
-                    {["Kota", "Provinsi", "Nasional", "Internasional"].map((level) => (
+                    {["kota", "provinsi", "nasional", "internasional"].map((level) => (
                       <label key={level} className="flex items-center">
                         <input
                           type="radio"
