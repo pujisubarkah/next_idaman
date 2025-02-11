@@ -106,7 +106,7 @@ const RiwayatPendidikan: React.FC<{ nip: string }> = ({ nip }) => {
 
    const fetchUniversitas = async () => {  
       try {  
-        const response = await axios.get('/api/data/universitas');  
+        const response = await axios.get('/api/master_data/universitas');  
         const data = response.data;  
         setUniversitasOptions(data);  
       } catch (error) {  

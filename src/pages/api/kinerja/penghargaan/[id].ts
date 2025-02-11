@@ -12,67 +12,60 @@ export default async function handler(req, res) {
                 riw_penghargaan_pejabat,
                 riw_penghargaan_instansi,
                 riw_penghargaan_thn,
-                riw_penghargaan_sk,
                 riw_penghargaan_tglsk,
-                riw_penghargaan_jabatan,
-                riw_penghargaan_lokasi
+                riw_penghargaan_lokasi,
             } = req.body;
 
-            // Validasi data yang diterima
-            if (!id || !peg_id) {
-                return res.status(400).json({ error: "id and peg_id are required" });
+            // Validasi input
+            if (!id || !peg_id || !penghargaan_id) {
+                return res.status(400).json({ error: "Missing required fields" });
             }
 
-            // Memperbarui data di tabel spg_riwayat_penghargaan
+            // Update data di Supabase
             const { data, error } = await supabase
-                .schema('siap_skpd') // Menyesuaikan skema
-                .from('spg_riwayat_penghargaan') // Menyesuaikan tabel
+                .schema('siap_skpd')
+                .from('spg_riwayat_penghargaan')
                 .update({
                     peg_id,
                     penghargaan_id,
                     riw_penghargaan_pejabat,
                     riw_penghargaan_instansi,
                     riw_penghargaan_thn,
-                    riw_penghargaan_sk,
                     riw_penghargaan_tglsk,
-                    riw_penghargaan_jabatan,
-                    riw_penghargaan_lokasi
+                    riw_penghargaan_lokasi,
                 })
-                .eq('riw_penghargaan_id', id); // Menggunakan id untuk mencari data yang akan diperbarui
+                .eq('riw_penghargaan_id', id);
 
-            if (error) throw error;
+            if (error) {
+                return res.status(400).json({ error: error.message });
+            }
 
-            // Kirimkan data yang diperbarui ke client
-            res.status(200).json(data);
+            return res.status(200).json(data);
         } catch (error) {
-            console.error("Error updating data:", error.message);
-            res.status(500).json({ error: error.message });
+            console.error("Error updating data:", error);
+            return res.status(500).json({ error: "Internal Server Error" });
         }
     } else if (req.method === 'DELETE') {
         try {
-            // Validasi id
-            if (!id) {
-                return res.status(400).json({ error: "'id' parameter is required" });
+            // Hapus data dari Supabase
+            const { data, error } = await supabase
+                .schema('siap_skpd')
+                .from('spg_riwayat_penghargaan')
+                .delete()
+                .eq('riw_penghargaan_id', id);
+
+            if (error) {
+                return res.status(400).json({ error: error.message });
             }
 
-            // Menghapus data dari tabel spg_riwayat_penghargaan
-            const { data, error } = await supabase
-                .schema('siap_skpd') // Menyesuaikan skema
-                .from('spg_riwayat_penghargaan') // Menyesuaikan tabel
-                .delete()
-                .eq('riw_penghargaan_id', id); // Menggunakan id untuk mencari data yang akan dihapus
-
-            if (error) throw error;
-
-            // Kirimkan konfirmasi penghapusan ke client
-            res.status(204).json({ message: "Data deleted successfully" });
+            // Return 204 No Content without a body
+            return res.status(204).end();
         } catch (error) {
-            console.error("Error deleting data:", error.message);
-            res.status(500).json({ error: error.message });
+            console.error("Error deleting data:", error);
+            return res.status(500).json({ error: "Internal Server Error" });
         }
     } else {
-        // Jika metode bukan PUT atau DELETE
-        res.setHeader('Allow', ['PUT', 'DELETE']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+        // Method not allowed
+        return res.status(405).json({ error: "Method Not Allowed" });
     }
 }

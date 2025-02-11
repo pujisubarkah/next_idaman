@@ -7,7 +7,7 @@ import Select from "react-select";
 
 const RiwayatPenghargaan = () => {
   interface DataPenghargaan {
-    no: number;
+    id: number; // Ganti no dengan id
     namaPenghargaan: string;
     nomorSK: string;
     tanggalSK: string;
@@ -27,7 +27,7 @@ const RiwayatPenghargaan = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedData, setSelectedData] = useState<DataPenghargaan | null>(null);
   const [formData, setFormData] = useState<DataPenghargaan>({
-    no: 0,
+    id: 0,
     namaPenghargaan: '',
     nomorSK: '',
     tanggalSK: '',
@@ -36,8 +36,8 @@ const RiwayatPenghargaan = () => {
     lokasi: '',
   });
   const [penghargaanOptions, setPenghargaanOptions] = useState<PenghargaanOption[]>([]);
+  const [loading, setLoading] = useState(false); // State untuk loading
 
-  // Fungsi untuk memformat tanggal
   const formatTanggal = (tanggal: string) => {
     const bulanIndo = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -53,11 +53,11 @@ const RiwayatPenghargaan = () => {
   };
 
   const fetchRiwayatPenghargaan = async (nip: string) => {
+    setLoading(true); // Set loading true
     try {
       const response = await axios.get(`/api/kinerja/penghargaan?peg_id=${nip}`);
-
-      const mappedData = response.data.map((item: any, index: number) => ({
-        no: index + 1,
+      const mappedData = response.data.map((item: any) => ({
+        id: item.riw_penghargaan_id,
         namaPenghargaan: item.penghargaan_nm,
         nomorSK: item.riw_penghargaan_sk,
         tanggalSK: formatTanggal(item.riw_penghargaan_tglsk),
@@ -65,10 +65,11 @@ const RiwayatPenghargaan = () => {
         instansi: item.riw_penghargaan_instansi,
         lokasi: item.riw_penghargaan_lokasi,
       }));
-
       setData(mappedData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false); // Set loading false
     }
   };
 
@@ -85,25 +86,21 @@ const RiwayatPenghargaan = () => {
     }
   };
 
-
-
   useEffect(() => {
-    // Mendapatkan NIP dari URL
     const path = window.location.pathname;
-    const segments = path.split("/"); // Memecah URL menjadi array
-    const nipFromUrl = segments[segments.length - 1]; // Ambil elemen terakhir (NIP)
+    const segments = path.split("/");
+    const nipFromUrl = segments[segments.length - 1];
     setNip(nipFromUrl);
-  }, []); // Hanya dijalankan sekali ketika komponen pertama kali dimuat
+  }, []);
 
   useEffect(() => {
     if (nip) {
-      // Fetch data hanya jika nip tersedia
       fetchRiwayatPenghargaan(nip);
     }
-  }, [nip]); // Dependency pada nip, hanya akan dijalankan ketika nip berubah
+  }, [nip]);
 
   useEffect(() => {
-    fetchPenghargaanOptions(); // Ambil data penghargaan saat komponen dimuat
+    fetchPenghargaanOptions();
   }, []);
 
   const openModal = (isEdit: boolean, data: DataPenghargaan | null = null) => {
@@ -111,10 +108,10 @@ const RiwayatPenghargaan = () => {
     setIsEditMode(isEdit);
     if (isEdit && data) {
       setSelectedData(data);
-      setFormData(data); // Populate form with selected data
+      setFormData(data);
     } else {
       setFormData({
-        no: 0,
+        id: 0,
         namaPenghargaan: '',
         nomorSK: '',
         tanggalSK: '',
@@ -142,25 +139,28 @@ const RiwayatPenghargaan = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value);
+    });
+
     try {
       if (isEditMode) {
-        // Update existing data
-        await axios.put(`/api/kinerja/penghargaan/${selectedData?.no}`, formData);
+        await axios.put(`/api/kinerja/penghargaan/${selectedData?.id}`, formDataToSend);
       } else {
-        // Add new data
-        await axios.post(`/api/kinerja/penghargaan`, formData);
+        await axios.post(`/api/kinerja/penghargaan`, formDataToSend);
       }
-      fetchRiwayatPenghargaan(nip!); // Refresh data
+      fetchRiwayatPenghargaan(nip!);
       closeModal();
     } catch (error) {
       console.error("Error saving data:", error);
     }
   };
 
-  const handleDelete = async (no) => {
+  const handleDelete = async (id) => {
     if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
       try {
-        await axios.delete(`/api/kinerja/penghargaan/${no}`);
+        await axios.delete(`/api/kinerja/penghargaan/${id}`);
         if (nip) {
           fetchRiwayatPenghargaan(nip);
         }
@@ -169,7 +169,7 @@ const RiwayatPenghargaan = () => {
       }
     }
   };
-  
+
   return (
     <div id="penghargaan" className="p-8">
       <h3 className="text-center text-xl font-semibold mb-8 text-[#3781c7]">RIWAYAT PENGHARGAAN</h3>
@@ -183,60 +183,65 @@ const RiwayatPenghargaan = () => {
         </button>
       </div>
 
-      <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">
-        <thead className="bg-[#3781c7] text-white">
-          <tr>
-            <th rowSpan={2} className="p-3 border border-[#f2bd1d]">No</th>
-            <th rowSpan={2} className="p-3 border border-[#f2bd1d]">Nama Penghargaan</th>
-            <th colSpan={3} className="p-3 border border-[#f2bd1d]">Surat Keputusan</th>
-            <th colSpan={2} className="p-3 border border-[#f2bd1d]">Instansi Penyelenggara</th>
-            <th rowSpan={2} className="p-3 border border-[#f2bd1d]">Pilihan</th>
-          </tr>
-          <tr>
-            <th className="p-3 border border-[#f2bd1d]">Nomor</th>
-            <th className="p-3 border border-[#f2bd1d]">Tanggal</th>
-            <th className="p-3 border border-[#f2bd1d]">Jabatan Penandatangan</th>
-            <th className="p-3 border border-[#f2bd1d]">Instansi</th>
-            <th className="p-3 border border-[#f2bd1d]">Lokasi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 ? (
+      {loading ? (
+        <div className="text-center">Loading...</div>
+      ) : (
+        <table className="w-full border border-[#3781c7] rounded-lg overflow-hidden">
+          <thead className="bg-[#3781c7] text-white">
             <tr>
-              <td colSpan={8} className="text-center p-4">Data tidak ditemukan.</td>
+              <th rowSpan={2} className="p-3 border border-[#f2bd1d]">No</th>
+              <th rowSpan={2} className="p-3 border border-[#f2bd1d]">Nama Penghargaan</th>
+              <th colSpan={3} className="p-3 border border-[#f2bd1d]">Surat Keputusan</th>
+              <th colSpan={2} className="p-3 border border-[#f2bd1d]">Instansi Penyelenggara</th>
+              <th rowSpan={2} className="p-3 border border-[#f2bd1d]">Pilihan</th>
             </tr>
-          ) : (
-            data.map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
-                <td className="p-3 border border-[#f2bd1d]">{item.no}</td>
-                <td className="p-3 border border-[#f2bd1d]">{item.namaPenghargaan}</td>
-                <td className="p-3 border border-[#f2bd1d]">{item.nomorSK}</td>
-                <td className="p-3 border border-[#f2bd1d]">{item.tanggalSK}</td>
-                <td className="p-3 border border-[#f2bd1d]">{item.jabatanPenandatangan}</td>
-                <td className="p-3 border border-[#f2bd1d]">{item.instansi}</td>
-                <td className="p-3 border border-[#f2bd1d]">{item.lokasi}</td>
-                <td className="p-3 border border-[#f2bd1d]">
-                  <div className="flex space-x-4">
-                    <button
-                      className="text-green-500 hover:text-green-700"
-                      aria-label="Edit"
-                      onClick={() => openModal(true, item)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} /> Edit
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      aria-label="Delete"
-                    >
-                      <FontAwesomeIcon icon={faTrash} /> Delete
-                    </button>
-                  </div>
-                </td>
+            <tr>
+              <th className="p-3 border border-[#f2bd1d]">Nomor</th>
+              <th className="p-3 border border-[#f2bd1d]">Tanggal</th>
+              <th className="p- 3 border border-[#f2bd1d]">Jabatan Penandatangan</th>
+              <th className="p-3 border border-[#f2bd1d]">Instansi</th>
+              <th className="p-3 border border-[#f2bd1d]">Lokasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="text-center p-4">Data tidak ditemukan.</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              data.map((item, index) => (
+                <tr key={item.id} className={index % 2 === 0 ? "bg-teal-50" : "bg-white"}>
+                  <td className="p-3 border border-[#f2bd1d]">{index + 1}</td>
+                  <td className="p-3 border border-[#f2bd1d]">{item.namaPenghargaan}</td>
+                  <td className="p-3 border border-[#f2bd1d]">{item.nomorSK}</td>
+                  <td className="p-3 border border-[#f2bd1d]">{item.tanggalSK}</td>
+                  <td className="p-3 border border-[#f2bd1d]">{item.jabatanPenandatangan}</td>
+                  <td className="p-3 border border-[#f2bd1d]">{item.instansi}</td>
+                  <td className="p-3 border border-[#f2bd1d]">{item.lokasi}</td>
+                  <td className="p-3 border border-[#f2bd1d]">
+                    <div className="flex space-x-4">
+                      <button
+                        className="text-green-500 hover:text-green-700"
+                        aria-label="Edit"
+                        onClick={() => openModal(true, item)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} /> Edit
+                      </button>
+                      <button
+                        className="text-red-500 hover:text-red-700"
+                        aria-label="Delete"
+                        onClick={() => handleDelete(item.id)} // Pass item.id to handleDelete
+                      >
+                        <FontAwesomeIcon icon={faTrash} /> Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -245,21 +250,21 @@ const RiwayatPenghargaan = () => {
               {isEditMode ? "Edit Data Penghargaan" : "Tambah Data Penghargaan"}
             </h2>
             <form onSubmit={handleSubmit}>
-            <div className="mb-4 flex items-center">
-  <label className="block text-gray-700 text-sm font-bold mb-2 mr-4 w-1/3" htmlFor="namaPenghargaan">
-    Nama Penghargaan
-  </label>
-  <Select
-    id="namaPenghargaan"
-    name="namaPenghargaan"
-    options={penghargaanOptions}
-    onChange={handleSelectChange}
-    isClearable
-    placeholder="Pilih Penghargaan"
-    className="w-2/3" // Mengatur lebar dropdown
-    classNamePrefix="select"
-  />
-</div>
+              <div className="mb-4 flex items-center">
+                <label className="block text-gray-700 text-sm font-bold mb-2 mr-4 w-1/3" htmlFor="namaPenghargaan">
+                  Nama Penghargaan
+                </label>
+                <Select
+                  id="namaPenghargaan"
+                  name="namaPenghargaan"
+                  options={penghargaanOptions}
+                  onChange={handleSelectChange}
+                  isClearable
+                  placeholder="Pilih Penghargaan"
+                  className="w-2/3"
+                  classNamePrefix="select"
+                />
+              </div>
               <div className="mb-4 flex items-center">
                 <label className="block text-gray-700 text-sm font-bold mb-2 mr-4 w-1/3" htmlFor="nomorSK">
                   Nomor SK
