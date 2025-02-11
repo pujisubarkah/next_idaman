@@ -58,7 +58,7 @@ const RiwayatPenghargaan = () => {
 
       const mappedData = response.data.map((item: any, index: number) => ({
         no: index + 1,
-        namaPenghargaan: item.penghargaan_id,
+        namaPenghargaan: item.penghargaan_nm,
         nomorSK: item.riw_penghargaan_sk,
         tanggalSK: formatTanggal(item.riw_penghargaan_tglsk),
         jabatanPenandatangan: item.riw_penghargaan_pejabat,
@@ -84,6 +84,8 @@ const RiwayatPenghargaan = () => {
       console.error("Error fetching penghargaan options:", error);
     }
   };
+
+
 
   useEffect(() => {
     // Mendapatkan NIP dari URL
@@ -155,6 +157,19 @@ const RiwayatPenghargaan = () => {
     }
   };
 
+  const handleDelete = async (no) => {
+    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+      try {
+        await axios.delete(`/api/kinerja/penghargaan/${no}`);
+        if (nip) {
+          fetchRiwayatPenghargaan(nip);
+        }
+      } catch (error) {
+        console.error("Error deleting data:", error);
+      }
+    }
+  };
+  
   return (
     <div id="penghargaan" className="p-8">
       <h3 className="text-center text-xl font-semibold mb-8 text-[#3781c7]">RIWAYAT PENGHARGAAN</h3>
