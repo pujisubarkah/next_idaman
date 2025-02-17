@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }  
   
       // Fetch related data  
-      const fetchData = async (table, columns) => {  
+      const fetchData = async (table: string, columns: string) => {  
         const { data, error } = await supabase.schema('siap').from(table).select(columns);  
         if (error) throw error;  
         return data;  
@@ -71,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         kecamatan,  
         kelurahan,  
       ] = await Promise.all([  
-        fetchData('m_status_kawin', 'id, status'),  
+        fetchData('m_status_kawin', 'id_kawin, status'),  
         fetchData('m_spg_agama', 'id_agama, nm_agama'),  
         fetchData('jenis_pegawai', 'status_kepegawaian_id, stspeg_nama'),  
         fetchData('jenis_asn', 'id, nama'),  
@@ -87,15 +87,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fetchData('m_spg_propinsi', 'propinsi_id, propinsi_nm'),  
         fetchData('m_spg_kabupaten', 'kabupaten_id, kabupaten_nm'),  
         fetchData('m_spg_kecamatan', 'kecamatan_id, kecamatan_nm'),  
-        fetchData('m_keldes', 'id, nama'),  
+        fetchData('m_keldes', 'kelurahan_id, nama'),  
       ]);  
   
       console.log('Data fetched successfully'); // Debugging log  
   
       // Create mappings for easy lookup  
-      const createMap = (data, key, value) => {  
+      const createMap = (data: any[], key: string, value: string) => {  
         const map = {};  
-        data.forEach(item => {  
+        data.forEach((item: any) => {  
           map[item[key]] = item[value];  
         });  
         return map;  
@@ -115,8 +115,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const kedudukanMap = createMap(kedudukanpegawai, 'id_status_kepegawaian', 'status');  
       const provinsiMap = createMap(provinsi, 'propinsi_id', 'propinsi_nm');  
       const kabkotMap = createMap(kabkot, 'kabupaten_id', 'kabupaten_nm');  
-      const kecamatanMap = createMap(kecamatan, 'kecamatan_id', 'kecamatan_nm');  
-      const kelurahanMap = createMap(kelurahan, 'id', 'nama');  
+      // const kecamatanMap = createMap(kecamatan, 'kecamatan_id', 'kecamatan_nm');  
+      // const kelurahanMap = createMap(kelurahan, 'kelurahan_id', 'nama');  
       const pendidikanAwalMap = createMap(pendidikanAwal, 'id_pend', 'nm_pend',); 
       const pendidikanAkhirMap = createMap(pendidikanAwal, 'id_pend', 'nm_pend'); 
   
