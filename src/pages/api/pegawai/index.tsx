@@ -11,7 +11,7 @@ export default async function handler(req, res) {
       // Build the Supabase query
       let query = supabase
         .schema('siap')
-        .from('view_data_pegawai')
+        .from('v_pegawai_data')
         .select('*', { count: 'exact' });
 
     

@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
-import RootLayout from "../../pegawai/profile/edit/layout"; // Mengimpor layout dari home/layout.js
-import axios from "axios"; // If you use axios for fetching data
+import RootLayout from "../../pegawai/profile/edit/layout"; // Import layout
+import axios from "axios"; // Import axios for fetching data
 
 // Define colors for the bar chart
 const COLORS = [
@@ -13,38 +13,37 @@ const COLORS = [
 const EducationChart = () => {
   const [selectedSatuanKerja, setSelectedSatuanKerja] = useState<string>("Tugas Belajar");
   const [data, setData] = useState<any[]>([]);
-  const [satuanKerjaList, setSatuanKerjaList] = useState<any[]>([]);
   const [satuanKerjaOptions, setSatuanKerjaOptions] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null); // State for error handling
 
   // Fetch data from the API
   const fetchData = async () => {
     try {
-      const response = await axios.get("/api/reakp/pendidikan");
+      const response = await axios.get("/api/rekap/pendidikan");
       const fetchedData = response.data;
 
       // Prepare the data structure for the bar chart
-      const formattedData: any = {};
+      const formattedData: { [key: string]: any[] } = {};
       fetchedData.forEach((item: any) => {
         const pegawaiByPendidikan = item.pegawai_by_pendidikan;
 
         // Prepare the data for each education level (e.g., "S1", "S2")
-        const educationData = Object.keys(pegawaiByPendidikan).map((level) => {
-          return {
-            category: level, // Education level (S1, S2, etc.)
-            value: pegawaiByPendidikan[level].length, // Count of employees in that level
-          };
-        });
+        const educationData = Object.keys(pegawaiByPendidikan).map((level) => ({
+          category: level, // Education level (S1, S2, etc.)
+          value: pegawaiByPendidikan[level].length, // Count of employees in that level
+        }));
 
         formattedData[item.satuan_kerja_nama] = educationData;
       });
 
-      setData(formattedData[selectedSatuanKerja]);
+      setData(formattedData[selectedSatuanKerja] || []); // Set data or empty array if not found
       setSatuanKerjaOptions(fetchedData.map((item: any) => ({
         satuan_kerja_id: item.satuan_kerja_id,
         satuan_kerja_nama: item.satuan_kerja_nama,
       })));
     } catch (error) {
       console.error("Error fetching data:", error);
+      setError("Failed to fetch data. Please try again later."); // Set error message
     }
   };
 
@@ -55,7 +54,7 @@ const EducationChart = () => {
   const handleSatuanKerjaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newSatuanKerja = event.target.value;
     setSelectedSatuanKerja(newSatuanKerja);
-    setData((prevData) => prevData[newSatuanKerja]);
+    // No need to set data here, it will be updated in useEffect
   };
 
   return (
@@ -80,6 +79,9 @@ const EducationChart = () => {
             ))}
           </select>
         </div>
+
+        {/* Error message */}
+        {error && <p className="text-red-500">{error}</p>}
 
         {/* Responsive Bar Chart */}
         <ResponsiveContainer width="80%" height={400}>
