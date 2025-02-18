@@ -27,7 +27,7 @@ export default async function handler(req, res) {
             const { data: spgData, error: spgError } = await supabase
                 .schema('siap')
                 .from('spg_pegawai')
-                .select('peg_nip, peg_nama, satuan_kerja_id, jabatan_id');
+                .select('peg_nip, peg_nama, satuan_kerja_id, jabatan_id, jabatan_id');
 
             if (spgError) {
                 return res.status(500).json({ error: spgError.message });

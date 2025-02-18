@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       // Membangun query Supabase
       let query = supabase
         .schema('siap')
-        .from('view_data_pegawai')
+        .from('v_pegawai_data')
         .select('*', { count: 'exact' });
 
       // Filter berdasarkan peg_status = false

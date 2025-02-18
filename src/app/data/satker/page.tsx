@@ -116,8 +116,8 @@ export default function ListUnitPage() {
           <h3 className="text-lg font-bold font-poppins">DAFTAR SATUAN KERJA LEMBAGA ADMINISTRASI NEGARA</h3>
         </div>
 
-        {/* Search and Add Button */}
-        <div className="mb-4 flex justify-between items-center">
+        {/* Search Bar */}
+        <div className="mb-4">
           <div className="flex items-center space-x-2">
             <input
               type="text"
@@ -133,8 +133,12 @@ export default function ListUnitPage() {
               Search
             </button>
           </div>
+        </div>
+
+        {/* Add Button */}
+        <div className="mb-4">
           <button
-            className="px-4 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded shadow flex items-center"
+            className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded shadow flex items-center"
             onClick={toggleModal}
           >
             <FaPlus className="mr-2" />
