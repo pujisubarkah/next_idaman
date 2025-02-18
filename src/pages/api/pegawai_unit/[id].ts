@@ -36,49 +36,12 @@ export default async function handler(req: any, res: any) {
     'id_kel_ktp','peg_alamat_rt_ktp','peg_alamat_rw_ktp','peg_kodepos_ktp', 'peg_tmt_kgb'
   ];
 
-  if (method === 'GET') {
-    try {
-      const { data, error } = await supabase
-        .schema('siap_skpd')
-        .from('spg_pegawai')
-        .select(commonFields.join(', '))
-        .eq('peg_id', id);
-
-      if (error) throw error;
-
-      if (data.length === 0) {
-        return res.status(404).json({ message: 'Pegawai tidak ditemukan' });
-      }
-
-      return handleSuccessResponse(res, data[0]);
-    } catch (error) {
-      return handleErrorResponse(res, 'Error fetching data', error);
-    }
-  } else if (method === 'POST') {
-    try {
-      const newData = req.body;
-
-      if (!validateRequiredFields([newData.peg_nama, newData.peg_nip])) {
-        return res.status(400).json({ message: 'Nama dan NIP wajib diisi' });
-      }
-
-      const { data, error } = await supabase
-        .schema('siap_skpd')
-        .from('spg_pegawai')
-        .insert([newData]);
-
-      if (error) throw error;
-
-      return handleSuccessResponse(res, data, 201);
-    } catch (error) {
-      return handleErrorResponse(res, 'Error inserting data', error);
-    }
-  } else if (method === 'PUT') {
+  if (method === 'PUT') {
     try {
       const updatedData = req.body;
 
-      if (!validateRequiredFields([updatedData.peg_nama, updatedData.peg_nip, updatedData.peg_gelar_depan])) {
-        return res.status(400).json({ message: 'Tidak ada kolom untuk diperbarui' });
+      if (!validateRequiredFields([updatedData.peg_nama, updatedData.peg_nip])) {
+        return res.status(400).json({ message: 'Nama dan NIP wajib diisi' });
       }
 
       const { data, error } = await supabase
@@ -92,6 +55,20 @@ export default async function handler(req: any, res: any) {
       return handleSuccessResponse(res, data);
     } catch (error) {
       return handleErrorResponse(res, 'Error updating data', error);
+    }
+  } else if (method === 'DELETE') {
+    try {
+      const { error } = await supabase
+        .schema('siap_skpd')
+        .from('spg_pegawai')
+        .delete()
+        .eq('peg_id', id);
+
+      if (error) throw error;
+
+      return handleSuccessResponse(res, { message: 'Pegawai berhasil dihapus' });
+    } catch (error) {
+      return handleErrorResponse(res, 'Error deleting data', error);
     }
   } else {
     return res.status(405).json({ message: 'Method Not Allowed' });

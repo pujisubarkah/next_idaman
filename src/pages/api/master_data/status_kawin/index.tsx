@@ -7,7 +7,7 @@ export default async function handler(req, res) {
       const { data, error } = await supabase
         .schema('siap') // Ensure the schema is correct
         .from('m_status_kawin') // Ensure the table name is correct
-        .select('id, status');
+        .select('id_kawin, status');
 
       if (error) throw error;
 

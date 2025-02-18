@@ -52,9 +52,40 @@ export default async function handler(req, res) {
       console.error('Unexpected error:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
+  } else if (req.method === 'POST') {
+    // Menangani permintaan POST untuk menambahkan pegawai baru
+    const { peg_id, peg_nama, peg_jabatan } = req.body; // Ambil data dari body
+
+    // Validasi input
+    if (!peg_id || !peg_nama || !peg_jabatan) {
+      return res.status(400).json({ error: 'peg_id, peg_nama, and peg_jabatan are required' });
+    }
+
+    try {
+      // Tambahkan pegawai baru ke dalam tabel
+      const { data, error } = await supabase
+        .schema('siap_skpd')
+        .from('spg_pegawai')
+        .insert([{ peg_id, peg_nama, peg_jabatan }]);
+
+      // Tangani error dari Supabase
+      if (error) {
+        console.error('Error inserting data:', error);
+        return res.status(500).json({ error: error.message });
+      }
+
+      // Kembalikan data pegawai yang baru ditambahkan
+      return res.status(201).json({
+        message: 'Pegawai added successfully',
+        data,
+      });
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
   } else {
-    // Jika method bukan GET, kembalikan 405 (Method Not Allowed)
-    res.setHeader('Allow', ['GET']);
+    // Jika method bukan GET atau POST, kembalikan 405 (Method Not Allowed)
+    res.setHeader('Allow', ['GET', 'POST']);
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
