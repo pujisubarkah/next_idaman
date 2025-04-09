@@ -81,9 +81,16 @@ export default async function handler(req, res) {
         },
       });
 
+
+      // Ubah semua BigInt jadi string
+      const dataSanitizednew = newPegawai.map(item => ({
+      ...item,
+      peg_id: item.peg_id.toString(),
+      }));
+      
       return res.status(201).json({
         message: 'Pegawai added successfully',
-        data: newPegawai,
+        data: dataSanitizednew,
       });
     } catch (error) {
       console.error('Error inserting data:', error);
