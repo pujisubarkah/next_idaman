@@ -1,53 +1,58 @@
-import { supabase } from '../../../../../lib/supabaseClient';
+import { NextApiRequest, NextApiResponse } from 'next';
+import prisma from '@/lib/prisma';
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
-      // Mengambil data dari m_spg_satuan_kerja dan m_spg_unit_kerja
-      const { data, error } = await supabase
-        .schema('siap') // Ganti dengan schema yang sesuai
-        .from('m_spg_satuan_kerja')
-        .select(`
-          satuan_kerja_id,
-          satuan_kerja_nama,
-          m_spg_unit_kerja (
-            unit_kerja_id,
-            unit_kerja_nama,
-            unit_kerja_parent,
-            unit_kerja_level
-          )
-        `)
-        .order('unit_kerja_level', { foreignTable: 'm_spg_unit_kerja', ascending: true }) // Mengurutkan berdasarkan unit_kerja_level
-        .order('satuan_kerja_id', { ascending: true }); // Mengurutkan berdasarkan satuan_kerja_id
+      // Ambil semua satuan kerja beserta unit kerjanya
+      const data = await prisma.m_spg_satuan_kerja.findMany({
+        where: {
+          NOT: {
+            satuan_kerja_id: 99,
+          },
+        },
+        select: {
+          satuan_kerja_id: true,
+          satuan_kerja_nama: true,
+          m_spg_unit_kerja: {
+            where: {
+              NOT: {
+                unit_kerja_id: 99,
+              },
+            },
+            select: {
+              unit_kerja_id: true,
+              unit_kerja_nama: true,
+              unit_kerja_parent: true,
+              unit_kerja_level: true,
+            },
+            orderBy: {
+              unit_kerja_level: 'asc',
+            },
+          },
+        },
+        orderBy: {
+          satuan_kerja_id: 'asc',
+        },
+      });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      // Fungsi untuk membangun hierarki unit kerja
+      // Fungsi menyusun hirarki unit kerja
       const buildHierarchy = (units) => {
         const unitMap = {};
 
-        // Membuat map berdasarkan unit_kerja_id untuk referensi cepat
         units.forEach(unit => {
           unitMap[unit.unit_kerja_id] = { ...unit, children: [] };
         });
 
-        // Menyusun hierarki dengan menambahkan unit kerja anak ke parent
-        const result: any[] = [];
+        const result: Array<{ unit_kerja_id: number; unit_kerja_nama: string; unit_kerja_parent: number | null; unit_kerja_level: number; children: any[] }> = [];
 
         units.forEach(unit => {
-          // Menyaring unit kerja dengan unit_kerja_id = 99
-          if (unit.unit_kerja_id === 99) return;
-
           if (unit.unit_kerja_parent) {
-            // Jika unit kerja memiliki parent, tambahkan ke children dari parent
-            const parentUnit = unitMap[unit.unit_kerja_parent];
-            if (parentUnit) {
-              parentUnit.children.push(unitMap[unit.unit_kerja_id]);
+            const parent = unitMap[unit.unit_kerja_parent];
+            if (parent) {
+              parent.children.push(unitMap[unit.unit_kerja_id]);
             }
           } else {
-            // Jika tidak ada parent (root), masukkan ke dalam list utama
             result.push(unitMap[unit.unit_kerja_id]);
           }
         });
@@ -55,22 +60,18 @@ export default async function handler(req, res) {
         return result;
       };
 
-      // Menyusun data satuan kerja dan unit kerja
-      const structuredData = data
-        .filter(satuan => satuan.satuan_kerja_id !== 99)  // Filter satuan_kerja_id = 99
-        .map((satuan) => {
-          return {
-            satuan_kerja_id: satuan.satuan_kerja_id,
-            satuan_kerja_nama: satuan.satuan_kerja_nama,
-            units: buildHierarchy(satuan.m_spg_unit_kerja)
-          };
-        });
+      const structuredData = data.map((satuan) => ({
+        satuan_kerja_id: satuan.satuan_kerja_id,
+        satuan_kerja_nama: satuan.satuan_kerja_nama,
+        units: buildHierarchy(satuan.m_spg_unit_kerja),
+      }));
 
       return res.status(200).json(structuredData);
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ message: 'Error fetching data', error: error.message });
     }
   } else {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 }
+

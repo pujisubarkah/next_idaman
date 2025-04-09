@@ -1,24 +1,21 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Adjust path accordingly
+import { NextApiRequest, NextApiResponse } from 'next';
+import prisma from '@/lib/prisma'
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
-      // Fetch data from Supabase
-      const { data, error } = await supabase
-        .schema('siap') // Ensure the schema is correct
-        .from('m_spg_jurusan') // Ensure the table name is correct
-        .select('jurusan_id, jurusan_nm') // Adjust the fields to be fetched;
+      const data = await prisma.m_spg_jurusan.findMany({
+        select: {
+          jurusan_id: true,
+          jurusan_nm: true
+        }
+      });
 
-      if (error) throw error;
-
-      // Send the fetched data in the response
-      return res.status(200).json(data); // Return fetched data
-    } catch (error) {
-      // Return an error response if the data fetching fails
+      return res.status(200).json(data);
+    } catch (error: any) {
       return res.status(500).json({ message: 'Error fetching data', error: error.message });
     }
   } else {
-    // Return method not allowed if not GET
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 }

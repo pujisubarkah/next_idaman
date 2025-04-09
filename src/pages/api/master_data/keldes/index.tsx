@@ -1,33 +1,41 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Adjust path accordingly
+import { NextApiRequest, NextApiResponse } from 'next';
+import prisma from '@/lib/prisma';
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    const { kecamatan_id } = req.query; // Get the kecamatan_id from the query parameters
+    const { kecamatan_id } = req.query;
+
+    // Validasi kecamatan_id wajib ada
+    if (!kecamatan_id) {
+      return res.status(400).json({ message: 'kecamatan_id is required' });
+    }
 
     try {
-      let query = supabase
-        .schema('siap') // Ensure the schema is correct
-        .from('m_keldes') // Ensure the schema and table name are correct
-        .select('kecamatan_id, id, nama, kodepos');
+      const data = await prisma.m_keldes.findMany({
+        where: {
+          kecamatan_id: Number(kecamatan_id), // kecamatan_id bukan bigint
+        },
+        select: {
+          kecamatan_id: true,
+          kelurahan_id: true, // ini bigint
+          nama: true,
+          kodepos: true,
+        },
+      });
 
-      // If kecamatan_id is provided, filter by it
-      if (kecamatan_id) {
-        query = query.eq('kecamatan_id', kecamatan_id);
-      }
+      // Serialisasi BigInt (hanya kelurahan_id yang perlu)
+      const serializedData = data.map((item) => ({
+        id: item.kelurahan_id.toString(), // ubah ke string agar JSON tidak error
+        kecamatan_id: item.kecamatan_id,
+        nama: item.nama,
+        kodepos: item.kodepos,
+      }));
 
-      // Fetch data from Supabase
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      // Send the fetched data in the response
-      return res.status(200).json(data); // Return fetched data
-    } catch (error) {
-      // Return an error response if the data fetching fails
+      return res.status(200).json(serializedData);
+    } catch (error: any) {
       return res.status(500).json({ message: 'Error fetching data', error: error.message });
     }
   } else {
-    // Return method not allowed if not GET
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 }
