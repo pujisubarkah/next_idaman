@@ -30,12 +30,12 @@ export default async function handler(req, res) {
       };
 
       // Ambil total count
-      const totalItems = await prisma.spg_pegawai.count({
+      const totalItems = await prisma.siap_skpd_spg_pegawai.count({
         where: whereClause,
       });
 
       // Ambil data paginated
-      const data = await prisma.spg_pegawai.findMany({
+      const data = await prisma.siap_skpd_spg_pegawai.findMany({
         where: whereClause,
         skip: skip,
         take: limit,
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     }
 
     try {
-      const newPegawai = await prisma.spg_pegawai.create({
+      const newPegawai = await prisma.siap_skpd_spg_pegawai.create({
         data: {
           peg_id,
           peg_nama,
