@@ -83,10 +83,11 @@ export default async function handler(req, res) {
 
 
       // Ubah semua BigInt jadi string
-      const dataSanitizednew = newPegawai.map(item => ({
-      ...item,
-      peg_id: item.peg_id.toString(),
-      }));
+      const dataSanitizednew = {
+      ...newPegawai,
+        peg_id: newPegawai.peg_id.toString(),
+      };
+
       
       return res.status(201).json({
         message: 'Pegawai added successfully',
