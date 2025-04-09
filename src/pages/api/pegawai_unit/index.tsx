@@ -46,9 +46,15 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: 'Data not found' });
       }
 
+      // Ubah semua BigInt jadi string
+      const dataSanitized = data.map(item => ({
+      ...item,
+      peg_id: item.peg_id.toString(),
+      }));
+
       return res.status(200).json({
-        data,
-        totalItems,
+      data: dataSanitized,
+      totalItems,
       });
     } catch (error) {
       console.error('Unexpected error:', error);
