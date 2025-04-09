@@ -1,4 +1,4 @@
-// pages/api/pegawai_unit/index.tsx
+// pages/api/pegawai.js
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -18,9 +18,8 @@ export default async function handler(req, res) {
       const limit = parseInt(itemsPerPage);
       const skip = (pageNumber - 1) * limit;
 
-      // Bangun filter pencarian
       const whereClause = {
-        peg_id: peg_id, // cocokkan peg_id
+        peg_id: peg_id,
         ...(searchQuery && {
           peg_nama: {
             contains: searchQuery,
@@ -29,18 +28,17 @@ export default async function handler(req, res) {
         }),
       };
 
-      // Ambil total count
-      const totalItems = await prisma.siap_skpd_spg_pegawai.count({
-        where: whereClause,
-      });
+      const totalItems = await prisma.spg_pegawai.count({ where: whereClause });
 
-      // Ambil data paginated
-      const data = await prisma.siap_skpd_spg_pegawai.findMany({
+      const data = await prisma.spg_pegawai.findMany({
         where: whereClause,
         skip: skip,
         take: limit,
         orderBy: {
-          peg_nama: 'asc', // bisa diganti sesuai kebutuhan
+          peg_nama: 'asc',
+        },
+        include: {
+          siap_skpd_m_spg_jabatan: true, // Include relasi ke m_spg_jabatan
         },
       });
 
@@ -58,20 +56,22 @@ export default async function handler(req, res) {
     }
   }
 
-  // ========== POST ==========
+  // ===== POST =====
   else if (req.method === 'POST') {
-    const { peg_id, peg_nama, peg_jabatan } = req.body;
+    const { peg_id, peg_nama, jabatan_id } = req.body;
 
-    if (!peg_id || !peg_nama || !peg_jabatan) {
-      return res.status(400).json({ error: 'peg_id, peg_nama, and peg_jabatan are required' });
+    if (!peg_id || !peg_nama || !jabatan_id) {
+      return res.status(400).json({
+        error: 'peg_id, peg_nama, and jabatan_id are required',
+      });
     }
 
     try {
-      const newPegawai = await prisma.siap_skpd_spg_pegawai.create({
+      const newPegawai = await prisma.spg_pegawai.create({
         data: {
           peg_id,
           peg_nama,
-          peg_jabatan,
+          jabatan_id, // pastikan ini foreign key yang sesuai dengan Prisma model
         },
       });
 
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // ========== METHOD NOT ALLOWED ==========
+  // ===== METHOD NOT ALLOWED =====
   else {
     res.setHeader('Allow', ['GET', 'POST']);
     return res.status(405).json({ error: 'Method Not Allowed' });
