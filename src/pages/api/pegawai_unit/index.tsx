@@ -38,7 +38,7 @@ export default async function handler(req, res) {
           peg_nama: 'asc',
         },
         include: {
-          siap_m_spg_jabatan: true, // Include relasi ke m_spg_jabatan
+          m_spg_jabatan: true, // Include relasi ke m_spg_jabatan
         },
       });
 
