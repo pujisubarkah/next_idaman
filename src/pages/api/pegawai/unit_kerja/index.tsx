@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
     try {
       // Query Prisma ke view_data_pegawai dengan filter dan urutan
-      const data = await prisma.view_data_pegawai.findMany({
+      const data = await prisma.v_pegawai_data.findMany({
         where: {
           unit_kerja_id: parseInt(unit_kerja_id), // Pastikan sesuai tipe data (integer/string)
         },
