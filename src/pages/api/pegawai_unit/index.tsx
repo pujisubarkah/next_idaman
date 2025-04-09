@@ -28,9 +28,9 @@ export default async function handler(req, res) {
         }),
       };
 
-      const totalItems = await prisma.spg_pegawai.count({ where: whereClause });
+      const totalItems = await prisma.siap_skpd_spg_pegawai.count({ where: whereClause });
 
-      const data = await prisma.spg_pegawai.findMany({
+      const data = await prisma.siap_skpd_spg_pegawai.findMany({
         where: whereClause,
         skip: skip,
         take: limit,
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     }
 
     try {
-      const newPegawai = await prisma.spg_pegawai.create({
+      const newPegawai = await prisma.siap_skpd_spg_pegawai.create({
         data: {
           peg_id,
           peg_nama,
