@@ -3,6 +3,25 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+function sanitizeBigInt(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeBigInt);
+  } else if (obj && typeof obj === 'object') {
+    const sanitized = {};
+    for (const key in obj) {
+      const value = obj[key];
+      if (typeof value === 'bigint') {
+        sanitized[key] = value.toString();
+      } else {
+        sanitized[key] = sanitizeBigInt(value);
+      }
+    }
+    return sanitized;
+  }
+  return obj;
+}
+
+
 export default async function handler(req, res) {
  if (req.method === 'GET') {
   const { searchQuery, page = 1, itemsPerPage = 10, peg_id } = req.query;
@@ -42,16 +61,12 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'Data not found' });
     }
 
-    // Konversi BigInt semua pegawai
-    const sanitized = data.map(p => ({
-      ...p,
-      peg_id: p.peg_id.toString(),
-    }));
+    const sanitized = sanitizeBigInt(data);
 
-    return res.status(200).json({
-      data: sanitized,
-      totalItems,
-    });
+return res.status(200).json({
+  data: sanitized,
+  totalItems,
+});
   } catch (error) {
     console.error('Unexpected error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -78,16 +93,12 @@ else if (req.method === 'POST') {
       },
     });
 
-    // BigInt to string
-    const sanitizedData = {
-      ...newPegawai,
-      peg_id: newPegawai.peg_id.toString(),
-    };
+    const sanitizedData = sanitizeBigInt(newPegawai);
 
-    return res.status(201).json({
-      message: 'Pegawai added successfully',
-      data: sanitizedData,
-    });
+return res.status(201).json({
+  message: 'Pegawai added successfully',
+  data: sanitizedData,
+});
   } catch (error) {
     console.error('Error inserting data:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
