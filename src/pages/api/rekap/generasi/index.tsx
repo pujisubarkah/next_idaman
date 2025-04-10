@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       // Ambil data satuan kerja beserta relasi v_pegawai_data
       const satuanKerjaData = await prisma.m_spg_satuan_kerja.findMany({
         include: {
-          pegawai: {
+          v_pegawai_data: {
             select: {
               peg_nama: true,
               peg_nip: true,
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
 
 function groupByGeneration(data) {
   return data.map((satuanKerja) => {
-    const pegawaiData = satuanKerja.pegawai || [];
+    const pegawaiData = satuanKerja.v_pegawai_data || [];
 
     const groupedPegawai = pegawaiData.reduce((result, pegawai) => {
       const birthDate = pegawai?.peg_lahir_tanggal;
