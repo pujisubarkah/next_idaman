@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       });
 
       // Ambil data golongan untuk mapping
-      const golonganData = await prisma.m_spg_golongan.findMany({
+      const golonganData = await prisma.siap_skpd_m_spg_golongan.findMany({
         select: {
           gol_id: true,
           nm_gol: true,
