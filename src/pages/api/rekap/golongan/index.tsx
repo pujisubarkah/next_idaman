@@ -43,7 +43,8 @@ export default async function handler(req, res) {
         const golonganDetails = {};
 
         satuanKerja.v_pegawai_data.forEach((pegawai) => {
-          const golName = golonganMap[pegawai.gol_id_akhir] || 'Unknown';
+          const golId = pegawai.gol_id_akhir;
+          const golName = golId !== null && golonganMap[golId] ? golonganMap[golId] : 'Unknown';
 
           if (!golonganDetails[golName]) {
             golonganDetails[golName] = {
