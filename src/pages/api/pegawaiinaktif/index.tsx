@@ -1,66 +1,76 @@
+import { PrismaClient } from '@prisma/client';
 
-
-import { supabase } from '../../../../lib/supabaseClient'; // Pastikan pathnya benar
+const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { pensiun_id, searchQuery, page = 1, itemsPerPage = 10 } = req.query;
 
-    console.log('Request received at /api/pensiun'); // Log untuk debugging
+    console.log('Request received at /api/pensiun');
 
     try {
-      // Membangun query Supabase
-      let query = supabase
-        .schema('siap')
-        .from('v_pegawai_data')
-        .select('*', { count: 'exact' });
+      const pageNumber = parseInt(page);
+      const limit = parseInt(itemsPerPage);
+      const skip = (pageNumber - 1) * limit;
 
-      // Filter berdasarkan peg_status = false
-      query = query.eq('peg_status', false);
+      // Bangun where clause dinamis
+      const whereClause = {
+        peg_status: false, // Filter status aktif/pensiun
+        ...(pensiun_id && {
+          pensiun_id: {
+            in: pensiun_id.split(',').map(Number),
+          },
+        }),
+        ...(searchQuery && {
+          peg_nama_lengkap: {
+            contains: searchQuery,
+            mode: 'insensitive',
+          },
+        }),
+      };
 
-      // Filter berdasarkan pensiun_id jika ada
-      if (pensiun_id) {
-        const pensiunIds = pensiun_id.split(',').map(Number); // Pisahkan jika lebih dari satu ID
-        query = query.in('pensiun_id', pensiunIds);
-      }
+      // Hitung total data
+      const totalItems = await prisma.v_pegawai_data.count({
+        where: whereClause,
+      });
 
-      // Filter berdasarkan searchQuery jika ada
-      if (searchQuery) {
-        query = query.ilike('peg_nama_lengkap', `%${searchQuery}%`);
-      }
+      // Ambil data dengan paginasi dan sorting
+      const data = await prisma.v_pegawai_data.findMany({
+        where: whereClause,
+        orderBy: {
+          tmt_pensiun: 'desc',
+        },
+        skip,
+        take: limit,
+      });
 
-      // Urutkan berdasarkan TMT Pensiun secara descending
-      query = query.order('tmt_pensiun', { ascending: false });
-
-      // Paginasi menggunakan range
-      const { data, error, count } = await query.range(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage - 1
-      );
-
-      // Menangani error dari Supabase
-      if (error) {
-        console.error('Error fetching data:', error);
-        return res.status(500).json({ error: error.message });
-      }
-
-      // Jika data tidak ditemukan
+      // Cek kalau datanya kosong
       if (!data || data.length === 0) {
         console.log('No data found');
         return res.status(404).json({ message: 'Data not found' });
       }
 
-      // Mengembalikan data dengan informasi total
+      // Ubah BigInt (kalau ada) ke string
+      const sanitized = data.map((item) => {
+        const clean = { ...item };
+        for (const key in clean) {
+          if (typeof clean[key] === 'bigint') {
+            clean[key] = clean[key].toString();
+          }
+        }
+        return clean;
+      });
+
+      // Kirim hasilnya
       return res.status(200).json({
-        data,
-        totalItems: count || 0,
+        data: sanitized,
+        totalItems,
       });
     } catch (error) {
       console.error('Unexpected error:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   } else {
-    // Jika method yang digunakan selain GET, kembalikan status 405
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
