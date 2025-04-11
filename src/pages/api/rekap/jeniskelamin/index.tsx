@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       // Fetch all satuan kerja and their pegawai from Prisma
       const satuanKerjaData = await prisma.m_spg_satuan_kerja.findMany({
         include: {
-          siap_skpd_spg_pegawai: {
+          v_pegawai_data: {
             select: {
               peg_nama: true,
               peg_nip: true,
