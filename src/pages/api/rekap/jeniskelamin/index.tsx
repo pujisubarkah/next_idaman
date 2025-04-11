@@ -1,3 +1,5 @@
+buatkan kode versi prisma berdasarkan kode di bawah
+
 import { supabase } from '../../../../../lib/supabaseClient';
 
 export default async function handler(req, res) {
