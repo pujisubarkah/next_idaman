@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       });
 
       const groupedByGender = satuanKerjaData.map((satuanKerja) => {
-        const groupedPegawai = satuanKerja.siap_skpd_spg_pegawai.reduce((acc, pegawai) => {
+        const groupedPegawai = satuanKerja.v_pegawai_data.reduce((acc, pegawai) => {
           const gender = pegawai.peg_jenis_kelamin || 'Tidak Diketahui';
           if (!acc[gender]) {
             acc[gender] = {
