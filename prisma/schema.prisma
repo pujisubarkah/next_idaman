@@ -53,20 +53,6 @@ model catatan_pegawai {
   @@schema("siap")
 }
 
-model chat_message {
-  id          BigInt @id @default(autoincrement())
-  topic       String @db.VarChar(255)
-  sender_name String @db.VarChar(255)
-  sender_id   Int
-  receiver_id Int
-  type        String @db.VarChar(255)
-  content     String
-  time        BigInt
-
-  @@index([topic, time], map: "chat_message_topic_time_index")
-  @@schema("siap")
-}
-
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model checkinout_mobile {
   id             BigInt
@@ -84,66 +70,6 @@ model checkinout_mobile {
   ssids          String?
 
   @@index([peg_nip])
-  @@ignore
-  @@schema("siap")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model gaji_pengelola {
-  bendahara_pengeluaran String? @db.VarChar(255)
-  pengurus_gaji         String? @db.VarChar(255)
-  satuan_kerja_id       Int?
-  unit_kerja_id         Int?
-  pengguna_anggaran     String? @db.VarChar(255)
-
-  @@ignore
-  @@schema("siap")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model gaji_tol {
-  eselon_id           Int?
-  jabatan_id          Int?
-  nip                 String?   @db.VarChar(30)
-  jf_id               Int?
-  jfu_id              Int?
-  tunjangan           BigInt?
-  last_update_time    DateTime? @default(now()) @db.Timestamp(6)
-  last_update_user_id BigInt?
-  satuan_kerja_id     Int?
-  jabatan_jenis       Int?      @db.SmallInt
-  jabatan_kelas       String?   @db.VarChar(255)
-  keterangan          String?   @db.VarChar(500)
-  deleted_at          DateTime? @db.Timestamp(6)
-
-  @@ignore
-  @@schema("siap")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model gaji_ttp {
-  eselon_id           Int?
-  jabatan_id          Int?
-  nip                 String?   @db.VarChar(30)
-  jf_id               Int?
-  jfu_id              Int?
-  tunjangan           BigInt?
-  last_update_time    DateTime? @default(now()) @db.Timestamp(6)
-  last_update_user_id BigInt?
-  jenis_ttp           String?   @db.VarChar(50)
-  deleted_at          DateTime? @db.Timestamp(6)
-
-  @@ignore
-  @@schema("siap")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model gaji_ttp_pejabat_pengadaan {
-  jenis      String? @db.VarChar(255)
-  min        BigInt?
-  max        BigInt?
-  keterangan Int?
-
   @@ignore
   @@schema("siap")
 }
@@ -379,7 +305,6 @@ model m_spg_agama {
   create_username String?                 @db.VarChar(255)
   update_username String?                 @db.VarChar(255)
   v_pegawai_data  v_pegawai_data[]
-  v_pegawai_data2 v_pegawai_data2[]
   spg_pegawai     siap_skpd_spg_pegawai[]
 
   @@schema("siap")
@@ -486,24 +411,23 @@ model m_spg_dp3 {
 }
 
 model m_spg_eselon {
-  eselon_id       Int                       @id
-  gol_id_awal     Int?
-  gol_id_akhir    Int?
-  eselon_nm       String                    @db.VarChar(10)
-  eselon_bup      Int?
-  eselon_kd       String?                   @db.VarChar(2)
-  created_at      DateTime?                 @db.Timestamp(6)
-  updated_at      DateTime?                 @default(now()) @db.Timestamp(6)
-  create_username String?                   @db.VarChar(255)
-  update_username String?                   @db.VarChar(255)
-  sapk_id         String?                   @db.VarChar(255)
-  m_spg_jabatan   siap_m_spg_jabatan[]
-  v_pegawai_data  v_pegawai_data[]
-  v_pegawai_data2 v_pegawai_data2[]
- 
+  eselon_id               Int                             @id
+  gol_id_awal             Int?
+  gol_id_akhir            Int?
+  eselon_nm               String                          @db.VarChar(10)
+  eselon_bup              Int?
+  eselon_kd               String?                         @db.VarChar(2)
+  created_at              DateTime?                       @db.Timestamp(6)
+  updated_at              DateTime?                       @default(now()) @db.Timestamp(6)
+  create_username         String?                         @db.VarChar(255)
+  update_username         String?                         @db.VarChar(255)
+  sapk_id                 String?                         @db.VarChar(255)
+  m_spg_jabatan           siap_m_spg_jabatan[]
+  v_pegawai_data          v_pegawai_data[]
+  siap_skpd_m_spg_jabatan siap_skpd_m_spg_jabatan[]
+  spg_riwayat_jabatan     siap_skpd_spg_riwayat_jabatan[]
 
   @@schema("siap")
-  siap_skpd_m_spg_jabatan siap_skpd_m_spg_jabatan[]
 }
 
 model m_spg_fakultas {
@@ -593,10 +517,9 @@ model siap_m_spg_golongan {
   spg_kgb                                                               spg_kgb[]
   v_pegawai_data_v_pegawai_data_gol_id_akhirTom_spg_golongan            v_pegawai_data[]                @relation("v_pegawai_data_gol_id_akhirTom_spg_golongan")
   v_pegawai_data_v_pegawai_data_gol_id_awalTom_spg_golongan             v_pegawai_data[]                @relation("v_pegawai_data_gol_id_awalTom_spg_golongan")
-  v_pegawai_data2_v_pegawai_data2_gol_id_akhirTom_spg_golongan          v_pegawai_data2[]               @relation("v_pegawai_data2_gol_id_akhirTom_spg_golongan")
-  v_pegawai_data2_v_pegawai_data2_gol_id_awalTom_spg_golongan           v_pegawai_data2[]               @relation("v_pegawai_data2_gol_id_awalTom_spg_golongan")
   spg_pegawai_spg_pegawai_gol_id_akhirTom_spg_golongan                  siap_skpd_spg_pegawai[]         @relation("spg_pegawai_gol_id_akhirTom_spg_golongan")
   spg_pegawai_spg_pegawai_gol_id_awalTom_spg_golongan                   siap_skpd_spg_pegawai[]         @relation("spg_pegawai_gol_id_awalTom_spg_golongan")
+  spg_riwayat_jabatan                                                   siap_skpd_spg_riwayat_jabatan[]
   spg_riwayat_pangkat                                                   siap_skpd_spg_riwayat_pangkat[]
 
   @@map("m_spg_golongan")
@@ -667,7 +590,6 @@ model siap_m_spg_jabatan {
   m_spg_satuan_kerja     m_spg_satuan_kerja?       @relation(fields: [satuan_kerja_id], references: [satuan_kerja_id], onDelete: NoAction, onUpdate: NoAction)
   m_spg_unit_kerja       siap_m_spg_unit_kerja?    @relation(fields: [unit_kerja_id], references: [unit_kerja_id], onDelete: NoAction, onUpdate: NoAction)
   v_pegawai_data         v_pegawai_data[]
-  v_pegawai_data2        v_pegawai_data2[]
 
   @@index([eselon_id])
   @@index([jabatan_jenis])
@@ -759,7 +681,7 @@ model m_spg_jenis_cuti {
   kinerja          String?                      @db.VarChar(64)
   peerreview       Boolean?
   order            Decimal?                     @db.Decimal
-  spg_riwayat_cuti siap_skpd_spg_riwayat_cuti[] @ignore
+  spg_riwayat_cuti siap_skpd_spg_riwayat_cuti[]
 
   @@schema("siap")
 }
@@ -1051,7 +973,6 @@ model siap_m_spg_referensi_jf {
   m_spg_jabatan_kelas                                               m_spg_jabatan_kelas?    @relation(fields: [jf_kelas], references: [kelas], onDelete: NoAction, onUpdate: NoAction)
   m_spg_jabatan_rumpun                                              m_spg_jabatan_rumpun?   @relation(fields: [rumpun_id], references: [rumpun_id], onDelete: NoAction, onUpdate: NoAction)
   v_pegawai_data                                                    v_pegawai_data[]
-  v_pegawai_data2                                                   v_pegawai_data2[]
 
   @@index([jf_nama])
   @@map("m_spg_referensi_jf")
@@ -1077,7 +998,6 @@ model siap_m_spg_referensi_jfu {
   deleted_at         DateTime?            @db.Timestamp(6)
   m_spg_jabatan      siap_m_spg_jabatan[]
   v_pegawai_data     v_pegawai_data[]
-  v_pegawai_data2    v_pegawai_data2[]
 
   @@map("m_spg_referensi_jfu")
   @@schema("siap")
@@ -1104,40 +1024,40 @@ model m_spg_rumpun {
 }
 
 model m_spg_satuan_kerja {
-  satuan_kerja_id         Int                          @id @default(autoincrement())
-  tahun_id                Int?
-  satuan_kerja_nama       String?                      @db.VarChar(255)
-  kode                    String?                      @db.VarChar(15)
-  satuan_kerja_alamat     String?                      @db.VarChar(150)
-  satuan_kerja_kel_ds     String?                      @db.VarChar(50)
-  kecamatan_id            Int?
-  satuan_kerja_khusus     String?                      @db.VarChar(1)
-  status                  Int?                         @default(1)
-  kode_skpd               String?                      @db.VarChar(255)
-  created_at              DateTime?                    @db.Timestamp(6)
-  updated_at              DateTime?                    @default(now()) @db.Timestamp(6)
-  create_username         String?                      @db.VarChar(255)
-  update_username         String?                      @db.VarChar(255)
-  latitude                Float?
-  longitude               Float?
-  kota                    String?                      @db.VarChar(255)
-  kecamatan               String?                      @db.VarChar(255)
-  kelurahan               String?                      @db.VarChar(255)
-  satuan_kerja_nama_alias String?                      @db.VarChar(255)
-  sapk_id                 String?                      @db.VarChar(32)
-  bobot                   Decimal?                     @db.Decimal(10, 2)
-  m_kabkot_id             Int?
-  rumpun_id               Int?
-  lampiran_no             Decimal?                     @db.Decimal
-  m_spg_jabatan           siap_m_spg_jabatan[]
-  m_spg_unit_kerja        siap_m_spg_unit_kerja[]
-  v_pegawai_data          v_pegawai_data[]
-  v_pegawai_data2         v_pegawai_data2[]
-  users                   siap_skpd_users[]
+  satuan_kerja_id            Int                          @id @default(autoincrement())
+  tahun_id                   Int?
+  satuan_kerja_nama          String?                      @db.VarChar(255)
+  kode                       String?                      @db.VarChar(15)
+  satuan_kerja_alamat        String?                      @db.VarChar(150)
+  satuan_kerja_kel_ds        String?                      @db.VarChar(50)
+  kecamatan_id               Int?
+  satuan_kerja_khusus        String?                      @db.VarChar(1)
+  status                     Int?                         @default(1)
+  kode_skpd                  String?                      @db.VarChar(255)
+  created_at                 DateTime?                    @db.Timestamp(6)
+  updated_at                 DateTime?                    @default(now()) @db.Timestamp(6)
+  create_username            String?                      @db.VarChar(255)
+  update_username            String?                      @db.VarChar(255)
+  latitude                   Float?
+  longitude                  Float?
+  kota                       String?                      @db.VarChar(255)
+  kecamatan                  String?                      @db.VarChar(255)
+  kelurahan                  String?                      @db.VarChar(255)
+  satuan_kerja_nama_alias    String?                      @db.VarChar(255)
+  sapk_id                    String?                      @db.VarChar(32)
+  bobot                      Decimal?                     @db.Decimal(10, 2)
+  m_kabkot_id                Int?
+  rumpun_id                  Int?
+  lampiran_no                Decimal?                     @db.Decimal
+  m_spg_jabatan              siap_m_spg_jabatan[]
+  m_spg_unit_kerja           siap_m_spg_unit_kerja[]
+  v_pegawai_data             v_pegawai_data[]
+  siap_skpd_m_spg_jabatan    siap_skpd_m_spg_jabatan[]
+  siap_skpd_m_spg_unit_kerja siap_skpd_m_spg_unit_kerja[]
+  spg_pegawai                siap_skpd_spg_pegawai[]
+  users                      siap_skpd_users[]
 
   @@schema("siap")
-  siap_skpd_m_spg_jabatan siap_skpd_m_spg_jabatan[]
-  siap_skpd_m_spg_unit_kerja siap_skpd_m_spg_unit_kerja[]
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -1324,7 +1244,6 @@ model siap_m_spg_unit_kerja {
   m_spg_jabatan         siap_m_spg_jabatan[]
   m_spg_satuan_kerja    m_spg_satuan_kerja?  @relation(fields: [satuan_kerja_id], references: [satuan_kerja_id], onDelete: NoAction, onUpdate: NoAction)
   v_pegawai_data        v_pegawai_data[]
-  v_pegawai_data2       v_pegawai_data2[]
 
   @@map("m_spg_unit_kerja")
   @@schema("siap")
@@ -2059,103 +1978,102 @@ model siap_spg_pegawai {
   jabatan_id                 Int?
   id_pend_akhir              Int?
   id_agama                   Int?
-  peg_nip                    String           @db.VarChar(18)
-  peg_gelar_depan            String?          @db.VarChar(50)
-  peg_gelar_belakang         String?          @db.VarChar(50)
-  peg_lahir_tanggal          DateTime?        @db.Date
-  peg_jenis_kelamin          String?          @db.Char(1)
+  peg_nip                    String          @db.VarChar(18)
+  peg_gelar_depan            String?         @db.VarChar(50)
+  peg_gelar_belakang         String?         @db.VarChar(50)
+  peg_lahir_tanggal          DateTime?       @db.Date
+  peg_jenis_kelamin          String?         @db.Char(1)
   peg_status_perkawinan      Int?
-  peg_karpeg                 String?          @db.VarChar(50)
-  peg_karsutri               String?          @db.VarChar(50)
-  peg_status_kepegawaian     String?          @db.VarChar(32)
-  peg_cpns_tmt               DateTime?        @db.Date
-  peg_pns_tmt                DateTime?        @db.Date
-  peg_gol_awal_tmt           DateTime?        @db.Date
+  peg_karpeg                 String?         @db.VarChar(50)
+  peg_karsutri               String?         @db.VarChar(50)
+  peg_status_kepegawaian     String?         @db.VarChar(32)
+  peg_cpns_tmt               DateTime?       @db.Date
+  peg_pns_tmt                DateTime?       @db.Date
+  peg_gol_awal_tmt           DateTime?       @db.Date
   peg_kerja_tahun            Int?
   peg_kerja_bulan            Int?
-  peg_jabatan_tmt            DateTime?        @db.Date
-  peg_no_askes               String?          @db.VarChar(50)
-  peg_npwp                   String?          @db.VarChar(50)
+  peg_jabatan_tmt            DateTime?       @db.Date
+  peg_no_askes               String?         @db.VarChar(50)
+  peg_npwp                   String?         @db.VarChar(50)
   peg_bapertarum             Int?
-  peg_kel_desa               String?          @db.VarChar(100)
-  peg_kodepos                String?          @db.VarChar(50)
-  peg_telp                   String?          @db.VarChar(100)
-  peg_telp_hp                String?          @db.VarChar(100)
-  peg_tmt_kgb                DateTime?        @db.Date
-  peg_tmt_pmk                DateTime?        @db.Date
-  peg_tmt_cltn               DateTime?        @db.Date
-  peg_foto                   String?          @db.VarChar(255)
-  peg_pend_awal_th           String?          @db.VarChar(4)
-  peg_pend_akhir_th          String?          @db.VarChar(4)
-  peg_gol_akhir_tmt          DateTime?        @db.Date
+  peg_kel_desa               String?         @db.VarChar(100)
+  peg_kodepos                String?         @db.VarChar(50)
+  peg_telp                   String?         @db.VarChar(100)
+  peg_telp_hp                String?         @db.VarChar(100)
+  peg_tmt_kgb                DateTime?       @db.Date
+  peg_tmt_pmk                DateTime?       @db.Date
+  peg_tmt_cltn               DateTime?       @db.Date
+  peg_foto                   String?         @db.VarChar(255)
+  peg_pend_awal_th           String?         @db.VarChar(4)
+  peg_pend_akhir_th          String?         @db.VarChar(4)
+  peg_gol_akhir_tmt          DateTime?       @db.Date
   xar_uid                    Int?
-  tgl_entry                  DateTime?        @db.Date
+  tgl_entry                  DateTime?       @db.Date
   satuan_kerja_id            Int?
-  peg_status                 Boolean?         @default(true)
-  peg_nip_lama               String?          @db.VarChar(9)
+  peg_status                 Boolean?        @default(true)
+  peg_nip_lama               String?         @db.VarChar(9)
   stspeg_id                  Int?
-  peg_ktp                    String?          @db.VarChar(50)
-  peg_instansi_dpk           String?          @db.VarChar(255)
-  peg_ak                     String?          @db.VarChar(7)
-  peg_ketstatus              String?          @db.VarChar(255)
-  peg_email                  String?          @db.VarChar(100)
+  peg_ktp                    String?         @db.VarChar(50)
+  peg_instansi_dpk           String?         @db.VarChar(255)
+  peg_ak                     String?         @db.VarChar(7)
+  peg_ketstatus              String?         @db.VarChar(255)
+  peg_email                  String?         @db.VarChar(100)
   peg_punya_kpe              Int?
-  peg_punya_kpe_tgl          DateTime?        @db.Date
+  peg_punya_kpe_tgl          DateTime?       @db.Date
   peg_status_asn             Int?
   peg_status_gaji            Int?
   id_status_kepegawaian      Int?
-  updated_at                 DateTime?        @default(now()) @db.Timestamp(6)
-  jenis_guru                 String?          @db.VarChar(255)
+  updated_at                 DateTime?       @default(now()) @db.Timestamp(6)
+  jenis_guru                 String?         @db.VarChar(255)
   peg_jenis_asn              Int?
   peg_status_calon           Int?
-  peg_jenis_pns              Int?             @default(10)
+  peg_jenis_pns              Int?            @default(10)
   kedudukan_pegawai          Int?
   status_tkd                 Int?
-  peg_skpd_tmt               DateTime?        @db.Date
-  peg_eselon_tmt             DateTime?        @db.Date
-  created_at                 DateTime?        @db.Timestamp(6)
-  create_username            String?          @db.VarChar(255)
-  update_username            String?          @db.VarChar(255)
-  password                   String?          @db.VarChar(200)
+  peg_skpd_tmt               DateTime?       @db.Date
+  peg_eselon_tmt             DateTime?       @db.Date
+  created_at                 DateTime?       @db.Timestamp(6)
+  create_username            String?         @db.VarChar(255)
+  update_username            String?         @db.VarChar(255)
+  password                   String?         @db.VarChar(200)
   id_kota                    Int?
   id_kec                     Int?
   id_kel                     BigInt?
   id_provinsi                Int?
-  peg_ketstatus_tgl          DateTime?        @db.Date
+  peg_ketstatus_tgl          DateTime?       @db.Date
   tugas_tambahan_jabatan_id  Int?
-  tugas_tambahan_jenis       String?          @db.VarChar(255)
-  daftar_spesialisasi        String?          @db.VarChar(1023)
-  tmt_tugas_tambahan         DateTime?        @db.Date
-  nuptk                      String?          @db.VarChar(255)
-  peg_jft_tmt                DateTime?        @db.Date
-  orang_sapk_id              String?          @db.VarChar(32)
-  peg_taspen                 String?          @db.VarChar(3)
+  tugas_tambahan_jenis       String?         @db.VarChar(255)
+  daftar_spesialisasi        String?         @db.VarChar(1023)
+  tmt_tugas_tambahan         DateTime?       @db.Date
+  nuptk                      String?         @db.VarChar(255)
+  peg_jft_tmt                DateTime?       @db.Date
+  orang_sapk_id              String?         @db.VarChar(32)
+  peg_taspen                 String?         @db.VarChar(3)
   tugas_tambahan2_jabatan_id Int?
-  tugas_tambahan2_jenis      String?          @db.VarChar(255)
-  tmt_tugas_tambahan2        DateTime?        @db.Date
+  tugas_tambahan2_jenis      String?         @db.VarChar(255)
+  tmt_tugas_tambahan2        DateTime?       @db.Date
   peg_alamat_latitude        Float?
   peg_alamat_longitude       Float?
-  peg_alamat_rt              String?          @db.VarChar(10)
-  peg_alamat_rw              String?          @db.VarChar(10)
-  peg_alamat_rt_ktp          String?          @db.VarChar(10)
-  peg_alamat_rw_ktp          String?          @db.VarChar(10)
+  peg_alamat_rt              String?         @db.VarChar(10)
+  peg_alamat_rw              String?         @db.VarChar(10)
+  peg_alamat_rt_ktp          String?         @db.VarChar(10)
+  peg_alamat_rw_ktp          String?         @db.VarChar(10)
   id_kota_ktp                Int?
   id_kec_ktp                 Int?
   id_kel_ktp                 BigInt?
   id_provinsi_ktp            Int?
-  peg_rumah_alamat_ktp       String?          @db.VarChar(255)
-  peg_kodepos_ktp            String?          @db.VarChar(50)
-  peg_no_rekening            String?          @db.VarChar(255)
+  peg_rumah_alamat_ktp       String?         @db.VarChar(255)
+  peg_kodepos_ktp            String?         @db.VarChar(50)
+  peg_no_rekening            String?         @db.VarChar(255)
   peg_masa_kerja_golongan    Int?
-  peg_email_resmi            String?          @db.VarChar(100)
-  peg_id                     BigInt           @id
+  peg_email_resmi            String?         @db.VarChar(100)
+  peg_id                     BigInt          @id
   peg_umur_pensiun           Int?
-  peg_rumah_alamat           String?          @db.VarChar(255)
-  peg_nama                   String           @db.VarChar(255)
-  peg_lahir_tempat           String?          @db.VarChar(50)
+  peg_rumah_alamat           String?         @db.VarChar(255)
+  peg_nama                   String          @db.VarChar(255)
+  peg_lahir_tempat           String?         @db.VarChar(50)
   unit_kerja_id              Int?
   v_pegawai_data             v_pegawai_data?
-  v_pegawai_data2            v_pegawai_data2?
 
   @@index([peg_id], map: "idx_spg_pegawai_lookup")
   @@index([gol_id_awal], map: "r19_fk")
@@ -3771,165 +3689,6 @@ model v_pegawai_data {
   @@schema("siap")
 }
 
-model v_pegawai_data2 {
-  peg_id                                                      BigInt                    @id(map: "v_pegawai_data_copy1_pkey")
-  last_update                                                 DateTime?                 @db.Timestamp(6)
-  peg_nip                                                     String?                   @unique(map: "v_pegawai_data_peg_nip_idx_copy1") @db.VarChar(18)
-  peg_nip_lama                                                String?                   @db.VarChar(9)
-  peg_nama                                                    String                    @db.VarChar(255)
-  peg_nama_lengkap                                            String                    @db.VarChar(255)
-  peg_lahir_tanggal                                           DateTime?                 @db.Date
-  peg_usia                                                    Int?
-  peg_jenis_kelamin                                           String?                   @db.Char(1)
-  peg_rumah_alamat                                            String?                   @db.VarChar(255)
-  peg_kodepos                                                 String?                   @db.VarChar(10)
-  peg_foto_url                                                String?                   @db.VarChar(511)
-  peg_status                                                  Boolean?
-  peg_ketstatus                                               String?                   @db.VarChar(255)
-  peg_ktp                                                     String?                   @db.VarChar(50)
-  peg_umur_pensiun                                            Int?
-  peg_jabatan_tmt                                             DateTime?                 @db.Date
-  peg_eselon_tmt                                              DateTime?                 @db.Date
-  peg_skpd_tmt                                                DateTime?                 @db.Date
-  peg_npwp                                                    String?                   @db.VarChar(50)
-  peg_telp                                                    String?                   @db.VarChar(100)
-  peg_telp_hp                                                 String?                   @db.VarChar(100)
-  id_agama                                                    Int?
-  nm_agama                                                    String?                   @db.VarChar(255)
-  jabatan_id                                                  Int?
-  jf_id                                                       Int?
-  jfu_id                                                      Int?
-  jabatan_jenis                                               Int?
-  jabatan_nama                                                String?                   @db.VarChar(1023)
-  eselon_id                                                   Int?
-  eselon_nm                                                   String?                   @db.VarChar(10)
-  unit_kerja_id                                               Int?
-  unit_kerja_nama                                             String?                   @db.VarChar(255)
-  satuan_kerja_id                                             Int?
-  satuan_kerja_nama                                           String?                   @db.VarChar(255)
-  gol_id_awal                                                 Int?
-  nm_gol_awal                                                 String?                   @db.VarChar(255)
-  nm_pkt_awal                                                 String?                   @db.VarChar(255)
-  gol_id_akhir                                                Int?
-  nm_gol_akhir                                                String?                   @db.VarChar(255)
-  nm_pkt_akhir                                                String?                   @db.VarChar(255)
-  id_pend_awal                                                Int?
-  nm_pend_awal                                                String?                   @db.VarChar(255)
-  kat_nama_pend_awal                                          String?                   @db.VarChar(255)
-  nm_tingpend_awal                                            String?                   @db.VarChar(255)
-  id_pend_akhir                                               Int?
-  nm_pend_akhir                                               String?                   @db.VarChar(255)
-  kat_nama_pend_akhir                                         String?                   @db.VarChar(255)
-  nm_tingpend_akhir                                           String?                   @db.VarChar(255)
-  riwayat_pendidikan                                          String?
-  riwayat_jabatan                                             String?
-  unit_kerja_parent_nama                                      String?                   @db.VarChar(255)
-  kedudukan_pegawai                                           Int?
-  kedudukan_pns                                               String?                   @db.VarChar(255)
-  kode_jabatan                                                String?                   @db.VarChar(255)
-  peg_tmt_pensiun                                             DateTime?                 @db.Date
-  masa_kerja_tahun                                            Int?
-  masa_kerja_bulan                                            Int?
-  masa_kerja_golongan_tahun                                   Int?
-  masa_kerja_golongan_bulan                                   Int?
-  peg_status_kepegawaian_id                                   Int?
-  peg_status_kepegawaian                                      String?                   @db.VarChar(255)
-  tugas_tambahan_jabatan_id                                   Int?
-  tugas_tambahan_jenis                                        String?                   @db.VarChar(255)
-  daftar_spesialisasi                                         String?
-  tugas_tambahan_jabatan_nama                                 String?                   @db.VarChar(255)
-  tmt_tugas_tambahan                                          DateTime?                 @db.Date
-  peg_instansi_dpk                                            String?                   @db.VarChar(255)
-  daftar_spesialisasi_nama                                    String?
-  peg_jenis_pns                                               Int?
-  jf_nama                                                     String?                   @db.VarChar(255)
-  jfu_nama                                                    String?                   @db.VarChar(255)
-  peg_gol_akhir_tmt                                           DateTime?                 @db.Date
-  peg_ketstatus_tgl                                           DateTime?                 @db.Date
-  peg_cpns_tmt                                                DateTime?                 @db.Date
-  peg_pns_tmt                                                 DateTime?                 @db.Date
-  nuptk                                                       String?                   @db.VarChar(255)
-  id_goldar                                                   Int?
-  nm_goldar                                                   String?                   @db.VarChar(3)
-  peg_email                                                   String?                   @db.VarChar(100)
-  peg_bapertarum                                              String?                   @db.VarChar(255)
-  peg_no_askes                                                String?                   @db.VarChar(50)
-  id_status_kepegawaian                                       Int?
-  peg_lahir_tempat                                            String?                   @db.VarChar(100)
-  peg_status_perkawinan                                       Int?
-  unit_kerja_level                                            Int?
-  unit_kerja_parent                                           String?                   @db.VarChar(32)
-  peg_kel_desa                                                String?                   @db.VarChar(100)
-  kecamatan_nm                                                String?                   @db.VarChar(50)
-  jabatan_kelas                                               String?                   @db.VarChar(10)
-  peg_karpeg                                                  String?                   @db.VarChar(50)
-  peg_pend_akhir_th                                           String?                   @db.VarChar(4)
-  peg_nama_jenis_pns                                          String?                   @db.VarChar(255)
-  peg_jft_tmt                                                 DateTime?                 @db.Date
-  id_kota                                                     Int?
-  id_kec                                                      Int?
-  id_kel                                                      BigInt?
-  id_provinsi                                                 Int?
-  nama_kel                                                    String?                   @db.VarChar(255)
-  nama_kec                                                    String?                   @db.VarChar(255)
-  nama_kota                                                   String?                   @db.VarChar(255)
-  nama_provinsi                                               String?                   @db.VarChar(255)
-  tugas_tambahan2_jabatan_id                                  Int?
-  tugas_tambahan2_jenis                                       String?                   @db.VarChar(255)
-  tugas_tambahan2_jabatan_nama                                String?                   @db.VarChar(255)
-  tmt_tugas_tambahan2                                         DateTime?                 @db.Date
-  peg_alamat_latitude                                         Float?
-  peg_alamat_longitude                                        Float?
-  is_gtk                                                      Boolean?                  @default(false)
-  peg_alamat_rt                                               String?                   @db.VarChar(10)
-  peg_alamat_rw                                               String?                   @db.VarChar(10)
-  peg_alamat_rt_ktp                                           String?                   @db.VarChar(10)
-  peg_alamat_rw_ktp                                           String?                   @db.VarChar(10)
-  peg_rumah_alamat_ktp                                        String?                   @db.VarChar(255)
-  peg_kodepos_ktp                                             String?                   @db.VarChar(50)
-  nama_kel_ktp                                                String?                   @db.VarChar(255)
-  nama_kec_ktp                                                String?                   @db.VarChar(255)
-  nama_kota_ktp                                               String?                   @db.VarChar(255)
-  nama_provinsi_ktp                                           String?                   @db.VarChar(255)
-  nip_atasan                                                  String?                   @db.VarChar(255)
-  nama_atasan                                                 String?                   @db.VarChar(255)
-  nip_atasan_bayangan                                         String?                   @db.VarChar(255)
-  nama_atasan_bayangan                                        String?                   @db.VarChar(255)
-  peg_kgb_yad_akhir                                           DateTime?                 @db.Date
-  unit_kerja_nama_full                                        String?                   @db.VarChar(2047)
-  organisasi_nama_alias                                       String?                   @db.VarChar(255)
-  organisasi_id                                               String?                   @db.VarChar(32)
-  peg_no_rekening                                             String?                   @db.VarChar(255)
-  peg_masa_kerja_golongan                                     Int?
-  peg_jumlah_anak                                             Int?                      @default(0)
-  peg_jumlah_anak_tunjangan                                   Int?                      @default(0)
-  peg_jumlah_pasangan_tunjangan                               Int?                      @default(0)
-  peg_email_resmi                                             String?                   @db.VarChar(100)
-  peg_tmt_kgb                                                 DateTime?                 @db.Date
-  is_nakes                                                    Boolean?                  @default(false)
-  m_spg_eselon                                                m_spg_eselon?             @relation(fields: [eselon_id], references: [eselon_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_eselon_id_fkey")
-  m_spg_golongan_v_pegawai_data2_gol_id_akhirTom_spg_golongan siap_m_spg_golongan?      @relation("v_pegawai_data2_gol_id_akhirTom_spg_golongan", fields: [gol_id_akhir], references: [gol_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_gol_id_akhir_fkey")
-  m_spg_golongan_v_pegawai_data2_gol_id_awalTom_spg_golongan  siap_m_spg_golongan?      @relation("v_pegawai_data2_gol_id_awalTom_spg_golongan", fields: [gol_id_awal], references: [gol_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_gol_id_awal_fkey")
-  m_spg_agama                                                 m_spg_agama?              @relation(fields: [id_agama], references: [id_agama], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_id_agama_fkey")
-  m_spg_jabatan                                               siap_m_spg_jabatan?       @relation(fields: [jabatan_id], references: [jabatan_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_jabatan_id_fkey")
-  m_spg_referensi_jf                                          siap_m_spg_referensi_jf?  @relation(fields: [jf_id], references: [jf_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_jf_id_fkey")
-  m_spg_referensi_jfu                                         siap_m_spg_referensi_jfu? @relation(fields: [jfu_id], references: [jfu_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_jfu_id_fkey")
-  spg_pegawai                                                 siap_spg_pegawai          @relation(fields: [peg_id], references: [peg_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_peg_id_fkey")
-  m_spg_satuan_kerja                                          m_spg_satuan_kerja?       @relation(fields: [satuan_kerja_id], references: [satuan_kerja_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_satuan_kerja_id_fkey")
-  m_spg_unit_kerja                                            siap_m_spg_unit_kerja?    @relation(fields: [unit_kerja_id], references: [unit_kerja_id], onDelete: NoAction, onUpdate: NoAction, map: "v_pegawai_data_copy1_unit_kerja_id_fkey")
-
-  @@index([jabatan_id], map: "v_pegawai_data_jabatan_id_idx_copy1")
-  @@index([jabatan_nama], map: "v_pegawai_data_jabatan_nama_idx_copy1")
-  @@index([jf_id], map: "v_pegawai_data_jf_id_idx_copy1")
-  @@index([jfu_id], map: "v_pegawai_data_jfu_id_idx_copy1")
-  @@index([organisasi_id], map: "v_pegawai_data_organisasi_id_idx_copy1")
-  @@index([organisasi_nama_alias], map: "v_pegawai_data_organisasi_nama_alias_idx_copy1")
-  @@index([peg_status], map: "v_pegawai_data_peg_status_idx_copy1")
-  @@index([satuan_kerja_id], map: "v_pegawai_data_satuan_kerja_id_idx_copy1")
-  @@index([unit_kerja_id], map: "v_pegawai_data_unit_kerja_id_idx_copy1")
-  @@schema("siap")
-}
-
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model siap_v_pegawai_data_tunjangan {
   peg_id                        String    @db.VarChar(64)
@@ -4336,7 +4095,7 @@ model log_action {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model log_edit_pegawai {
-  id         BigInt          @default(autoincrement())
+  id         Int             @id @default(autoincrement())
   peg_id     BigInt
   status_id  Int
   action     String?         @db.VarChar(255)
@@ -4347,7 +4106,6 @@ model log_edit_pegawai {
   m_status   m_status        @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users      siap_skpd_users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@ignore
   @@schema("siap_skpd")
 }
 
@@ -4563,6 +4321,7 @@ model siap_skpd_m_spg_unit_kerja {
   negeri                Boolean?                  @default(false)
   m_spg_jabatan         siap_skpd_m_spg_jabatan[]
   m_spg_satuan_kerja    m_spg_satuan_kerja?       @relation(fields: [satuan_kerja_id], references: [satuan_kerja_id], onDelete: NoAction, onUpdate: NoAction)
+  spg_pegawai           siap_skpd_spg_pegawai[]
 
   @@index([kode_unit_kerja], map: "m_spg_unit_kerja_kode_unit_kerja_npsn_idx")
   @@index([npsn])
@@ -4577,7 +4336,7 @@ model m_status {
   status                  String                    @db.VarChar(255)
   created_at              DateTime?                 @db.Timestamp(6)
   updated_at              DateTime?                 @db.Timestamp(6)
-  log_edit_pegawai        log_edit_pegawai[]        @ignore
+  log_edit_pegawai        log_edit_pegawai[]
   status_edit_pegawai     status_edit_pegawai[]
   status_edit_pegawai_log status_edit_pegawai_log[]
 
@@ -4618,86 +4377,6 @@ model modules {
   @@index([parent_id], map: "modules_parent_id_index")
   @@index([type], map: "modules_type_index")
   @@index([url])
-  @@schema("siap_skpd")
-}
-
-model monitoring {
-  peg_nip                           String   @id @db.VarChar(18)
-  peg_nama                          String?  @db.VarChar(255)
-  peg_jenis_kelamin                 String?  @db.VarChar(255)
-  jabatan_nama                      String?  @db.VarChar(255)
-  satuan_kerja_id                   String?  @db.VarChar(255)
-  satuan_kerja_nama                 String?  @db.VarChar(255)
-  unit_kerja_id                     String?  @db.VarChar(255)
-  unit_kerja_nama                   String?  @db.VarChar(2047)
-  organisasi_nama_alias             String?  @db.VarChar(255)
-  organisasi_id                     String?  @db.VarChar(255)
-  peg_status                        Boolean?
-  is_gtk                            Boolean?
-  login_count                       Int?
-  update_count                      Int?
-  progres                           Float?   @db.Real
-  npwp                              Int?
-  karpeg                            Int?
-  sk_cpns                           Int?
-  sk_pns                            Int?
-  rekening_bank                     Int?
-  karis                             Int?
-  karsu                             Int?
-  riwayat_diklat_struktural         Int?
-  riwayat_diklat_struktural_komplit Int?
-  sertifikat_pbj                    Int?
-  sertifikat_pbj_komplit            Int?
-  skp                               Int?
-  skp_komplit                       Int?
-  kgb                               Int?
-  kgb_komplit                       Int?
-  riwayat_pangkat                   Int?
-  riwayat_pangkat_komplit           Int?
-  riwayat_pendidikan                Int?
-  riwayat_pendidikan_komplit        Int?
-  sertifikat_lppks                  Int?
-  sertifikat_lppks_komplit          Int?
-  riwayat_jabatan                   Int?
-  riwayat_jabatan_komplit           Int?
-  nm_pkt_akhir                      String?  @db.VarChar
-  nm_gol_akhir                      String?  @db.VarChar
-  gol_id_akhir                      Int?
-  nm_pend_akhir                     String?  @db.VarChar
-  id_pend_akhir                     Int?
-  pend_sd                           Boolean?
-  pend_smp                          Boolean?
-  pend_sma                          Boolean?
-  pend_d3                           Boolean?
-  pend_s1                           Boolean?
-  pend_s2                           Boolean?
-  pend_s3                           Boolean?
-  ii_a                              Boolean?
-  ii_b                              Boolean?
-  ii_c                              Boolean?
-  ii_d                              Boolean?
-  iii_a                             Boolean?
-  iii_b                             Boolean?
-  iii_c                             Boolean?
-  iii_d                             Boolean?
-  iv_a                              Boolean?
-  iv_b                              Boolean?
-  iv_c                              Boolean?
-  iv_d                              Boolean?
-  iv_e                              Boolean?
-  diklat_j                          Int?
-  diklat_v                          Int?
-  sertifikat_j                      Int?
-  sertifikat_v                      Int?
-  prestasi_j                        Int?
-  prestasi_v                        Int?
-  penghargaan_j                     Int?
-  penghargaan_v                     Int?
-  i_b                               Boolean?
-  i_c                               Boolean?
-  i_d                               Boolean?
-  i_a                               Boolean?
-
   @@schema("siap_skpd")
 }
 
@@ -5328,7 +5007,7 @@ model siap_skpd_spg_pegawai {
   peg_gol_akhir_tmt                                            DateTime?                           @db.Date
   xar_uid                                                      Int?
   tgl_entry                                                    DateTime?                           @db.Date
-  satuan_kerja_id                                              BigInt?
+  satuan_kerja_id                                              Int?
   peg_status                                                   Boolean?                            @default(true)
   peg_nip_lama                                                 String?                             @db.VarChar(9)
   stspeg_id                                                    Int?
@@ -5401,9 +5080,11 @@ model siap_skpd_spg_pegawai {
   m_spg_jabatan                                                siap_skpd_m_spg_jabatan?            @relation(fields: [jabatan_id], references: [jabatan_id], onDelete: NoAction, onUpdate: NoAction)
   m_spg_kecamatan_spg_pegawai_kecamatan_idTom_spg_kecamatan    m_spg_kecamatan?                    @relation("spg_pegawai_kecamatan_idTom_spg_kecamatan", fields: [kecamatan_id], references: [kecamatan_id], onDelete: NoAction, onUpdate: NoAction)
   jenis_pns                                                    jenis_pns?                          @relation(fields: [peg_jenis_pns], references: [id_jen_pns], onDelete: NoAction, onUpdate: NoAction)
+  m_spg_satuan_kerja                                           m_spg_satuan_kerja?                 @relation(fields: [satuan_kerja_id], references: [satuan_kerja_id], onDelete: NoAction, onUpdate: NoAction)
+  m_spg_unit_kerja                                             siap_skpd_m_spg_unit_kerja?         @relation(fields: [unit_kerja_id], references: [unit_kerja_id], onDelete: NoAction, onUpdate: NoAction)
   spg_pensiun                                                  siap_skpd_spg_pensiun[]
   spg_riwayat                                                  siap_skpd_spg_riwayat[]
-  spg_riwayat_cuti                                             siap_skpd_spg_riwayat_cuti[]        @ignore
+  spg_riwayat_cuti                                             siap_skpd_spg_riwayat_cuti[]
   spg_riwayat_diklat                                           siap_skpd_spg_riwayat_diklat[]
   spg_riwayat_ijin                                             spg_riwayat_ijin[]
   spg_riwayat_penghargaan                                      siap_skpd_spg_riwayat_penghargaan[]
@@ -5468,7 +5149,7 @@ model siap_skpd_spg_riwayat {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model siap_skpd_spg_riwayat_cuti {
-  cuti_id          Int                    @default(autoincrement())
+  cuti_id          Int                    @id @default(autoincrement())
   peg_id           BigInt?
   jeniscuti_id     Int?
   cuti_tgl         DateTime?              @db.Date
@@ -5490,7 +5171,6 @@ model siap_skpd_spg_riwayat_cuti {
   spg_pegawai      siap_skpd_spg_pegawai? @relation(fields: [peg_id], references: [peg_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("spg_riwayat_cuti")
-  @@ignore
   @@schema("siap_skpd")
 }
 
@@ -5598,36 +5278,38 @@ model spg_riwayat_ijin {
 }
 
 model siap_skpd_spg_riwayat_jabatan {
-  riw_jabatan_id          Int       @id @default(autoincrement())
+  riw_jabatan_id          Int                  @id @default(autoincrement())
   peg_id                  BigInt?
-  jabatan_id              String?   @db.VarChar(64)
-  riw_jabatan_nm          String?   @db.VarChar(4095)
-  riw_jabatan_unit        String?   @db.VarChar(4095)
-  riw_jabatan_tmt         DateTime? @db.Date
-  riw_jabatan_no          String?   @db.VarChar(100)
-  riw_jabatan_tgl         DateTime? @db.Date
-  riw_jabatan_pejabat     String?   @db.VarChar(255)
+  jabatan_id              String?              @db.VarChar(64)
+  riw_jabatan_nm          String?              @db.VarChar(4095)
+  riw_jabatan_unit        String?              @db.VarChar(4095)
+  riw_jabatan_tmt         DateTime?            @db.Date
+  riw_jabatan_no          String?              @db.VarChar(100)
+  riw_jabatan_tgl         DateTime?            @db.Date
+  riw_jabatan_pejabat     String?              @db.VarChar(255)
   gol_id                  Int?
-  riw_jabatan_skpd        String?   @db.VarChar(4095)
-  riw_jabatan_instansi    String?   @db.VarChar(4095)
+  riw_jabatan_skpd        String?              @db.VarChar(4095)
+  riw_jabatan_instansi    String?              @db.VarChar(4095)
   eselon_id               Int?
-  created_at              DateTime? @db.Timestamp(6)
-  updated_at              DateTime? @default(now()) @db.Timestamp(6)
-  create_username         String?   @db.VarChar(255)
-  update_username         String?   @db.VarChar(255)
-  riw_jabatan_jenis       String?   @default("Jabatan") @db.VarChar(255)
-  riw_jabatan_selesai_tmt DateTime? @db.Date
+  created_at              DateTime?            @db.Timestamp(6)
+  updated_at              DateTime?            @default(now()) @db.Timestamp(6)
+  create_username         String?              @db.VarChar(255)
+  update_username         String?              @db.VarChar(255)
+  riw_jabatan_jenis       String?              @default("Jabatan") @db.VarChar(255)
+  riw_jabatan_selesai_tmt DateTime?            @db.Date
   rumpun_id               Int?
-  riw_pelantikan_tmt      DateTime? @db.Date
-  sapk_synced             Boolean?  @default(false)
-  riw_jabatan_aktif       Int?      @default(0)
+  riw_pelantikan_tmt      DateTime?            @db.Date
+  sapk_synced             Boolean?             @default(false)
+  riw_jabatan_aktif       Int?                 @default(0)
   jabatan_jenis           Int?
   jfu_id                  Int?
   jf_id                   Int?
-  unit_kerja_id           String?   @db.VarChar(255)
-  satuan_kerja_id         String?   @db.VarChar(255)
-  deleted_at              DateTime? @db.Timestamp(6)
-  jenis_pengangkatan      String?   @db.VarChar(255)
+  unit_kerja_id           String?              @db.VarChar(255)
+  satuan_kerja_id         String?              @db.VarChar(255)
+  deleted_at              DateTime?            @db.Timestamp(6)
+  jenis_pengangkatan      String?              @db.VarChar(255)
+  m_spg_eselon            m_spg_eselon?        @relation(fields: [eselon_id], references: [eselon_id], onDelete: NoAction, onUpdate: NoAction)
+  m_spg_golongan          siap_m_spg_golongan? @relation(fields: [gol_id], references: [gol_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([peg_id])
   @@map("spg_riwayat_jabatan")
@@ -6105,7 +5787,7 @@ model siap_skpd_users {
   unit_kerja_id           String?                   @db.VarChar(32)
   status_aktif            Int?                      @default(1)
   action_log              action_log[]
-  log_edit_pegawai        log_edit_pegawai[]        @ignore
+  log_edit_pegawai        log_edit_pegawai[]
   status_edit_pegawai_log status_edit_pegawai_log[]
   roles                   roles?                    @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   m_spg_satuan_kerja      m_spg_satuan_kerja?       @relation(fields: [satuan_kerja_id], references: [satuan_kerja_id], onDelete: NoAction, onUpdate: NoAction)

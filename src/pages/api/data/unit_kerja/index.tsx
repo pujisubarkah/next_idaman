@@ -3,96 +3,86 @@ import { supabase } from '../../../../../lib/supabaseClient';
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      // Mengambil data dari m_spg_satuan_kerja, m_spg_unit_kerja, dan spg_pegawai
-      const { data, error } = await supabase
-        .schema('siap') // Ganti dengan schema yang sesuai
+      // Ambil data dari schema 'siap' (satuan kerja)
+      const { data: satuanKerja, error: satuanError } = await supabase
+        .schema('siap')
         .from('m_spg_satuan_kerja')
+        .select('*')
+        .order('satuan_kerja_id', { ascending: true });
+
+      if (satuanError) throw new Error(satuanError.message);
+
+      // Ambil data dari schema 'siap_skpd' (unit kerja dan pegawai)
+      const { data: unitKerja, error: unitError } = await supabase
+        .schema('siap_skpd')
+        .from('m_spg_unit_kerja')
         .select(`
-          satuan_kerja_id,
-          satuan_kerja_nama,
-          m_spg_unit_kerja (
-            unit_kerja_id,
-            unit_kerja_nama,
-            unit_kerja_parent,
-            unit_kerja_level,
-            spg_pegawai (peg_nama)
-          ),
+          *,
           spg_pegawai (peg_nama)
         `)
-        .order('unit_kerja_level', { foreignTable: 'm_spg_unit_kerja', ascending: true }) // Mengurutkan berdasarkan unit_kerja_level
-        .order('satuan_kerja_id', { ascending: true }); // Mengurutkan berdasarkan satuan_kerja_id
+        .order('unit_kerja_level', { ascending: true });
 
-      if (error) {
-        throw new Error(error.message);
-      }
+      if (unitError) throw new Error(unitError.message);
 
-      // Interface untuk unit kerja
+      // Tipe untuk Unit Kerja
       interface Unit {
         unit_kerja_id: number;
         unit_kerja_nama: string;
         unit_kerja_parent: number | null;
         unit_kerja_level: number;
-        pegawai_count: number;  // Jumlah pegawai di unit kerja
+        satuan_kerja_id: number;
+        pegawai_count: number;
         children: Unit[];
       }
 
-      // Fungsi untuk membangun hierarki unit kerja
+      // Fungsi hierarki unit kerja
       const buildHierarchy = (units: Unit[]): Unit[] => {
         const unitMap: { [key: number]: Unit } = {};
-
-        // Membuat map berdasarkan unit_kerja_id untuk referensi cepat
         units.forEach(unit => {
           unitMap[unit.unit_kerja_id] = { ...unit, children: [] };
         });
 
-        // Menyusun hierarki dengan mencocokkan parent ke unit yang sesuai
         const result: Unit[] = [];
-
         units.forEach(unit => {
-          // Skip unit kerja dengan unit_kerja_id = 99
-          if (unit.unit_kerja_id === 99) {
-            return;
-          }
-          
+          if (unit.unit_kerja_id === 99) return;
           if (unit.unit_kerja_parent) {
-            // Jika ada parent, tambahkan ke children dari unit_kerja_parent
             unitMap[unit.unit_kerja_parent]?.children.push(unitMap[unit.unit_kerja_id]);
           } else {
-            // Jika tidak ada parent, masukkan ke dalam root level
             result.push(unitMap[unit.unit_kerja_id]);
           }
         });
 
-        // Sortir untuk memastikan unit_kerja_id = 1 berada di atas
-        const sortedResult = result.sort((a, b) => {
-          if (a.unit_kerja_id === 1) return -1;  // Menempatkan unit_kerja_id = 1 di atas
+        return result.sort((a, b) => {
+          if (a.unit_kerja_id === 1) return -1;
           if (b.unit_kerja_id === 1) return 1;
-
-          // Urutkan berdasarkan unit_kerja_level setelahnya
           return a.unit_kerja_level - b.unit_kerja_level;
         });
-
-        return sortedResult;
       };
 
-      // Menyusun data satuan kerja dan unit kerja, serta menghitung jumlah pegawai
-      const structuredData = data
-        .filter(satuan => satuan.satuan_kerja_id !== 99)  // Filter satuan_kerja_id = 99
-        .map((satuan) => {
-          // Menghitung jumlah pegawai di satuan kerja
-          const satuanPegawaiCount = satuan.spg_pegawai ? satuan.spg_pegawai.length : 0;
+      // Gabungkan dan strukturkan data
+      const structuredData = satuanKerja
+        .filter(sk => sk.satuan_kerja_id !== 99)
+        .map(sk => {
+          const relatedUnits = unitKerja.filter(
+            unit => unit.satuan_kerja_id === sk.satuan_kerja_id && unit.unit_kerja_id !== 99
+          );
+
+          const satuanPegawaiCount = relatedUnits.reduce(
+            (total, unit) => total + (unit.spg_pegawai?.length || 0),
+            0
+          );
 
           return {
-            satuan_kerja_id: satuan.satuan_kerja_id,
-            satuan_kerja_nama: satuan.satuan_kerja_nama,
+            satuan_kerja_id: sk.satuan_kerja_id,
+            satuan_kerja_nama: sk.satuan_kerja_nama,
+            pegawai_count: satuanPegawaiCount,
             units: buildHierarchy(
-              satuan.m_spg_unit_kerja.map(unit => ({
+              relatedUnits.map(unit => ({
                 ...unit,
-                pegawai_count: unit.spg_pegawai ? unit.spg_pegawai.length : 0, // Jumlah pegawai per unit kerja
+                pegawai_count: unit.spg_pegawai?.length || 0,
                 children: []
               }))
             ),
-            pegawai_count: satuanPegawaiCount, // Menambahkan jumlah pegawai di tingkat satuan kerja
           };
         });
 

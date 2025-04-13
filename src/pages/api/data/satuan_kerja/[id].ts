@@ -1,70 +1,70 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Pastikan path sesuai dengan proyek Anda
+import prisma from '../../../../../lib/prisma'; // Pastikan path sesuai
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
-  const { id } = req.query; // Mendapatkan ID dari URL parameter
+  const { id } = req.query;
 
   if (method === 'GET') {
     try {
-      // Fetch data from Supabase sorted by satuan_kerja_nama
-      const { data, error } = await supabase
-        .schema('siap') // Pastikan nama schema benar
-        .from('m_spg_satuan_kerja') // Pastikan nama tabel benar
-        .select('*')
-        .eq('satuan_kerja_id', id); // Menggunakan satuan_kerja_id sebagai filter
+      const data = await prisma.m_spg_satuan_kerja.findUnique({
+        where: {
+          satuan_kerja_id: Number(id),
+        },
+      });
 
-      if (error) throw error;
+      if (!data) {
+        return res.status(404).json({ message: 'Data not found' });
+      }
 
-      return res.status(200).json(data); // Mengirimkan data yang ditemukan
-    } catch (error) {
+      return res.status(200).json(data);
+    } catch (error: any) {
       return res.status(500).json({ message: 'Error fetching data', error: error.message });
     }
   } else if (method === 'POST') {
     try {
       const { satuan_kerja_nama, kode_skpd, status } = req.body;
 
-      // Validasi input
       if (!satuan_kerja_nama || !kode_skpd || status === undefined) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
 
-      // Insert data into Supabase
-      const { data, error } = await supabase
-        .schema('siap') // Pastikan nama schema benar
-        .from('m_spg_satuan_kerja') // Pastikan nama tabel benar
-        .insert([{ satuan_kerja_nama, kode_skpd, status }]);
+      const created = await prisma.m_spg_satuan_kerja.create({
+        data: {
+          satuan_kerja_nama,
+          kode_skpd,
+          status,
+        },
+      });
 
-      if (error) throw error;
-
-      return res.status(201).json(data); // Mengirimkan data yang baru dimasukkan
-    } catch (error) {
+      return res.status(201).json(created);
+    } catch (error: any) {
       return res.status(500).json({ message: 'Error inserting data', error: error.message });
     }
   } else if (method === 'PUT') {
     try {
       const { satuan_kerja_nama, kode_skpd, status } = req.body;
 
-      // Validasi input
       if (!satuan_kerja_nama || !kode_skpd || status === undefined) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
 
-      // Pastikan hanya kolom yang ingin diupdate yang diteruskan
-      const { data, error } = await supabase
-        .schema('siap') // Pastikan nama schema benar
-        .from('m_spg_satuan_kerja') // Pastikan nama tabel benar
-        .update({ satuan_kerja_nama, kode_skpd, status })
-        .eq('satuan_kerja_id', id); // Memperbarui data berdasarkan satuan_kerja_id yang diterima dari query
+      const updated = await prisma.m_spg_satuan_kerja.update({
+        where: {
+          satuan_kerja_id: Number(id),
+        },
+        data: {
+          satuan_kerja_nama,
+          kode_skpd,
+          status,
+        },
+      });
 
-      if (error) throw error;
-
-      // Mengirimkan data yang telah diperbarui
-      return res.status(200).json(data); // Data yang sudah diperbarui
-    } catch (error) {
+      return res.status(200).json(updated);
+    } catch (error: any) {
       return res.status(500).json({ message: 'Error updating data', error: error.message });
     }
   } else {
-    // Mengembalikan status 405 jika metode tidak diperbolehkan
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 }

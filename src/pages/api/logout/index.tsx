@@ -1,4 +1,4 @@
-import { supabase } from "../../../../lib/supabaseClient";
+import prisma  from "../../../../lib/prisma"; // sesuaikan path sesuai struktur project
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,23 +6,31 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Ambil sessionId dari body
-    const { sessionId } = req.body; // Ambil langsung dari req.body
+    const { sessionId } = req.body;
+
     console.log("Session ID Diterima:", sessionId);
 
     if (!sessionId) {
       return res.status(400).json({ error: 'Session ID tidak ditemukan' });
     }
 
-    // Logika penghapusan session
-    await supabase
-      .schema('siap_skpd')
-      .from('log_session')
-      .update({ logout_time: new Date() })
-      .eq('session_id', sessionId);
+    // Update logout_time berdasarkan session_id
+    const updateResult = await prisma.log_session.updateMany({
+      where: {
+        session_id: sessionId,
+      },
+      data: {
+        logout_time: new Date(),
+      },
+    });
 
-    // Hapus session di cookies
-    res.setHeader('Set-Cookie', 'session_id=; Max-Age=0; path=/');
+    // Jika tidak ada row yang diupdate, beri respon gagal
+    if (updateResult.count === 0) {
+      return res.status(404).json({ error: 'Session tidak ditemukan' });
+    }
+
+    // Hapus session_id dari cookie
+    res.setHeader('Set-Cookie', 'session_id=; Max-Age=0; Path=/; HttpOnly');
 
     return res.status(200).json({ message: 'Logout berhasil' });
   } catch (error) {
