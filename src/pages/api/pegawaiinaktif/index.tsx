@@ -1,77 +1,64 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../../../../lib/prisma'; // Sesuaikan path jika perlu
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { pensiun_id, searchQuery, page = 1, itemsPerPage = 10 } = req.query;
-
-    console.log('Request received at /api/pensiun');
-
     try {
-      const pageNumber = parseInt(page);
-      const limit = parseInt(itemsPerPage);
-      const skip = (pageNumber - 1) * limit;
-
-      // Bangun where clause dinamis
-      const whereClause = {
-        peg_status: false, // Filter status aktif/pensiun
-        ...(pensiun_id && {
-          pensiun_id: {
-            in: pensiun_id.split(',').map(Number),
+      // Mengambil data dari siap_skpd_spg_pensiun dan menghubungkannya dengan siap_skpd_spg_pegawai
+      const spgPensiun = await prisma.siap_skpd_spg_pensiun.findMany({
+        select: {
+          rpensiun_id: true,
+          pensiun_id: true,
+          peg_id: true,
+          rpensiun_tglsk: true, // Mengambil tanggal pensiun
+          spg_pegawai: { // Menghubungkan dengan model siap_skpd_spg_pegawai
+            select: {
+              peg_nama: true, // Mengambil nama pegawai
+              peg_lahir_tanggal: true, // Mengambil tanggal lahir
+              peg_lahir_tempat: true, // Mengambil tempat lahir
+              peg_nip: true, // Mengambil NIP pegawai
+              peg_gol_akhir_tmt: true, // Mengambil golongan akhir TMT
+              unit_kerja_id: true, // Mengambil ID unit kerja
+              jabatan_id: true, // Mengambil ID jabatan
+              peg_jabatan_tmt: true, // Mengambil TMT jabatan pegawai
+              peg_status: true, // Mengambil status pegawai
+              peg_ketstatus_tgl: true, // Mengambil tanggal status ket status
+              peg_kerja_tahun: true, // Mengambil lama kerja dalam tahun
+              peg_kerja_bulan: true, // Mengambil lama kerja dalam bulan
+              peg_ketstatus: true, // Mengambil keterangan status
+            },
           },
-        }),
-        ...(searchQuery && {
-          peg_nama_lengkap: {
-            contains: searchQuery,
-            mode: 'insensitive',
-          },
-        }),
-      };
-
-      // Hitung total data
-      const totalItems = await prisma.v_pegawai_data.count({
-        where: whereClause,
-      });
-
-      // Ambil data dengan paginasi dan sorting
-      const data = await prisma.v_pegawai_data.findMany({
-        where: whereClause,
-        orderBy: {
-          peg_tmt_pensiun: 'desc',
         },
-        skip,
-        take: limit,
       });
 
-      // Cek kalau datanya kosong
-      if (!data || data.length === 0) {
-        console.log('No data found');
-        return res.status(404).json({ message: 'Data not found' });
-      }
+      // Mengonversi BigInt ke string untuk peg_id
+      const responseData = spgPensiun.map(item => ({
+        ...item,
+        peg_id: item.peg_id ? item.peg_id.toString() : null, // Mengonversi BigInt menjadi String
+        peg_nama: item.spg_pegawai?.peg_nama || null, // Menambahkan nama pegawai
+        peg_lahir_tanggal: item.spg_pegawai?.peg_lahir_tanggal || null, // Menambahkan tanggal lahir
+        peg_lahir_tempat: item.spg_pegawai?.peg_lahir_tempat || null, // Menambahkan tempat lahir
+        peg_nip: item.spg_pegawai?.peg_nip || null, // Menambahkan NIP
+        peg_gol_akhir_tmt: item.spg_pegawai?.peg_gol_akhir_tmt || null, // Menambahkan golongan akhir TMT
+        unit_kerja_id: item.spg_pegawai?.unit_kerja_id || null, // Menambahkan ID unit kerja
+        jabatan_id: item.spg_pegawai?.jabatan_id || null, // Menambahkan ID jabatan
+        peg_jabatan_tmt: item.spg_pegawai?.peg_jabatan_tmt || null, // Menambahkan TMT jabatan
+        peg_status: item.spg_pegawai?.peg_status || null, // Menambahkan status pegawai
+        peg_ketstatus_tgl: item.spg_pegawai?.peg_ketstatus_tgl || null, // Menambahkan tanggal status
+        peg_kerja_tahun: item.spg_pegawai?.peg_kerja_tahun || null, // Menambahkan tahun kerja
+        peg_kerja_bulan: item.spg_pegawai?.peg_kerja_bulan || null, // Menambahkan bulan kerja
+        peg_ketstatus: item.spg_pegawai?.peg_ketstatus || null, // Menambahkan keterangan status
+      }));
 
-      // Ubah BigInt (kalau ada) ke string
-      const sanitized = data.map((item) => {
-        const clean = { ...item };
-        for (const key in clean) {
-          if (typeof clean[key] === 'bigint') {
-            clean[key] = clean[key].toString();
-          }
-        }
-        return clean;
-      });
-
-      // Kirim hasilnya
-      return res.status(200).json({
-        data: sanitized,
-        totalItems,
-      });
+      // Mengembalikan data jika berhasil
+      res.status(200).json(responseData);
     } catch (error) {
-      console.error('Unexpected error:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+      // Menangani jika terjadi error saat mengambil data
+      console.error("Error details:", error);  // Menampilkan error lengkap
+      res.status(500).json({ error: 'Error fetching spg_pensiun records' });
     }
   } else {
-    res.setHeader('Allow', ['GET']);
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    // Menangani jika method yang digunakan bukan GET
+    res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
+
