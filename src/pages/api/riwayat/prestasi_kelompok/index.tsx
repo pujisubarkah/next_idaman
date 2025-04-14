@@ -1,77 +1,73 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Sesuaikan path import
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-    const { peg_id } = req.query;
+  const { peg_id } = req.query;
 
-    try {
-        // Handle GET request
-        if (req.method === 'GET') {
-            if (!peg_id) {
-                return res.status(400).json({ error: "'peg_id' parameter is required" });
-            }
+  try {
+    if (req.method === 'GET') {
+      if (!peg_id) {
+        return res.status(400).json({ error: "'peg_id' parameter is required" });
+      }
 
-        // Query dengan join antar tabel spg_riwayat dan spg_pegawai, serta filter berdasarkan peg_id dan riw_status
-        const { data, error } = await supabase
-            .schema('siap') // Jika skema default adalah public, hapus baris ini
-            .from('spg_riwayat_prestasi_kelompok')
-            .select('*')
-            .eq('peg_id', peg_id) // Filter berdasarkan peg_id
-           
+      const data = await prisma.spg_riwayat_prestasi_kelompok.findMany({
+        where: {
+          peg_id: BigInt(peg_id),
+        },
+      });
 
-            if (error) {
-                console.error("Error fetching data:", error);
-                return res.status(500).json({ error: error.message });
-            }
+      if (!data || data.length === 0) {
+        return res.status(404).json({ error: "No data found for the given peg_id" });
+      }
 
-            if (!data || data.length === 0) {
-                return res.status(404).json({ error: "No data found for the given peg_id" });
-            }
+      const cleanData = JSON.parse(JSON.stringify(data, (_, v) =>
+        typeof v === 'bigint' ? v.toString() : v
+      ));
 
-            return res.status(200).json(data);
-        }
-// Handle POST request
-if (req.method === 'POST') {
-    const {
+      return res.status(200).json(cleanData);
+    }
+
+    if (req.method === 'POST') {
+      const {
         peg_id,
         nama_penghargaan,
         tahun,
         peran,
         tingkat,
-        instansi_pemberi
-    } = req.body;
+        instansi_pemberi,
+      } = req.body;
 
-    if (!peg_id || !nama_penghargaan) {
+      if (!peg_id || !nama_penghargaan) {
         return res.status(400).json({ error: "Missing required fields" });
-    }
+      }
 
-    const { data, error } = await supabase
-        .schema('siap')
-        .from('spg_riwayat_prestasi_kelompok')
-        .insert([{
-            peg_id,
-            nama_penghargaan,
-            tahun,
-            peran,
-            tingkat,
-            instansi_pemberi
-        }]);
+      const newData = await prisma.spg_riwayat_prestasi_kelompok.create({
+        data: {
+          peg_id: BigInt(peg_id),
+          nama_penghargaan,
+          tahun,
+          peran,
+          tingkat,
+          instansi_pemberi,
+        },
+      });
 
-    if (error) {
-        console.error("Error inserting data:", error);
-        return res.status(500).json({ error: error.message });
-    }
+      const cleanData = JSON.parse(JSON.stringify(newData, (_, v) =>
+        typeof v === 'bigint' ? v.toString() : v
+      ));
 
-    return res.status(201).json({
+      return res.status(201).json({
         message: "Data successfully added",
-        data
-    });
-}
+        data: cleanData,
+      });
+    }
 
-// Handle unsupported methods
-res.setHeader('Allow', ['GET', 'POST']);
-return res.status(405).json({ error: `Method ${req.method} not allowed` });
-} catch (error) {
-console.error("Error in handler:", error);
-return res.status(500).json({ error: error.message });
-}
+    res.setHeader('Allow', ['GET', 'POST']);
+    return res.status(405).json({ error: `Method ${req.method} not allowed` });
+
+  } catch (error) {
+    console.error("Error in handler:", error);
+    return res.status(500).json({ error: error.message });
+  }
 }
