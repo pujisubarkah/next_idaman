@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       const data = await prisma.siap_skpd_spg_riwayat.findMany({
         where: {
           peg_id: peg_id,
-          riw_status: '1'
+          riw_status: 1
         }
       });
 
