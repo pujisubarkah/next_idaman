@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "'peg_id' parameter is required" });
       }
 
-      const data = await prisma.spg_riwayat.findMany({
+      const data = await prisma.siap_skpd_spg_riwayat.findMany({
         where: {
           peg_id: peg_id,
           riw_status: '1'
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      const newData = await prisma.spg_riwayat.create({
+      const newData = await prisma.siap_skpd_spg_riwayat.create({
         data: {
           peg_id,
           nik,
