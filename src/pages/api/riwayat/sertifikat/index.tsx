@@ -1,34 +1,36 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Sesuaikan path import
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-    try {
-        // Ambil parameter peg_id dari query
-        const { peg_id } = req.query;
+  try {
+    const { peg_id } = req.query;
 
-        if (!peg_id) {
-            return res.status(400).json({ error: "'peg_id' parameter is required" });
-        }
-
-        const { data, error } = await supabase
-            .schema('siap')
-            .from('spg_riwayat_sertifikat')
-            .select(`*`)
-            .eq('peg_id', peg_id)
-            .order('tanggal_sertifikat', { ascending: true });  // Ubah 'tingpend_id' ke kolom yang sesuai
-
-        if (error) {
-            throw error;
-        }
-
-        if (!data || data.length === 0) {
-            return res.status(404).json({ error: "No data found for the given peg_id" });
-        }
-
-        // Kirimkan data ke client
-        res.status(200).json(data);
-    } catch (error) {
-        // Tangani error jika terjadi
-        console.error("Error fetching data:", error.message);
-        res.status(500).json({ error: error.message });
+    if (!peg_id) {
+      return res.status(400).json({ error: "'peg_id' parameter is required" });
     }
+
+    const data = await prisma.siap_skpd_spg_riwayat_sertifikat.findMany({
+      where: {
+        peg_id: BigInt(peg_id), // ⚠️ gunakan BigInt jika peg_id memang besar
+      },
+      orderBy: {
+        tanggal_sertifikat: 'asc',
+      },
+    });
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: "No data found for the given peg_id" });
+    }
+
+    // Convert BigInt to string biar nggak error saat JSON.stringify
+    const cleanData = JSON.parse(JSON.stringify(data, (_, v) =>
+      typeof v === 'bigint' ? v.toString() : v
+    ));
+
+    res.status(200).json(cleanData);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: error.message });
+  }
 }
