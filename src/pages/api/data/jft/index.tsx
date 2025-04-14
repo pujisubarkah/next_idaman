@@ -1,51 +1,50 @@
-import { supabase } from '../../../../../lib/supabaseClient';
+import prisma from '../../../../../lib/prisma';
 
 export default async function handler(req, res) {
-    if (req.method === 'GET') {
-        try {
-            // Ambil data dengan join dari semua tabel
-            const { data, error } = await supabase
-                .schema('siap')
-                .from('m_spg_referensi_jf')
-                .select(`
-                    jf_id, 
-                    jf_nama, 
-                    jf_gol_awal_id, 
-                    jf_gol_akhir_id, 
-                    jf_skill, 
-                    m_spg_jabatan (
-                        jabatan_id,
-                        spg_pegawai (
-                            peg_nip, 
-                            peg_nama, 
-                            satuan_kerja_id,
-                            m_spg_satuan_kerja (satuan_kerja_nama)
-                        )
-                    )
-                `);
+  try {
+    const jabatanData = await prisma.siap_skpd_m_spg_referensi_jf.findMany({
+      select: {
+        jf_nama: true,
+        jf_skill: true,
+        m_spg_jabatan: {
+          select: {
+            spg_pegawai: {
+              select: {
+                peg_nama: true,
+                peg_nip: true,
+                satuan_kerja_id: true,
+                m_spg_satuan_kerja: {
+                  select: {
+                    satuan_kerja_nama: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
-            if (error) {
-                return res.status(500).json({ error: error.message });
-            }
+    const cleanedData = jabatanData
+      .filter(item =>
+        item.m_spg_jabatan?.some(j => (j.spg_pegawai || []).length > 0)
+      )
+      .map(item => {
+        const jumlah_pegawai = item.m_spg_jabatan
+          .flatMap(j => j.spg_pegawai || [])
+          .length;
 
-            // Filter hanya jabatan yang memiliki pegawai
-            const filteredData = data
-                .map(jf => ({
-                    ...jf,
-                    m_spg_jabatan: jf.m_spg_jabatan
-                        .map(jabatan => ({
-                            ...jabatan,
-                            jumlah_pegawai: jabatan.spg_pegawai.length // Hitung jumlah pegawai
-                        }))
-                        .filter(jabatan => jabatan.jumlah_pegawai > 0) // Hapus yang tidak ada pegawainya
-                }))
-                .filter(jf => jf.m_spg_jabatan.length > 0); // Hapus referensi jika tidak ada jabatan yang memiliki pegawai
+        return {
+          ...item,
+          jumlah_pegawai,
+        };
+      });
 
-            return res.status(200).json(filteredData);
-        } catch (err) {
-            return res.status(500).json({ error: err.message });
-        }
-    } else {
-        res.status(405).json({ message: 'Method Not Allowed' });
-    }
+    res.status(200).json(cleanedData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await prisma.$disconnect();
+  }
 }
