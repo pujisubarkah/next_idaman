@@ -1,68 +1,80 @@
-import { supabase } from '../../../../../lib/supabaseClient'; // Sesuaikan path import
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-    if (req.method === 'GET') {
-        return getPrestasi(req, res);
-    } else if (req.method === 'POST') {
-        return addPrestasi(req, res);
-    } else {
-        res.setHeader('Allow', ['GET', 'POST']);
-        res.status(405).json({ error: `Method ${req.method} Not Allowed` });
-    }
+  if (req.method === 'GET') {
+    return getPrestasi(req, res);
+  } else if (req.method === 'POST') {
+    return addPrestasi(req, res);
+  } else {
+    res.setHeader('Allow', ['GET', 'POST']);
+    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+  }
 }
 
 // GET: Ambil data berdasarkan peg_id
 async function getPrestasi(req, res) {
-    try {
-        const { peg_id } = req.query;
+  try {
+    const { peg_id } = req.query;
 
-        if (!peg_id) {
-            return res.status(400).json({ error: "'peg_id' parameter is required" });
-        }
-
-        const { data, error } = await supabase
-            .schema('siap') // Hapus jika skema default adalah public
-            .from('spg_riwayat_prestasi_pribadi')
-            .select('prestasi_pribadi_id, nama_penghargaan, tahun, tingkat, instansi_pemberi, peg_id')
-            .eq('peg_id', peg_id);
-
-        if (error) {
-            console.error("Error fetching data:", error);
-            return res.status(500).json({ error: error.message });
-        }
-
-        if (!data || data.length === 0) {
-            return res.status(404).json({ error: "No data found for the given peg_id" });
-        }
-
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    if (!peg_id) {
+      return res.status(400).json({ error: "'peg_id' parameter is required" });
     }
+
+    const data = await prisma.spg_riwayat_prestasi_pribadi.findMany({
+      where: {
+        peg_id: BigInt(peg_id), // pakai BigInt kalau peg_id panjang
+      },
+      select: {
+        prestasi_pribadi_id: true,
+        nama_penghargaan: true,
+        tahun: true,
+        tingkat: true,
+        instansi_pemberi: true,
+        peg_id: true,
+      },
+    });
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: "No data found for the given peg_id" });
+    }
+
+    const cleanData = JSON.parse(JSON.stringify(data, (_, v) =>
+      typeof v === 'bigint' ? v.toString() : v
+    ));
+
+    res.status(200).json(cleanData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
-// POST: Tambah data baru ke tabel spg_riwayat_prestasi_pribadi
+// POST: Tambah data baru
 async function addPrestasi(req, res) {
-    try {
-        const { nama_penghargaan, tahun, tingkat, instansi_pemberi, peg_id } = req.body;
+  try {
+    const { nama_penghargaan, tahun, tingkat, instansi_pemberi, peg_id } = req.body;
 
-        if (!nama_penghargaan || !tahun || !tingkat || !instansi_pemberi || !peg_id) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
-
-        const { data, error } = await supabase
-            .schema('siap') // Hapus jika skema default adalah public
-            .from('spg_riwayat_prestasi_pribadi')
-            .insert([{ nama_penghargaan, tahun, tingkat, instansi_pemberi, peg_id }])
-            .select();
-
-        if (error) {
-            console.error("Error inserting data:", error);
-            return res.status(500).json({ error: error.message });
-        }
-
-        res.status(201).json({ message: "Prestasi berhasil ditambahkan", data });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    if (!nama_penghargaan || !tahun || !tingkat || !instansi_pemberi || !peg_id) {
+      return res.status(400).json({ error: "All fields are required" });
     }
+
+    const newData = await prisma.spg_riwayat_prestasi_pribadi.create({
+      data: {
+        nama_penghargaan,
+        tahun,
+        tingkat,
+        instansi_pemberi,
+        peg_id: BigInt(peg_id),
+      },
+    });
+
+    const cleanData = JSON.parse(JSON.stringify(newData, (_, v) =>
+      typeof v === 'bigint' ? v.toString() : v
+    ));
+
+    res.status(201).json({ message: "Prestasi berhasil ditambahkan", data: cleanData });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
