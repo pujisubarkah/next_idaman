@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
       const data = await prisma.siap_skpd_spg_riwayat.findMany({
         where: {
-          peg_id: Number(peg_id), // pastiin ini number juga
+          peg_id: BigInt(peg_id), // pastiin ini number juga
           riw_status: 1
         }
       });
