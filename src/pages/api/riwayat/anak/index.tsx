@@ -1,8 +1,12 @@
-// pages/api/spg/riwayat/[peg_id].ts atau [peg_id].js
-
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
+function replaceBigInts(obj) {
+  return JSON.parse(
+    JSON.stringify(obj, (_, v) => (typeof v === 'bigint' ? v.toString() : v))
+  );
+}
 
 export default async function handler(req, res) {
   const { peg_id } = req.query;
@@ -15,7 +19,7 @@ export default async function handler(req, res) {
 
       const data = await prisma.siap_skpd_spg_riwayat.findMany({
         where: {
-          peg_id: peg_id,
+          peg_id: Number(peg_id), // pastiin ini number juga
           riw_status: 1
         }
       });
@@ -24,7 +28,7 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: "No data found for the given peg_id" });
       }
 
-      return res.status(200).json(data);
+      return res.status(200).json(replaceBigInts(data));
     }
 
     if (req.method === 'POST') {
@@ -72,7 +76,7 @@ export default async function handler(req, res) {
 
       return res.status(201).json({
         message: "Data successfully added",
-        data: newData,
+        data: replaceBigInts(newData),
       });
     }
 
