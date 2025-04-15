@@ -1,101 +1,61 @@
-import { supabase } from '../../../../../lib/supabaseClient';
+import prisma from '../../../../../lib/prisma';
 
 export default async function handler(req, res) {
-    if (req.method === 'GET') {
-        try {
-            // Mengambil data dari tabel m_spg_referensi_jf
-            const { data: jfData, error: jfError } = await supabase
-                .schema('siap')
-                .from('m_spg_referensi_jfu')
-                .select('jfu_id, jfu_nama, jfu_pangkat_awal, jfu_pangkat_puncak');
+  try {
+    const jabatanData = await prisma.siap_skpd_m_spg_referensi_jf.findMany({
+      select: {
+        jf_nama: true,
+        jf_skill: true,
+        m_spg_jabatan: {
+          select: {
+            spg_pegawai: {
+              where: {
+                peg_nip: { not: null }, // optional filter, biar lebih aman
+              },
+              select: {
+                peg_nama: true,
+                peg_nip: true,
+                satuan_kerja_id: true,
+                m_spg_satuan_kerja: {
+                  select: {
+                    satuan_kerja_nama: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      where: {
+        // hanya ambil jika ada m_spg_jabatan yang punya spg_pegawai
+        m_spg_jabatan: {
+          some: {
+            spg_pegawai: {
+              some: {
+                peg_nip: { not: null }, // bisa disesuaikan kondisi
+              },
+            },
+          },
+        },
+      },
+    });
 
-            if (jfError) {
-                return res.status(500).json({ error: jfError.message });
-            }
+    const cleanedData = jabatanData.map(item => {
+      // flatten semua pegawai dari semua jabatan
+      const allPegawai = item.m_spg_jabatan.flatMap(j => j.spg_pegawai || []);
+      return {
+        jf_nama: item.jf_nama,
+        jf_skill: item.jf_skill,
+        daftar_pegawai: allPegawai,
+        jumlah_pegawai: allPegawai.length,
+      };
+    });
 
-            // Mengambil data dari tabel m_spg_jabatan
-            const { data: jabatanData, error: jabatanError } = await supabase
-                .schema('siap')
-                .from('m_spg_jabatan')
-                .select('jabatan_id, jfu_id');
-
-            if (jabatanError) {
-                return res.status(500).json({ error: jabatanError.message });
-            }
-
-            // Mengambil data dari tabel spg_pegawai
-            const { data: spgData, error: spgError } = await supabase
-                .schema('siap')
-                .from('spg_pegawai')
-                .select('peg_nip, peg_nama, satuan_kerja_id, jabatan_id');
-
-            if (spgError) {
-                return res.status(500).json({ error: spgError.message });
-            }
-
-            // Mengambil data dari tabel m_spg_satuan_kerja
-            const { data: satuanKerjaData, error: satuanKerjaError } = await supabase
-                .schema('siap')
-                .from('m_spg_satuan_kerja')
-                .select('satuan_kerja_id, satuan_kerja_nama');
-
-            if (satuanKerjaError) {
-                return res.status(500).json({ error: satuanKerjaError.message });
-            }
-
-            // Mengelompokkan data berdasarkan jf_id
-            const groupedResult = jfData
-                .map(jf => {
-                    // Menghubungkan data jabatan dengan jf_id
-                    const relatedJabatan = jabatanData.filter(jabatan => jabatan.jfu_id === jf.jfu_id);
-
-                    // Menghubungkan data pegawai dengan jabatan_id
-                    const pegawai = relatedJabatan.flatMap(jabatan =>
-                        spgData.filter(spg => spg.jabatan_id === jabatan.jabatan_id)
-                    );
-
-                    // Menambahkan satuan_kerja_nama ke data pegawai
-                    const pegawaiWithSatuanKerja = pegawai.map(spg => {
-                        const satuanKerja = satuanKerjaData.find(
-                            sk => sk.satuan_kerja_id === spg.satuan_kerja_id
-                        );
-                        return {
-                            peg_nip: spg.peg_nip,
-                            peg_nama: spg.peg_nama,
-                            satuan_kerja_id: spg.satuan_kerja_id,
-                            satuan_kerja_nama: satuanKerja ? satuanKerja.satuan_kerja_nama : null,
-                        };
-                    });
-
-                    return {
-                        jf_id: jf.jfu_id,
-                        jf_nama: jf.jfu_nama,
-                        jf_gol_awal_id: jf.jfu_pangkat_awal,
-                        jf_gol_akhir_id: jf.jfu_pangkat_puncak,
-                        total_pegawai: pegawaiWithSatuanKerja.length, // Jumlah pegawai per jf_id
-                        pegawai: pegawaiWithSatuanKerja,
-                    };
-                })
-                // Filter hasil untuk hanya menyertakan data dengan total_pegawai > 0
-                .filter(group => group.total_pegawai > 0);
-
-            return res.status(200).json(groupedResult);
-        } catch (error) {
-            return res.status(500).json({ error: error.message });
-        }
-    } else if (req.method === 'POST') {
-        const { body } = req;
-        const { data, error } = await supabase
-            .from('m_spg_jabatan')
-            .insert([body]);
-
-        if (error) {
-            return res.status(500).json({ error: error.message });
-        }
-
-        return res.status(201).json(data);
-    } else {
-        res.setHeader('Allow', ['GET', 'POST']);
-        return res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
+    res.status(200).json(cleanedData);
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await prisma.$disconnect();
+  }
 }
