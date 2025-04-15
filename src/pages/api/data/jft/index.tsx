@@ -26,19 +26,20 @@ export default async function handler(req, res) {
     });
 
     const cleanedData = jabatanData
-      .filter(item =>
-        item.m_spg_jabatan?.some(j => (j.spg_pegawai || []).length > 0)
-      )
       .map(item => {
-        const jumlah_pegawai = item.m_spg_jabatan
-          .flatMap(j => j.spg_pegawai || [])
-          .length;
+        // Filter hanya jabatan yang punya pegawai
+        const filtered_jabatan = item.m_spg_jabatan.filter(j => (j.spg_pegawai || []).length > 0);
+        const jumlah_pegawai = filtered_jabatan
+          .reduce((total, j) => total + (j.spg_pegawai?.length || 0), 0);
 
         return {
-          ...item,
+          jf_nama: item.jf_nama,
+          jf_skill: item.jf_skill,
+          m_spg_jabatan: filtered_jabatan,
           jumlah_pegawai,
         };
-      });
+      })
+      .filter(item => item.m_spg_jabatan.length > 0); // Hapus item yang gak punya jabatan dengan pegawai
 
     res.status(200).json(cleanedData);
   } catch (error) {
