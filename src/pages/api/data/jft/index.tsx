@@ -27,19 +27,21 @@ export default async function handler(req, res) {
 
     const cleanedData = jabatanData
       .map(item => {
-        // Filter hanya jabatan yang punya pegawai
-        const filtered_jabatan = item.m_spg_jabatan.filter(j => (j.spg_pegawai || []).length > 0);
-        const jumlah_pegawai = filtered_jabatan
-          .reduce((total, j) => total + (j.spg_pegawai?.length || 0), 0);
+        // Ambil semua pegawai dari masing-masing jabatan, lalu gabung jadi satu array
+        const allPegawai = item.m_spg_jabatan
+          .flatMap(j => j.spg_pegawai || [])
+          .filter(p => !!p); // filter null/undefined just in case
+
+        if (allPegawai.length === 0) return null;
 
         return {
           jf_nama: item.jf_nama,
           jf_skill: item.jf_skill,
-          m_spg_jabatan: filtered_jabatan,
-          jumlah_pegawai,
+          m_spg_jabatan: allPegawai, // langsung isi daftar pegawai
+          jumlah_pegawai: allPegawai.length,
         };
       })
-      .filter(item => item.m_spg_jabatan.length > 0); // Hapus item yang gak punya jabatan dengan pegawai
+      .filter(item => item !== null); // buang yang kosong
 
     res.status(200).json(cleanedData);
   } catch (error) {
